@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/flutter_ecosed.dart';
-import 'package:flutter_ecosed/src/layout/plugins.dart';
 
+import '../platform/flutter_ecosed.dart';
 import '../widget/banner.dart';
 import 'overview.dart';
+import 'plugins.dart';
 
 class EcosedManager extends StatefulWidget {
   const EcosedManager({super.key});

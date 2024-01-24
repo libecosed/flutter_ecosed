@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/flutter_ecosed.dart';
-import 'package:flutter_ecosed/src/json.dart';
 
+import '../json.dart';
+import '../platform/flutter_ecosed.dart';
 import '../widget/module.dart';
 
 class PluginPage extends StatefulWidget {
