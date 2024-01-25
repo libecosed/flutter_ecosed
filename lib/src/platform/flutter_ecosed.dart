@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_ecosed.dart';
+import '../value/default_info.dart';
 import 'flutter_ecosed_platform_interface.dart';
+import 'flutter_ecosed_wrapper.dart';
 
-class FlutterEcosed extends EcosedPlugin {
+class FlutterEcosed extends EcosedPlugin implements FlutterEcosedWrapper {
   const FlutterEcosed({super.key});
 
+  @override
   Future<String?> getPlatformVersion() {
     return FlutterEcosedPlatform.instance.getPlatformVersion();
   }
 
+  @override
   Future<List?> getPluginList() {
     return FlutterEcosedPlatform.instance.getPluginList();
   }
@@ -20,6 +24,21 @@ class FlutterEcosed extends EcosedPlugin {
   @override
   String pluginName() {
     return 'FlutterEcosed';
+  }
+
+  @override
+  String pluginAuthor() {
+    return defaultAuthor;
+  }
+
+  @override
+  String pluginChannel() {
+    return 'flutter_ecosed';
+  }
+
+  @override
+  String pluginDescription() {
+    return '平台方法调用';
   }
 }
 

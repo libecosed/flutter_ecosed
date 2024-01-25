@@ -849,16 +849,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             super.onEcosedMethodCall(call, result)
             when (call.method) {
                 "getPlugins" -> result.success(mJSONList)
-                "addPlugin" -> mJSONList.add(
-                    element = JSONObject().run {
-                        put("channel", call.bundle?.getString("channel", "unknown"))
-                        put("title", call.bundle?.getString("title", "untitled"))
-                        put("description", call.bundle?.getString("description", "unknown"))
-                        put("author", call.bundle?.getString("author", "unknown"))
-                        put("version", call.bundle?.getString("version", "unknown"))
-                    }.toString()
-                )
-
                 else -> result.notImplemented()
             }
         }

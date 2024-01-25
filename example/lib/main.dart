@@ -3,20 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:flutter_ecosed_example/example_plugin.dart';
 
-void main() {
-  // runEcosedApp((openManager) {
-  //   return MyApp(openManager: openManager);
-  // }, (app) {
-  //   runApp(app);
-  // }, [const ExamplePlugin()]);
-
-  runApp(EcosedApp(
-      app: (openManager) {
-        return MyApp(openManager: openManager);
-      },
-      plugins: const [ExamplePlugin()],
-      title: ''));
-}
+void main() => runApp(EcosedApp(
+    app: (openManager) => MyApp(openManager: openManager),
+    plugins: const [ExamplePlugin()],
+    title: 'FlutterEcosed'));
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.openManager});

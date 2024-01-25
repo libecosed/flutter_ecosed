@@ -1,17 +1,15 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/value/default_info.dart';
 import 'package:flutter_ecosed/src/widget/banner.dart';
 
 import '../layout/manager.dart';
 import '../plugin/plugin.dart';
 
 typedef RunApp = void Function(Widget app);
-
-
-
 typedef EcosedApps = Widget Function(VoidCallback openManager);
 
-class EcosedApp extends StatefulWidget {
+class EcosedApp extends EcosedPlugin {
   const EcosedApp(
       {super.key,
       required this.app,
@@ -24,6 +22,18 @@ class EcosedApp extends StatefulWidget {
 
   @override
   State<EcosedApp> createState() => _EcosedAppState();
+
+  @override
+  String pluginName() => 'EcosedApp';
+
+  @override
+  String pluginAuthor() => defaultAuthor;
+
+  @override
+  String pluginChannel() => 'flutter_ecosed_app';
+
+  @override
+  String pluginDescription() => '应用入口';
 }
 
 class _EcosedAppState extends State<EcosedApp> {

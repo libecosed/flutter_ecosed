@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../person.dart';
 import '../platform/flutter_ecosed.dart';
 import '../widget/module.dart';
 
@@ -15,8 +14,10 @@ class PluginPage extends StatefulWidget {
 }
 
 class _PluginPageState extends State<PluginPage> {
-  List _pluginList = ['{"unknown":"unknown"}'];
-  final _ecosedNative = FlutterEcosed();
+  List _pluginList = [
+    '{"channel":"unknown","title":"unknown","description":"unknown","author":"unknown","version":"unknown"}'
+  ];
+  final _ecosedNative = const FlutterEcosed();
 
   @override
   void initState() {
@@ -37,21 +38,49 @@ class _PluginPageState extends State<PluginPage> {
     });
   }
 
-  List<Widget> card() {
-    return _pluginList
-        .map((e) => Plugin(
-      title: PluginPerson.fromJson(jsonDecode(e)).title,
-      version: PluginPerson.fromJson(jsonDecode(e)).version,
-      author: PluginPerson.fromJson(jsonDecode(e)).author,
-      description: PluginPerson.fromJson(jsonDecode(e)).description,
-    ))
-        .toList();
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return ListView(
-        children: card());
+        children: _pluginList
+            .map((e) => Plugin(
+                  title: PluginPerson.fromJson(jsonDecode(e)).title,
+                  version: PluginPerson.fromJson(jsonDecode(e)).version,
+                  author: PluginPerson.fromJson(jsonDecode(e)).author,
+                  description: PluginPerson.fromJson(jsonDecode(e)).description,
+                ))
+            .toList());
+    return Column(
+        children: _pluginList
+            .map((e) => Plugin(
+                  title: PluginPerson.fromJson(jsonDecode(e)).title,
+                  version: PluginPerson.fromJson(jsonDecode(e)).version,
+                  author: PluginPerson.fromJson(jsonDecode(e)).author,
+                  description: PluginPerson.fromJson(jsonDecode(e)).description,
+                ))
+            .toList());
+  }
+}
+
+class PluginPerson {
+  String channel;
+  String title;
+  String description;
+  String author;
+  String version;
+
+  PluginPerson(
+      {required this.channel,
+      required this.title,
+      required this.description,
+      required this.author,
+      required this.version});
+
+  factory PluginPerson.fromJson(Map<String, dynamic> json) {
+    return PluginPerson(
+        channel: json['channel'],
+        title: json['title'],
+        description: json['description'],
+        author: json['author'],
+        version: json['version']);
   }
 }

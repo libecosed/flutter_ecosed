@@ -1,0 +1,1 @@
+const String defaultAuthor = 'wyq0918dev';

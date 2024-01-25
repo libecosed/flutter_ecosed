@@ -5,12 +5,19 @@ class ExamplePlugin extends EcosedPlugin {
   const ExamplePlugin({super.key});
 
   @override
-  String pluginName() {
-    return 'Example Plugin.';
-  }
+  String pluginName() => 'Example Plugin.';
 
   @override
   State<ExamplePlugin> createState() => _ExamplePluginState();
+
+  @override
+  String pluginAuthor() => 'example';
+
+  @override
+  String pluginChannel() => 'flutter_example';
+
+  @override
+  String pluginDescription() => 'example';
 }
 
 class _ExamplePluginState extends State<ExamplePlugin> {
