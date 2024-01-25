@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../json.dart';
+import '../person.dart';
 import '../platform/flutter_ecosed.dart';
 import '../widget/module.dart';
 
@@ -37,16 +37,21 @@ class _PluginPageState extends State<PluginPage> {
     });
   }
 
+  List<Widget> card() {
+    return _pluginList
+        .map((e) => Plugin(
+      title: PluginPerson.fromJson(jsonDecode(e)).title,
+      version: PluginPerson.fromJson(jsonDecode(e)).version,
+      author: PluginPerson.fromJson(jsonDecode(e)).author,
+      description: PluginPerson.fromJson(jsonDecode(e)).description,
+    ))
+        .toList();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-        children: _pluginList
-            .map((e) => Plugin(
-                  title: PluginPerson.fromJson(jsonDecode(e)).title,
-                  version: PluginPerson.fromJson(jsonDecode(e)).version,
-                  author: PluginPerson.fromJson(jsonDecode(e)).author,
-                  description: PluginPerson.fromJson(jsonDecode(e)).description,
-                ))
-            .toList());
+        children: card());
   }
 }

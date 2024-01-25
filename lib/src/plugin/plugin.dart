@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 
-class EcosedPlugin extends StatefulWidget {
+abstract class EcosedPlugin extends StatefulWidget {
   const EcosedPlugin({super.key});
 
-  @override
-  State<EcosedPlugin> createState() => _EcosedPluginState();
-}
+  String pluginName();
 
-class _EcosedPluginState extends State<EcosedPlugin> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  Widget pluginWidget() => this;
 }

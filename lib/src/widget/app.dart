@@ -1,17 +1,24 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/widget/banner.dart';
 
-import '../layout/ecosed_manager.dart';
+import '../layout/manager.dart';
 import '../plugin/plugin.dart';
 
-const bool kIsEcosedDevMode = bool.fromEnvironment(
-  'ecosed.library.devmode',
-  defaultValue: false,
-);
+typedef RunApp = void Function(Widget app);
+
+
+
+typedef EcosedApps = Widget Function(VoidCallback openManager);
 
 class EcosedApp extends StatefulWidget {
-  const EcosedApp({super.key, required this.app, required this.plugins, required this.title});
+  const EcosedApp(
+      {super.key,
+      required this.app,
+      required this.plugins,
+      required this.title});
 
-  final Widget app;
+  final EcosedApps app;
   final List<EcosedPlugin> plugins;
   final String title;
 
@@ -20,8 +27,37 @@ class EcosedApp extends StatefulWidget {
 }
 
 class _EcosedAppState extends State<EcosedApp> {
+  final ValueNotifier<int> _managerIndex = ValueNotifier(1);
+
+  final int app = 0;
+  final int managerIndex = 1;
+
   @override
   Widget build(BuildContext context) {
-    return const EcosedManager();
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) =>
+            MaterialApp(
+                title: widget.title,
+                home: EcosedBanner(
+                    child: ValueListenableBuilder(
+                        valueListenable: _managerIndex,
+                        builder: (context, value, child) {
+                          return IndexedStack(
+                            index: value,
+                            children: [
+                              Container(child: widget.app(() {
+                                _managerIndex.value = managerIndex;
+                              })),
+                              //widget.app(manager),
+                              EcosedHome(onPressed: () {
+                                _managerIndex.value = app;
+                              }),
+                            ],
+                          );
+                        })),
+                theme: ThemeData(colorScheme: lightDynamic, useMaterial3: true),
+                darkTheme:
+                    ThemeData(colorScheme: darkDynamic, useMaterial3: true),
+                themeMode: ThemeMode.system));
   }
 }

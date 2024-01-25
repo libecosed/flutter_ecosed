@@ -40,7 +40,8 @@ import org.json.JSONObject
 import rikka.shizuku.Shizuku
 import kotlin.system.exitProcess
 
-class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware,
+class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
+    ActivityAware,
     ServiceConnection, LifecycleOwner, DefaultLifecycleObserver {
 
 
@@ -110,7 +111,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     override fun onCreate() {
         super<Service>.onCreate()
-// 添加Shizuku监听
+        // 添加Shizuku监听
         Shizuku.addBinderReceivedListener(mService)
         Shizuku.addBinderDeadListener(mService)
         Shizuku.addRequestPermissionResultListener(mService)
@@ -252,7 +253,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 override val bundleProxy: Bundle
                     get() = Bundle().apply {
-                        putString("channel", call.argument<String>("channel"))
+                        putString(
+                            "channel", call.argument<String>("channel")
+                        )
                     }
             },
             result = object : ResultProxy {
@@ -855,6 +858,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         put("version", call.bundle?.getString("version", "unknown"))
                     }.toString()
                 )
+
                 else -> result.notImplemented()
             }
         }
@@ -997,6 +1001,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             bindEcosed(this@run)
 
             Toast.makeText(this@run, "client", Toast.LENGTH_SHORT).show()
+
 
         }
 

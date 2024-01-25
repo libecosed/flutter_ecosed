@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_ecosed/flutter_ecosed.dart';
+import 'package:flutter_ecosed_example/example_plugin.dart';
 
-void main() => runApp(const EcosedApp(app: MyApp(), plugins: [], title: ''));
+void main() {
+  // runEcosedApp((openManager) {
+  //   return MyApp(openManager: openManager);
+  // }, (app) {
+  //   runApp(app);
+  // }, [const ExamplePlugin()]);
+
+  runApp(EcosedApp(
+      app: (openManager) {
+        return MyApp(openManager: openManager);
+      },
+      plugins: const [ExamplePlugin()],
+      title: ''));
+}
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.openManager});
+
+  final VoidCallback openManager;
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
@@ -21,12 +36,16 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(useMaterial3: false),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('FlutterEcosed Example App'),
         ),
-        body: const Center(
-          child: Text('Oi!'),
+        body: Center(
+          child: MaterialButton(
+            onPressed: widget.openManager,
+            child: const Text('打开管理器'),
+          ),
         ),
       ),
     );
