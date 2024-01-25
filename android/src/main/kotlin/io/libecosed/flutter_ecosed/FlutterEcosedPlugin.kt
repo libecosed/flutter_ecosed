@@ -871,7 +871,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun getView(context: Context?, viewId: Int, args: Any?): View {
-            return Button(this).apply {
+            return Button(context).apply {
                 layoutParams = ViewGroup.LayoutParams(100, 100)
                 text = "Button"
                 setOnClickListener {

@@ -14,7 +14,9 @@ class EcosedEngine extends EcosedPlugin implements EngineWrapper {
   String pluginName() => 'EcosedEngine';
 
   @override
-  void attach() {}
+  void attach() {
+
+  }
 
   @override
   String pluginAuthor() => defaultAuthor;

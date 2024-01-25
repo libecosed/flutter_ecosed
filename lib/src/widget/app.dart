@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/plugin/binding.dart';
 import 'package:flutter_ecosed/src/value/default_info.dart';
 import 'package:flutter_ecosed/src/widget/banner.dart';
 
@@ -34,10 +35,11 @@ class EcosedApp extends EcosedPlugin {
 
   @override
   String pluginDescription() => '应用入口';
+
 }
 
 class _EcosedAppState extends State<EcosedApp> {
-  final ValueNotifier<int> _managerIndex = ValueNotifier(1);
+  final ValueNotifier<int> _managerIndex = ValueNotifier(0);
 
   final int app = 0;
   final int managerIndex = 1;

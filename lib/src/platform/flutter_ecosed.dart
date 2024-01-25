@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/plugin/binding.dart';
 
 import '../../flutter_ecosed.dart';
 import '../value/default_info.dart';
 import 'flutter_ecosed_platform_interface.dart';
 import 'flutter_ecosed_wrapper.dart';
 
-class FlutterEcosed extends EcosedPlugin implements FlutterEcosedWrapper {
+class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
   const FlutterEcosed({super.key});
 
   @override
