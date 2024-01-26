@@ -42,9 +42,6 @@ class ExamplePlugin extends EcosedPlugin {
   String pluginDescription() => 'example';
 
   @override
-  void onEcosedAdded() {}
-
-  @override
   Object? onEcosedMethodCall(String name) {
     return null;
   }
