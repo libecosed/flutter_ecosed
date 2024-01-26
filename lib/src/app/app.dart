@@ -27,11 +27,11 @@ class PluginPerson {
   final String title;
   final String description;
   final String author;
-  final ModuleType type;
+  final PluginType type;
   final bool initial;
 
   factory PluginPerson.formJSON(
-      Map<String, dynamic> json, ModuleType type, bool initial) {
+      Map<String, dynamic> json, PluginType type, bool initial) {
     return PluginPerson(
         channel: json['channel'],
         title: json['title'],
@@ -42,7 +42,7 @@ class PluginPerson {
   }
 }
 
-enum ModuleType { native, flutter, unknown }
+enum PluginType { native, flutter, unknown }
 
 typedef EcosedExec = Object? Function(String channel, String method);
 typedef EcosedApps = Widget Function(Widget view, EcosedExec exec);
@@ -98,7 +98,7 @@ class _EcosedAppState extends State<EcosedApp> {
   final List<EcosedPlugin> _thirdPluginList = [];
 
   List<PluginPerson> _pluginPersonList = [
-    PluginPerson.formJSON(jsonDecode(_unknownPlugin), ModuleType.unknown, true)
+    PluginPerson.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
   ];
 
 
@@ -132,7 +132,7 @@ class _EcosedAppState extends State<EcosedApp> {
           title: element.pluginName(),
           description: element.pluginDescription(),
           author: element.pluginAuthor(),
-          type: ModuleType.flutter,
+          type: PluginType.flutter,
           initial: true));
     }
     // 添加native层内置模块
@@ -141,7 +141,7 @@ class _EcosedAppState extends State<EcosedApp> {
               as Future<List?>) ??
           [_unknownPlugin])) {
         pluginList.add(PluginPerson.formJSON(
-            jsonDecode(element), ModuleType.native, true));
+            jsonDecode(element), PluginType.native, true));
       }
     } on PlatformException {
       pluginList = _pluginPersonList;
@@ -159,7 +159,7 @@ class _EcosedAppState extends State<EcosedApp> {
           title: element.pluginName(),
           description: element.pluginDescription(),
           author: element.pluginAuthor(),
-          type: ModuleType.flutter,
+          type: PluginType.flutter,
           initial: false));
     }
     // 设置模块列表
@@ -209,9 +209,9 @@ class _EcosedAppState extends State<EcosedApp> {
 
   String _getType(PluginPerson person) {
     switch (person.type) {
-      case ModuleType.native:
+      case PluginType.native:
         return '内置模块 - Native';
-      case ModuleType.flutter:
+      case PluginType.flutter:
         return person.initial ? '内置模块 - Flutter' : '普通模块';
       default:
         return 'Unknown';
