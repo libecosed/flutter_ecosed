@@ -8,7 +8,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dynamic_color: ^1.6.9
   plugin_platform_interface: ^2.0.2
   flutter_plugin_android_lifecycle: ^2.0.17
 dev_dependencies:

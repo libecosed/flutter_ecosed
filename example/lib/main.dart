@@ -1,45 +1,58 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_ecosed/flutter_ecosed.dart';
-import 'package:flutter_ecosed_example/example_plugin.dart';
 
-void main() => runApp(EcosedApp(
-    app: (open, exec) {
+void main() => runApp(const ExampleApp());
 
-      return MyApp(openManager: open);
-    },
-    plugins: const [ExamplePlugin()],
-    title: 'FlutterEcosed'));
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key, required this.openManager});
-
-  final VoidCallback openManager;
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('FlutterEcosed Example App'),
-        ),
-        body: Center(
-          child: MaterialButton(
-            onPressed: widget.openManager,
-            child: const Text('打开管理器'),
-          ),
-        ),
-      ),
+      home: EcosedApp(
+          app: (view, exec) => Scaffold(
+                appBar: AppBar(
+                  title: const Text('FlutterEcosed Example App'),
+                ),
+                body: view,
+              ),
+          bannerLocation: BannerLocation.topStart,
+          appName: 'FlutterEcosed',
+          plugins: const [ExamplePlugin()]),
     );
+  }
+}
+
+class ExamplePlugin extends EcosedPlugin {
+  const ExamplePlugin({super.key});
+
+  @override
+  String pluginName() => 'Example Plugin.';
+
+  @override
+  State<ExamplePlugin> createState() => _ExamplePluginState();
+
+  @override
+  String pluginAuthor() => 'example';
+
+  @override
+  String pluginChannel() => 'flutter_example';
+
+  @override
+  String pluginDescription() => 'example';
+
+  @override
+  void onEcosedAdded() {}
+
+  @override
+  Object? onEcosedMethodCall(String name) {
+    return null;
+  }
+}
+
+class _ExamplePluginState extends State<ExamplePlugin> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
