@@ -1,4 +1,4 @@
 library flutter_library;
 
-export 'src/widget/app.dart';
+export 'src/app/app.dart';
 export 'src/plugin/plugin.dart';
