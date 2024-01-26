@@ -1,4 +1,7 @@
+import 'package:flutter_ecosed/flutter_ecosed.dart';
+
 abstract class EngineWrapper {
-  /// 引擎初始化
-  void attach();
+  List<EcosedPlugin> initialPlugin();
+  /// 调用插件方法
+  Object? execPluginCall(String name);
 }

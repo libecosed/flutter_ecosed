@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/plugin/binding.dart';
 
 import '../../flutter_ecosed.dart';
 import '../value/default_info.dart';
@@ -40,6 +39,18 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
   @override
   String pluginDescription() {
     return '平台方法调用';
+  }
+
+  @override
+  Object? onEcosedMethodCall(String name) {
+    switch (name) {
+      case 'platform':
+        return getPlatformVersion();
+      case 'plugins':
+        return getPluginList();
+      default:
+        return null;
+    }
   }
 }
 

@@ -4,7 +4,10 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:flutter_ecosed_example/example_plugin.dart';
 
 void main() => runApp(EcosedApp(
-    app: (openManager) => MyApp(openManager: openManager),
+    app: (open, exec) {
+
+      return MyApp(openManager: open);
+    },
     plugins: const [ExamplePlugin()],
     title: 'FlutterEcosed'));
 

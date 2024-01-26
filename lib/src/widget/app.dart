@@ -1,14 +1,14 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/plugin/binding.dart';
 import 'package:flutter_ecosed/src/value/default_info.dart';
 import 'package:flutter_ecosed/src/widget/banner.dart';
 
 import '../layout/manager.dart';
 import '../plugin/plugin.dart';
 
+typedef Exec = Object Function(String channel, String method);
 typedef RunApp = void Function(Widget app);
-typedef EcosedApps = Widget Function(VoidCallback openManager);
+typedef EcosedApps = Widget Function(VoidCallback open, Exec exec);
 
 class EcosedApp extends EcosedPlugin {
   const EcosedApp(
@@ -34,8 +34,12 @@ class EcosedApp extends EcosedPlugin {
   String pluginChannel() => 'flutter_ecosed_app';
 
   @override
-  String pluginDescription() => '应用入口';
+  String pluginDescription() => title;
 
+  @override
+  Object? onEcosedMethodCall(String name) {
+    return null;
+  }
 }
 
 class _EcosedAppState extends State<EcosedApp> {
@@ -57,13 +61,19 @@ class _EcosedAppState extends State<EcosedApp> {
                           return IndexedStack(
                             index: value,
                             children: [
-                              Container(child: widget.app(() {
-                                _managerIndex.value = managerIndex;
+                              Container(
+                                  child: widget.app(
+                                      () => _managerIndex.value = managerIndex,
+                                      (channel, method) {
+
+                                return '';
                               })),
                               //widget.app(manager),
-                              EcosedHome(onPressed: () {
-                                _managerIndex.value = app;
-                              }),
+                              EcosedHome(
+                                  onPressed: () {
+                                    _managerIndex.value = app;
+                                  },
+                                  plugins: widget.plugins),
                             ],
                           );
                         })),

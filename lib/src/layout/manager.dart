@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/engine/engine.dart';
 
+import '../../flutter_ecosed.dart';
 import '../widget/ecosed_view.dart';
 import 'overview.dart';
 import 'plugins.dart';
 
 class EcosedHome extends StatefulWidget {
-  const EcosedHome({super.key, required this.onPressed});
+  const EcosedHome({super.key, required this.onPressed, required this.plugins});
 
   final VoidCallback? onPressed;
+  final List<EcosedPlugin> plugins;
 
   @override
   State<EcosedHome> createState() => _EcosedHomeState();
@@ -29,10 +32,10 @@ class _EcosedHomeState extends State<EcosedHome> {
             builder: (context, value, child) {
               return IndexedStack(
                 index: value,
-                children: const [
-                  OverviewPage(),
-                  EcosedView(),
-                  PluginPage(),
+                children: [
+                  const OverviewPage(),
+                  EcosedEngine(plugins: widget.plugins),
+                  const PluginPage(),
                 ],
               );
             }),
