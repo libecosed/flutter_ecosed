@@ -1,16 +1,24 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/value/default_info.dart';
-import 'package:flutter_ecosed/src/widget/banner.dart';
 
 import '../layout/manager.dart';
+import '../platform/flutter_ecosed.dart';
 import '../plugin/plugin.dart';
+import '../value/default_info.dart';
+import 'banner.dart';
 
-typedef Exec = Object Function(String channel, String method);
+abstract class EcosedAppWrapper {
+  List<EcosedPlugin> initialPlugin();
+
+  /// 调用插件方法
+  Object? execPluginCall(String name);
+}
+
+typedef Exec = Object? Function(String channel, String method);
 typedef RunApp = void Function(Widget app);
 typedef EcosedApps = Widget Function(VoidCallback open, Exec exec);
 
-class EcosedApp extends EcosedPlugin {
+class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   const EcosedApp(
       {super.key,
       required this.app,
@@ -40,13 +48,44 @@ class EcosedApp extends EcosedPlugin {
   Object? onEcosedMethodCall(String name) {
     return null;
   }
+
+  @override
+  Object? execPluginCall(String name) {
+    return '';
+  }
+
+  @override
+  List<EcosedPlugin> initialPlugin() {
+    return [this, const FlutterEcosed()];
+  }
 }
 
 class _EcosedAppState extends State<EcosedApp> {
   final ValueNotifier<int> _managerIndex = ValueNotifier(0);
+  final List<EcosedPlugin> _pluginList = [];
 
   final int app = 0;
   final int managerIndex = 1;
+
+  @override
+  void initState() {
+    for (var element in widget.initialPlugin()) {
+      _pluginList.add(element);
+    }
+    for (var element in widget.plugins) {
+      _pluginList.add(element);
+    }
+    super.initState();
+  }
+
+  Object? exec(String channel, String method) {
+    for (var element in _pluginList) {
+      if (element.pluginChannel() == channel) {
+        return element.onEcosedMethodCall(method);
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +103,12 @@ class _EcosedAppState extends State<EcosedApp> {
                               Container(
                                   child: widget.app(
                                       () => _managerIndex.value = managerIndex,
-                                      (channel, method) {
-
-                                return '';
-                              })),
+                                      (channel, method) =>
+                                          exec(channel, method))),
                               //widget.app(manager),
-                              EcosedHome(
-                                  onPressed: () {
-                                    _managerIndex.value = app;
-                                  },
-                                  plugins: widget.plugins),
+                              EcosedHome(onPressed: () {
+                                _managerIndex.value = app;
+                              }),
                             ],
                           );
                         })),
