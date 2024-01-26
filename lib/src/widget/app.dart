@@ -101,7 +101,6 @@ class _EcosedAppState extends State<EcosedApp> {
     PluginPerson.formJSON(jsonDecode(_unknownPlugin), ModuleType.unknown, true)
   ];
 
-  final _ecosedNative = const FlutterEcosed();
 
   @override
   void initState() {
