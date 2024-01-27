@@ -13,8 +13,8 @@ class Overview extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
             child: StateCard(
                 icon: Icons.keyboard_command_key,
-                title: 'title',
-                subtitle: 'subtitle'))
+                title: 'Flutter Ecosed',
+                subtitle: '1.0.0'))
       ],
     );
   }

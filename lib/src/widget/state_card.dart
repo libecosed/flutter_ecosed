@@ -13,6 +13,9 @@ class StateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context)
+        .textTheme
+        .apply(displayColor: Theme.of(context).colorScheme.onSurface);
     return Card(
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: Padding(
@@ -28,10 +31,13 @@ class StateCard extends StatelessWidget {
                     Text(
                       title,
                       textAlign: TextAlign.left,
+                      style: textTheme.titleMedium,
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       textAlign: TextAlign.left,
+                      style: textTheme.bodyMedium,
                     )
                   ],
                 ),

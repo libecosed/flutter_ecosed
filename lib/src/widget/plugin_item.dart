@@ -29,7 +29,7 @@ class PluginItem extends StatelessWidget {
         child: Card(
           color: Theme.of(context).colorScheme.surface,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -37,19 +37,36 @@ class PluginItem extends StatelessWidget {
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(person.title,
-                            textAlign: TextAlign.start,
-                            style: textTheme.titleMedium),
+                        Text(
+                          person.title,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            fontSize: textTheme.titleMedium?.fontSize,
+                            fontFamily: textTheme.titleMedium?.fontFamily,
+                            height: textTheme.bodySmall?.height,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                         Text(
                           '通道: ${person.channel}',
                           textAlign: TextAlign.start,
-                          style: textTheme.bodySmall,
+                          style: TextStyle(
+                            fontSize: textTheme.bodySmall?.fontSize,
+                            fontFamily: textTheme.bodySmall?.fontFamily,
+                            height: textTheme.bodySmall?.height,
+                          ),
                         ),
                         Text(
                           '作者: ${person.author}',
                           textAlign: TextAlign.start,
-                          style: textTheme.bodySmall,
+                          style: TextStyle(
+                            fontSize: textTheme.bodySmall?.fontSize,
+                            fontFamily: textTheme.bodySmall?.fontFamily,
+                            height: textTheme.bodySmall?.height,
+                          ),
                         ),
                       ],
                     ),
@@ -64,7 +81,14 @@ class PluginItem extends StatelessWidget {
                 Text(
                   person.description,
                   textAlign: TextAlign.start,
-                  style: textTheme.bodySmall,
+                  style: TextStyle(
+                    fontSize: textTheme.bodySmall?.fontSize,
+                    fontFamily: textTheme.bodySmall?.fontFamily,
+                    height: textTheme.bodySmall?.height,
+                    fontWeight: textTheme.bodySmall?.fontWeight,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 4,
                 ),
                 const SizedBox(height: 16),
                 const Divider(),
@@ -72,6 +96,7 @@ class PluginItem extends StatelessWidget {
                   children: [
                     Text(
                       _getType(),
+                      textAlign: TextAlign.start,
                       style: textTheme.bodySmall,
                     ),
                     const Spacer(flex: 1),
