@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_ecosed.dart';
-import '../value/default_info.dart';
+import '../value/default.dart';
 import 'flutter_ecosed_platform_interface.dart';
 import 'flutter_ecosed_wrapper.dart';
 
@@ -23,7 +23,7 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
 
   @override
   String pluginName() {
-    return 'FlutterEcosed';
+    return 'Hybrid';
   }
 
   @override

@@ -6,19 +6,22 @@ void main() => runApp(const ExampleApp());
 class ExampleApp extends StatelessWidget {
   const ExampleApp({super.key});
 
+  static const String appName = 'FlutterEcosed Example App';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: EcosedApp(
-          app: (view, exec) => Scaffold(
-                appBar: AppBar(
-                  title: const Text('FlutterEcosed Example App'),
-                ),
-                body: view,
-              ),
-          bannerLocation: BannerLocation.topStart,
-          appName: 'FlutterEcosed',
-          plugins: const [ExamplePlugin()]),
+        app: (view, exec) => Scaffold(
+          appBar: AppBar(
+            title: const Text(appName),
+          ),
+          body: view,
+        ),
+        bannerLocation: BannerLocation.topStart,
+        appName: appName,
+        plugins: const [ExamplePlugin()],
+      ),
     );
   }
 }
@@ -27,7 +30,7 @@ class ExamplePlugin extends EcosedPlugin {
   const ExamplePlugin({super.key});
 
   @override
-  String pluginName() => 'Example Plugin.';
+  String pluginName() => 'Example Plugin';
 
   @override
   State<ExamplePlugin> createState() => _ExamplePluginState();

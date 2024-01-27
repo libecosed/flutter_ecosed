@@ -2,14 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecosed/src/widget/plugin_item.dart';
 
 import '../platform/flutter_ecosed.dart';
-import '../plugin/person.dart';
+import '../plugin/plugin_person.dart';
 import '../plugin/plugin.dart';
-import '../plugin/type.dart';
-import '../value/default_info.dart';
-import 'type.dart';
-import 'wrapper.dart';
+import '../plugin/plugin_type.dart';
+import '../value/default.dart';
+import '../widget/state_card.dart';
+import 'app_type.dart';
+import 'app_wrapper.dart';
 
 class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   const EcosedApp(
@@ -28,7 +30,7 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   State<EcosedApp> createState() => _EcosedAppState();
 
   @override
-  String pluginName() => 'EcosedApp';
+  String pluginName() => 'Application';
 
   @override
   String pluginAuthor() => defaultAuthor;
@@ -56,7 +58,8 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
 }
 
 class _EcosedAppState extends State<EcosedApp> {
-  static const String _unknownPlugin = '{"channel":"unknown","title":"unknown","description":"unknown","author":"unknown"}';
+  static const String _unknownPlugin =
+      '{"channel":"unknown","title":"unknown","description":"unknown","author":"unknown"}';
 
   final List<EcosedPlugin> _initialPluginList = [];
   final List<EcosedPlugin> _thirdPluginList = [];
@@ -64,7 +67,6 @@ class _EcosedAppState extends State<EcosedApp> {
   List<PluginPerson> _pluginPersonList = [
     PluginPerson.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
   ];
-
 
   @override
   void initState() {
@@ -132,120 +134,6 @@ class _EcosedAppState extends State<EcosedApp> {
     });
   }
 
-  Widget _statCard(IconData icon, String title, String subtitle) {
-    return Card(
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Row(
-            children: [
-              Icon(icon),
-              Padding(
-                padding: const EdgeInsets.only(left: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      textAlign: TextAlign.left,
-                    ),
-                    Text(
-                      subtitle,
-                      textAlign: TextAlign.left,
-                    )
-                  ],
-                ),
-              )
-            ],
-          )),
-    );
-  }
-
-  Widget _overview(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-            child: _statCard(Icons.keyboard_command_key, 'title', 'subtitle'))
-      ],
-    );
-  }
-
-  String _getType(PluginPerson person) {
-    switch (person.type) {
-      case PluginType.native:
-        return '内置模块 - Native';
-      case PluginType.flutter:
-        return person.initial ? '内置模块 - Flutter' : '普通模块';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  Widget _pluginItem(PluginPerson person) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Card(
-          color: Theme.of(context).colorScheme.surface,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(person.title, textAlign: TextAlign.start),
-                        Text('标识:${person.channel}',
-                            textAlign: TextAlign.start),
-                        Text('作者:${person.author}', textAlign: TextAlign.start),
-                      ],
-                    ),
-                    const Spacer(flex: 1),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.settings))
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(person.description, textAlign: TextAlign.start),
-                const SizedBox(height: 16),
-                const Divider(),
-                Row(
-                  children: [
-                    Text(_getType(person)),
-                    const Spacer(flex: 1),
-                    TextButton(onPressed: () {}, child: const Text('设置')),
-                    TextButton(onPressed: () {}, child: const Text('卸载'))
-                  ],
-                )
-              ],
-            ),
-          ),
-        ));
-  }
-
-  Widget _plugin(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-            children: _pluginPersonList
-                .map((element) => _pluginItem(element))
-                .toList()));
-  }
-
-  Widget _manager(BuildContext context) {
-    return ListView(
-      children: [_overview(context), const Divider(), _plugin(context)],
-    );
-  }
-
   Object? _thirdExec(String channel, String method) {
     if (_thirdPluginList.isNotEmpty) {
       for (var element in _thirdPluginList) {
@@ -268,13 +156,48 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
+  Widget _overview(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            child: StateCard(
+                icon: Icons.keyboard_command_key,
+                title: 'title',
+                subtitle: 'subtitle'))
+      ],
+    );
+  }
+
+  Widget _plugin(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        children: _pluginPersonList
+            .map((element) => PluginItem(person: element))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _manager(BuildContext context) {
+    return Scrollbar(
+      child: ListView(
+        children: [_overview(context), const Divider(), _plugin(context)],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Banner(
-        message: 'EcosedApp',
-        location: widget.bannerLocation,
-        color: Colors.pinkAccent,
-        child: widget.app(_manager(context),
-            (channel, method) => _thirdExec(channel, method)));
+      message: 'EcosedApp',
+      location: widget.bannerLocation,
+      color: Colors.pinkAccent,
+      child: widget.app(
+        _manager(context),
+        (channel, method) => _thirdExec(channel, method),
+      ),
+    );
   }
 }

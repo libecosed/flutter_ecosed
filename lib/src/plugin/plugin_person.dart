@@ -1,4 +1,4 @@
-import 'type.dart';
+import 'plugin_type.dart';
 
 class PluginPerson {
   const PluginPerson(
