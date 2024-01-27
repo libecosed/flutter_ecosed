@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class StateCard extends StatelessWidget {
   const StateCard(
       {super.key,
+      required this.color,
       required this.icon,
       required this.title,
       required this.subtitle});
 
+  final Color color;
   final IconData icon;
   final String title;
   final String subtitle;
@@ -16,9 +18,12 @@ class StateCard extends StatelessWidget {
     final textTheme = Theme.of(context)
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
+
     return Card(
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      child: Padding(
+      color: color,
+      child: GestureDetector(
+        onTap: () {},
+        child: Padding(
           padding: const EdgeInsets.all(24),
           child: Row(
             children: [
@@ -38,12 +43,14 @@ class StateCard extends StatelessWidget {
                       subtitle,
                       textAlign: TextAlign.left,
                       style: textTheme.bodyMedium,
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

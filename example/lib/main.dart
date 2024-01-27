@@ -3,41 +3,11 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 
 void main() => runApp(const ExampleApp());
 
-class ExampleApp extends StatelessWidget {
+class ExampleApp extends EcosedPlugin {
   const ExampleApp({super.key});
-
-  static const String appName = 'FlutterEcosed Example App';
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: EcosedApp(
-        app: (view, exec) => Scaffold(
-          appBar: AppBar(
-            title: const Text(appName),
-          ),
-          body: view,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {},
-            child: const Icon(Icons.add),
-          ),
-        ),
-        bannerLocation: BannerLocation.topStart,
-        appName: appName,
-        plugins: const [ExamplePlugin()],
-      ),
-    );
-  }
-}
-
-class ExamplePlugin extends EcosedPlugin {
-  const ExamplePlugin({super.key});
 
   @override
   String pluginName() => 'Example Plugin';
-
-  @override
-  State<ExamplePlugin> createState() => _ExamplePluginState();
 
   @override
   String pluginAuthor() => 'example';
@@ -52,11 +22,36 @@ class ExamplePlugin extends EcosedPlugin {
   Object? onEcosedMethodCall(String name) {
     return null;
   }
+
+  @override
+  State<ExampleApp> createState() => _ExampleAppState();
 }
 
-class _ExamplePluginState extends State<ExamplePlugin> {
+class _ExampleAppState extends State<ExampleApp> {
+
+  static const String appName = 'FlutterEcosed Example App';
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return MaterialApp(
+      home: EcosedApp(
+        home: (view, exec) => Scaffold(
+          appBar: AppBar(
+            title: const Text(appName),
+            centerTitle: true,
+          ),
+          body: view,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: const Icon(Icons.add),
+          ),
+        ),
+        bannerLocation: BannerLocation.topStart,
+        title: appName,
+        plugins: [widget],
+      ),
+      themeMode: ThemeMode.system,
+      title: appName,
+    );
   }
 }

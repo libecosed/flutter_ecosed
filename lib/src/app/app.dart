@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 
 import '../layout/manager.dart';
 import '../platform/flutter_ecosed.dart';
-import '../plugin/plugin_person.dart';
 import '../plugin/plugin.dart';
+import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../value/default.dart';
 import 'app_type.dart';
@@ -16,14 +16,14 @@ import 'app_wrapper.dart';
 class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   const EcosedApp(
       {super.key,
-      required this.app,
+      required this.home,
       required this.bannerLocation,
-      required this.appName,
+      required this.title,
       required this.plugins});
 
-  final EcosedApps app;
+  final EcosedHome home;
   final BannerLocation bannerLocation;
-  final String appName;
+  final String title;
   final List<EcosedPlugin> plugins;
 
   @override
@@ -39,7 +39,7 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   String pluginChannel() => appChannel;
 
   @override
-  String pluginDescription() => appName;
+  String pluginDescription() => title;
 
   @override
   Object? onEcosedMethodCall(String name) {
@@ -57,69 +57,78 @@ class _EcosedAppState extends State<EcosedApp> {
   final List<EcosedPlugin> _initialPluginList = [];
   final List<EcosedPlugin> _thirdPluginList = [];
 
-  List<PluginPerson> _pluginPersonList = [
-    PluginPerson.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
+  /// 插件信息列表
+  List<PluginDetails> _pluginDetailsList = [
+    PluginDetails.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
   ];
 
+  /// 加载状态
   @override
   void initState() {
     _initPluginsState();
     super.initState();
   }
 
+  /// 加载插件
   Future<void> _initPluginsState() async {
-    List<PluginPerson> pluginList = [];
-    //加载dart层的内置模块
+    List<PluginDetails> pluginList = [];
+    //加载dart层的内置插件
     if (widget.initialPlugin().isNotEmpty) {
       for (var element in widget.initialPlugin()) {
         _initialPluginList.add(element);
       }
     }
-    // 添加dart层模块
+    // 添加dart层插件
     for (var element in _initialPluginList) {
-      pluginList.add(PluginPerson(
-          channel: element.pluginChannel(),
-          title: element.pluginName(),
-          description: element.pluginDescription(),
-          author: element.pluginAuthor(),
-          type: PluginType.flutter,
-          initial: true));
+      pluginList.add(
+        PluginDetails(
+            channel: element.pluginChannel(),
+            title: element.pluginName(),
+            description: element.pluginDescription(),
+            author: element.pluginAuthor(),
+            type: PluginType.flutter,
+            initial: true),
+      );
     }
-    // 添加native层内置模块
+    // 添加native层内置插件
     if (Platform.isAndroid) {
       try {
         for (var element in (await (_initialExec(platformChannel, pluginMethod)
                 as Future<List?>) ??
             [_unknownPlugin])) {
-          pluginList.add(PluginPerson.formJSON(
-              jsonDecode(element), PluginType.native, true));
+          pluginList.add(
+            PluginDetails.formJSON(jsonDecode(element), PluginType.native, true),
+          );
         }
       } on PlatformException {
-        pluginList.add(_pluginPersonList.first);
+        pluginList.add(_pluginDetailsList.first);
       }
     }
-    //加载dart层普通模块
+    //加载dart层普通插件
     if (widget.plugins.isNotEmpty) {
       for (var element in widget.plugins) {
         _thirdPluginList.add(element);
       }
     }
-    // 添加dart层模块
+    // 添加dart层插件
     for (var element in _thirdPluginList) {
-      pluginList.add(PluginPerson(
-          channel: element.pluginChannel(),
-          title: element.pluginName(),
-          description: element.pluginDescription(),
-          author: element.pluginAuthor(),
-          type: PluginType.flutter,
-          initial: false));
+      pluginList.add(
+        PluginDetails(
+            channel: element.pluginChannel(),
+            title: element.pluginName(),
+            description: element.pluginDescription(),
+            author: element.pluginAuthor(),
+            type: PluginType.flutter,
+            initial: false),
+      );
     }
-    // 设置模块列表
+    // 设置插件列表
     setState(() {
-      _pluginPersonList = pluginList;
+      _pluginDetailsList = pluginList;
     });
   }
 
+  /// 执行普通插件代码
   Object? _thirdExec(String channel, String method) {
     if (_thirdPluginList.isNotEmpty) {
       for (var element in _thirdPluginList) {
@@ -131,6 +140,7 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
+  /// 执行内置插件代码
   Object? _initialExec(String channel, String method) {
     if (_initialPluginList.isNotEmpty) {
       for (var element in _initialPluginList) {
@@ -148,8 +158,8 @@ class _EcosedAppState extends State<EcosedApp> {
       message: 'EcosedApp',
       location: widget.bannerLocation,
       color: Colors.pinkAccent,
-      child: widget.app(
-        Manager(pluginPersonList: _pluginPersonList),
+      child: widget.home(
+        Manager(pluginDetailsList: _pluginDetailsList),
         (channel, method) => _thirdExec(channel, method),
       ),
     );

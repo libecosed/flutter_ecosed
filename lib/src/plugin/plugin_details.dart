@@ -1,7 +1,7 @@
 import 'plugin_type.dart';
 
-class PluginPerson {
-  const PluginPerson(
+class PluginDetails {
+  const PluginDetails(
       {required this.channel,
         required this.title,
         required this.description,
@@ -16,9 +16,9 @@ class PluginPerson {
   final PluginType type;
   final bool initial;
 
-  factory PluginPerson.formJSON(
+  factory PluginDetails.formJSON(
       Map<String, dynamic> json, PluginType type, bool initial) {
-    return PluginPerson(
+    return PluginDetails(
         channel: json['channel'],
         title: json['title'],
         description: json['description'],

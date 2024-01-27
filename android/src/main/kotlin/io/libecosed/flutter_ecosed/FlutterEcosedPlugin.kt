@@ -1046,6 +1046,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override val version: String
             get() = "1"
 
+        override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
+            super.onEcosedMethodCall(call, result)
+            when (call.method) {
+                "isShizukuInstalled" -> result.success(AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage))
+            }
+        }
+
         override fun getBinder(intent: Intent): IBinder {
             return object : EcosedKit.Stub() {
                 override fun getFrameworkVersion(): String = frameworkVersion()

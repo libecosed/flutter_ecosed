@@ -14,11 +14,8 @@ class EcosedView extends StatefulWidget {
 class _EcosedViewState extends State<EcosedView> {
   @override
   Widget build(BuildContext context) {
-    // This is used in the platform side to register the view.
     const String viewType = 'ecosed_view';
-    // Pass parameters to the platform side.
     const Map<String, dynamic> creationParams = <String, dynamic>{};
-
     return PlatformViewLink(
       viewType: viewType,
       surfaceFactory: (context, controller) {

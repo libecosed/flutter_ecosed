@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../plugin/plugin_person.dart';
+import '../plugin/plugin_details.dart';
 import '../widget/plugin_item.dart';
 
 class Plugin extends StatelessWidget {
-  const Plugin({super.key, required this.pluginPersonList});
+  const Plugin({super.key, required this.pluginDetailsList});
 
-  final List<PluginPerson> pluginPersonList;
+  final List<PluginDetails> pluginDetailsList;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
-        children: pluginPersonList
-            .map((element) => PluginItem(person: element))
+        children: pluginDetailsList
+            .map((element) => PluginItem(details: element))
             .toList(),
       ),
     );

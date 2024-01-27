@@ -11,7 +11,7 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   Future<String?> getPlatformVersion() async {
     Map<String, dynamic> map = {"channel": "ecosed_client"};
     final version =
-    await methodChannel.invokeMethod<String>('getPlatformVersion', map);
+        await methodChannel.invokeMethod<String>('getPlatformVersion', map);
     return version;
   }
 

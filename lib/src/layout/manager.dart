@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/layout/overview.dart';
-import 'package:flutter_ecosed/src/layout/plugin.dart';
 
-import '../plugin/plugin_person.dart';
+import '../plugin/plugin_details.dart';
+import 'overview.dart';
+import 'plugin.dart';
 
 class Manager extends StatelessWidget {
-  const Manager({super.key, required this.pluginPersonList});
+  const Manager({super.key, required this.pluginDetailsList});
 
-  final List<PluginPerson> pluginPersonList;
+  final List<PluginDetails> pluginDetailsList;
 
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
       child: ListView(
         children: [
-          Overview(),
+          const Overview(),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Divider(),
           ),
-          Plugin(pluginPersonList: pluginPersonList)
+          Plugin(pluginDetailsList: pluginDetailsList)
         ],
       ),
     );
