@@ -17,6 +17,10 @@ class ExampleApp extends StatelessWidget {
             title: const Text(appName),
           ),
           body: view,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: const Icon(Icons.add),
+          ),
         ),
         bannerLocation: BannerLocation.topStart,
         appName: appName,

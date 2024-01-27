@@ -9,6 +9,30 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
   const FlutterEcosed({super.key});
 
   @override
+  String pluginName() => 'Platform';
+
+  @override
+  String pluginAuthor() => defaultAuthor;
+
+  @override
+  String pluginChannel() => platformChannel;
+
+  @override
+  String pluginDescription() => 'Ecosed Platform';
+
+  @override
+  Object? onEcosedMethodCall(String name) {
+    switch (name) {
+      case 'platform':
+        return getPlatformVersion();
+      case pluginMethod:
+        return getPluginList();
+      default:
+        return null;
+    }
+  }
+
+  @override
   Future<String?> getPlatformVersion() {
     return FlutterEcosedPlatform.instance.getPlatformVersion();
   }
@@ -20,38 +44,6 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
 
   @override
   State<FlutterEcosed> createState() => _FlutterEcosedState();
-
-  @override
-  String pluginName() {
-    return 'Hybrid';
-  }
-
-  @override
-  String pluginAuthor() {
-    return defaultAuthor;
-  }
-
-  @override
-  String pluginChannel() {
-    return 'flutter_ecosed';
-  }
-
-  @override
-  String pluginDescription() {
-    return '平台方法调用';
-  }
-
-  @override
-  Object? onEcosedMethodCall(String name) {
-    switch (name) {
-      case 'platform':
-        return getPlatformVersion();
-      case 'plugins':
-        return getPluginList();
-      default:
-        return null;
-    }
-  }
 }
 
 class _FlutterEcosedState extends State<FlutterEcosed> {

@@ -21,6 +21,9 @@ class PluginItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context)
+        .textTheme
+        .apply(displayColor: Theme.of(context).colorScheme.onSurface);
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Card(
@@ -35,29 +38,42 @@ class PluginItem extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(person.title, textAlign: TextAlign.start),
-                        Text('标识:${person.channel}',
-                            textAlign: TextAlign.start),
-                        Text('作者:${person.author}', textAlign: TextAlign.start),
+                        Text(person.title,
+                            textAlign: TextAlign.start,
+                            style: textTheme.titleMedium),
+                        Text(
+                          '通道: ${person.channel}',
+                          textAlign: TextAlign.start,
+                          style: textTheme.bodySmall,
+                        ),
+                        Text(
+                          '作者: ${person.author}',
+                          textAlign: TextAlign.start,
+                          style: textTheme.bodySmall,
+                        ),
                       ],
                     ),
                     const Spacer(flex: 1),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.settings))
-                      ],
+                      children: [Switch(value: true, onChanged: (value) {})],
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(person.description, textAlign: TextAlign.start),
+                Text(
+                  person.description,
+                  textAlign: TextAlign.start,
+                  style: textTheme.bodySmall,
+                ),
                 const SizedBox(height: 16),
                 const Divider(),
                 Row(
                   children: [
-                    Text(_getType()),
+                    Text(
+                      _getType(),
+                      style: textTheme.bodySmall,
+                    ),
                     const Spacer(flex: 1),
                     TextButton(onPressed: () {}, child: const Text('设置')),
                     TextButton(onPressed: () {}, child: const Text('卸载'))

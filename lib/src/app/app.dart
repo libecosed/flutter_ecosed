@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/src/widget/plugin_item.dart';
 
+import '../layout/manager.dart';
 import '../platform/flutter_ecosed.dart';
 import '../plugin/plugin_person.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_type.dart';
 import '../value/default.dart';
-import '../widget/state_card.dart';
 import 'app_type.dart';
 import 'app_wrapper.dart';
 
@@ -36,7 +36,7 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   String pluginAuthor() => defaultAuthor;
 
   @override
-  String pluginChannel() => 'flutter_ecosed_app';
+  String pluginChannel() => appChannel;
 
   @override
   String pluginDescription() => appName;
@@ -47,14 +47,7 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   }
 
   @override
-  Object? execPluginCall(String name) {
-    return '';
-  }
-
-  @override
-  List<EcosedPlugin> initialPlugin() {
-    return [this, const FlutterEcosed()];
-  }
+  List<EcosedPlugin> initialPlugin() => [this, const FlutterEcosed()];
 }
 
 class _EcosedAppState extends State<EcosedApp> {
@@ -70,15 +63,6 @@ class _EcosedAppState extends State<EcosedApp> {
 
   @override
   void initState() {
-    // final parent = context.findAncestorWidgetOfExactType<Widget>(); // ParentWidget为目标父 widget 类型
-    // if (parent != null) {
-    //   if (parent !is MaterialApp) {
-    //
-    //   }
-    // } else {
-    //   // 没有找到指定类型的父 widget
-    // }
-
     _initPluginsState();
     super.initState();
   }
@@ -102,15 +86,17 @@ class _EcosedAppState extends State<EcosedApp> {
           initial: true));
     }
     // 添加native层内置模块
-    try {
-      for (var element in (await (_initialExec('flutter_ecosed', 'plugins')
-              as Future<List?>) ??
-          [_unknownPlugin])) {
-        pluginList.add(PluginPerson.formJSON(
-            jsonDecode(element), PluginType.native, true));
+    if (Platform.isAndroid) {
+      try {
+        for (var element in (await (_initialExec(platformChannel, pluginMethod)
+                as Future<List?>) ??
+            [_unknownPlugin])) {
+          pluginList.add(PluginPerson.formJSON(
+              jsonDecode(element), PluginType.native, true));
+        }
+      } on PlatformException {
+        pluginList.add(_pluginPersonList.first);
       }
-    } on PlatformException {
-      pluginList = _pluginPersonList;
     }
     //加载dart层普通模块
     if (widget.plugins.isNotEmpty) {
@@ -156,38 +142,6 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
-  Widget _overview(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-            child: StateCard(
-                icon: Icons.keyboard_command_key,
-                title: 'title',
-                subtitle: 'subtitle'))
-      ],
-    );
-  }
-
-  Widget _plugin(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        children: _pluginPersonList
-            .map((element) => PluginItem(person: element))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _manager(BuildContext context) {
-    return Scrollbar(
-      child: ListView(
-        children: [_overview(context), const Divider(), _plugin(context)],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Banner(
@@ -195,7 +149,7 @@ class _EcosedAppState extends State<EcosedApp> {
       location: widget.bannerLocation,
       color: Colors.pinkAccent,
       child: widget.app(
-        _manager(context),
+        Manager(pluginPersonList: _pluginPersonList),
         (channel, method) => _thirdExec(channel, method),
       ),
     );
