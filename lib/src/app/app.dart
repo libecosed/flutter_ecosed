@@ -97,7 +97,11 @@ class _EcosedAppState extends State<EcosedApp> {
                 as Future<List?>) ??
             [_unknownPlugin])) {
           pluginList.add(
-            PluginDetails.formJSON(jsonDecode(element), PluginType.native, true),
+            PluginDetails.formJSON(
+              jsonDecode(element),
+              PluginType.native,
+              true,
+            ),
           );
         }
       } on PlatformException {

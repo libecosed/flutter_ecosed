@@ -16,7 +16,7 @@ abstract class EcosedPlugin extends StatefulWidget {
   String pluginAuthor();
 
   ///插件界面
-  Widget pluginWidget() => this;
+  Widget pluginWidget(BuildContext context) => this;
 
   ///方法调用
   Object? onEcosedMethodCall(String name);

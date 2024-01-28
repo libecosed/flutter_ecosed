@@ -1,3 +1,18 @@
+/**
+ * Copyright flutter_ecosed
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.libecosed.flutter_ecosed
 
 import android.app.Activity
@@ -16,14 +31,16 @@ import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -31,7 +48,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.StandardMessageCodec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,9 +55,15 @@ import org.json.JSONObject
 import rikka.shizuku.Shizuku
 import kotlin.system.exitProcess
 
+/**
+ * 作者: wyq0918dev
+ * 仓库: https://github.com/libecosed/flutter_ecosed
+ * 时间: 2024/01/28
+ * 描述: flutter_ecosed
+ * 文档: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
+ */
 class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
-    ActivityAware,
-    ServiceConnection, LifecycleOwner, DefaultLifecycleObserver {
+    ActivityAware, ServiceConnection, LifecycleOwner, DefaultLifecycleObserver {
 
 
     /** Flutter插件方法通道 */
@@ -71,7 +93,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private lateinit var mEcosedServicesIntent: Intent
 
     /** 服务AIDL接口 */
-    private var mAIDL: EcosedKit? = null
+    private var mAIDL: FlutterEcosed? = null
     private var mIUserService: IUserService? = null
 
     /** 服务绑定状态 */
@@ -90,24 +112,42 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         .version(AppUtils.getAppVersionCode())
 
 
-    private fun checkPermission(code: Int): Boolean {
-        if (Shizuku.isPreV11()) {
-            // Pre-v11 is unsupported
-            return false
+    private fun checkShizukuPermission(): Boolean {
+        return when {
+            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED -> true
+            Shizuku.shouldShowRequestPermissionRationale() -> false
+            else -> false
         }
-        return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-            // Granted
-            true
-        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // Users choose "Deny and don't ask again"
-            false
-        } else {
-            // Request the permission
-            Shizuku.requestPermission(code)
-            false
+//        return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+//            // Granted
+//            true
+//        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+//            // Users choose "Deny and don't ask again"
+//            false
+//        } else false
+    }
+
+    private fun isShizukuInstalled(): Boolean {
+        return if (AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage)) {
+            !Shizuku.isPreV11()
+        } else false
+    }
+
+    private fun isEnableGMS(): Boolean {
+        val code = GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(this@FlutterEcosedPlugin)
+        return if (code == ConnectionResult.SUCCESS) true else {
+            AppUtils.isAppInstalled(EcosedManifest.GmsPackage)
         }
     }
 
+    private fun requestSignature() {
+        PermissionUtils.permission(EcosedManifest.fakePackageSignature).request()
+    }
+
+    /**
+     * 服务创建时执行
+     */
     override fun onCreate() {
         super<Service>.onCreate()
         // 添加Shizuku监听
@@ -147,17 +187,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         // 检查GMS
 
-//        val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this@EcosedKitPlugin)
-//        if (code == ConnectionResult.SUCCESS) {
-//            // 有gms
-//        } else {
-//            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
-//
-//            if (GoogleApiAvailability.getInstance().isUserResolvableError(code)){
-//                GoogleApiAvailability.getInstance().getErrorDialog(mActivity, code, 200)?.show()
-//            }
-//        }
-
 
         // 绑定Shizuku服务
         //Shizuku.bindUserService(mUserServiceArgs, this@EcosedKitPlugin)
@@ -181,7 +210,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         return super.onStartCommand(intent, flags, startId)
     }
 
+    /**
+     * 服务绑定时执行
+     */
     override fun onBind(intent: Intent): IBinder {
+        // 通过服务调用单元调用服务内部类进行绑定
         return serviceUnit {
             return@serviceUnit getBinder(
                 intent = intent
@@ -189,6 +222,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /**
+     * 重新绑定时执行
+     */
     override fun onRebind(intent: Intent?) {
         super.onRebind(intent)
     }
@@ -197,10 +233,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         return super.onUnbind(intent)
     }
 
-    override fun getLifecycle(): Lifecycle {
-        return mLifecycle
-    }
-
+    /**
+     * 服务销毁时执行
+     */
     override fun onDestroy() {
         super<Service>.onDestroy()
         // 移除Shizuku监听
@@ -212,17 +247,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         Shizuku.unbindUserService(mUserServiceArgs, this@FlutterEcosedPlugin, true)
     }
 
-    // 插件附加到引擎
+    /**
+     * 将插件添加到引擎
+     */
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // 初始化方法通道
         mMethodChannel = MethodChannel(binding.binaryMessenger, flutterChannelName)
+        // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
     }
 
+    /**
+     * 将插件从引擎移除
+     */
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // 清空回调程序释放内存
         mMethodChannel.setMethodCallHandler(null)
     }
 
-    // 调用方法
+    /**
+     * 调用方法
+     */
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) = frameworkUnit {
         onMethodCall(
             call = object : MethodCallProxy {
@@ -260,11 +305,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
+    /**
+     * 附加到活动
+     */
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
     ) = frameworkUnit {
+        // 获取活动
         getActivity(activity = binding.activity)
+        // 获取生命周期
         getLifecycle(lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding))
+        // 初始化引擎
         attach()
     }
 
@@ -278,33 +329,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     override fun onDetachedFromActivity() = Unit
-
-//    override val lifecycle: Lifecycle
-//        get() = mLifecycle
-
-    override fun onCreate(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onCreate(owner)
-    }
-
-    override fun onStart(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onStart(owner)
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onResume(owner)
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onPause(owner)
-    }
-
-    override fun onStop(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onStop(owner)
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        super<DefaultLifecycleObserver>.onDestroy(owner)
-    }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         when (name?.className) {
@@ -331,7 +355,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
             this@FlutterEcosedPlugin.javaClass.name -> {
                 if ((service != null) and (service?.pingBinder() == true)) {
-                    mAIDL = EcosedKit.Stub.asInterface(service)
+                    mAIDL = FlutterEcosed.Stub.asInterface(service)
                 }
                 when {
                     mAIDL != null -> {
@@ -420,6 +444,34 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    override fun getLifecycle(): Lifecycle {
+        return mLifecycle
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super<DefaultLifecycleObserver>.onCreate(owner)
+    }
+
+    override fun onStart(owner: LifecycleOwner) {
+        super<DefaultLifecycleObserver>.onStart(owner)
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super<DefaultLifecycleObserver>.onDestroy(owner)
+    }
+
     /**
      ***********************************************************************************************
      * 分类: 内部基本接口方法
@@ -430,6 +482,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun getActivity(activity: Activity)
         fun getLifecycle(lifecycle: Lifecycle)
         fun attach()
+        fun detach()
         fun onMethodCall(call: MethodCallProxy, result: ResultProxy)
     }
 
@@ -746,6 +799,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      ***********************************************************************************************
      */
 
+    /** 负责引擎和Flutter通信的框架 */
     private val mFramework = object : EcosedPlugin(), FlutterPluginProxy {
 
         override val channel: String
@@ -768,23 +822,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun getActivity(activity: Activity) = engineUnit {
-            getActivity(activity = activity)
+            return@engineUnit getActivity(activity = activity)
         }
 
         override fun getLifecycle(lifecycle: Lifecycle) = engineUnit {
-            getLifecycle(lifecycle = lifecycle)
+            return@engineUnit getLifecycle(lifecycle = lifecycle)
         }
 
         override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) = engineUnit {
-            onMethodCall(call = call, result = result)
+            return@engineUnit onMethodCall(call = call, result = result)
         }
 
         override fun attach() = engineUnit {
-            attach()
+            return@engineUnit attach()
+        }
+
+        override fun detach() = engineUnit {
+            return@engineUnit detach()
         }
     }
 
-
+    /** 引擎 */
     private val mEngine = object : EcosedPlugin(), EngineWrapper {
 
         override val channel: String
@@ -884,6 +942,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
         }
 
+        override fun detach() {
+
+        }
+
         /**
          * 调用插件代码的方法.
          * @param channel 要调用的插件的通道.
@@ -924,6 +986,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /** 客户端 */
     private val mClient = object : EcosedPlugin(), EcosedCallBack {
 
         override val channel: String
@@ -986,6 +1049,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /** 服务 */
     private val mService = object : EcosedPlugin(), ServiceWrapper,
         Shizuku.OnBinderReceivedListener,
         Shizuku.OnBinderDeadListener,
@@ -1005,12 +1069,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                "isShizukuInstalled" -> result.success(AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage))
+                "isShizukuInstalled" -> result.success(isShizukuInstalled())
+                "isShizukuGranted" -> result.success(checkShizukuPermission())
+                "isEnableGMS" -> result.success(isEnableGMS())
             }
         }
 
         override fun getBinder(intent: Intent): IBinder {
-            return object : EcosedKit.Stub() {
+            return object : FlutterEcosed.Stub() {
                 override fun getFrameworkVersion(): String = frameworkVersion()
                 override fun getShizukuVersion(): String = shizukuVersion()
                 override fun getChineseCale(): String = chineseCale()
@@ -1036,6 +1102,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /** 原生 */
     private val mNative = object : EcosedPlugin(), NativeWrapper {
 
         override val channel: String
@@ -1065,7 +1132,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * Shizuku调用类
      */
-
     class UserService : IUserService.Stub() {
 
 
@@ -1132,11 +1198,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: EcosedCallBack.() -> R,
     ): R = content.invoke(mClient)
 
-
+    /**
+     * 服务调用单元
+     * 服务与服务嗲用
+     * @param content 服务
+     * @return content 返回值
+     */
     private fun <R> serviceUnit(
         content: ServiceWrapper.() -> R,
     ): R = content.invoke(mService)
 
+    /**
+     *
+     */
     private fun <R> nativeUnit(
         content: NativeWrapper.() -> R,
     ): R = content.invoke(mNative)

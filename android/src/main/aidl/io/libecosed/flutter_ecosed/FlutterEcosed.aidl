@@ -1,6 +1,6 @@
 package io.libecosed.flutter_ecosed;
 
-interface EcosedKit {
+interface FlutterEcosed {
     String getFrameworkVersion(); // 获取版本
     String getShizukuVersion(); // 获取Shizuku版本
     String getChineseCale(); // 获取农历
