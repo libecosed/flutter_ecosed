@@ -19,7 +19,12 @@ class Manager extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Divider(),
           ),
-          Plugin(pluginDetailsList: pluginDetailsList)
+          Plugin(pluginDetailsList: pluginDetailsList),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(),
+          ),
+          Padding(padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), child: Card(child: Text('6'),),)
         ],
       ),
     );

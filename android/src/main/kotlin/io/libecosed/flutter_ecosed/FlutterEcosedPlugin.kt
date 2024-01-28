@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -31,8 +32,6 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
-import io.flutter.plugin.platform.PlatformView
-import io.flutter.plugin.platform.PlatformViewFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -217,26 +216,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         mMethodChannel = MethodChannel(binding.binaryMessenger, flutterChannelName)
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
-
-        binding.platformViewRegistry.registerViewFactory(
-            viewTypeId, object : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-
-                override fun create(
-                    context: Context?, viewId: Int, args: Any?
-                ): PlatformView = object : PlatformView {
-
-                    override fun getView(): View = frameworkUnit {
-                        return@frameworkUnit getView(
-                            context = context, viewId = viewId, args = args
-                        )
-                    }
-
-                    override fun dispose() = frameworkUnit {
-                        dispose()
-                    }
-                }
-            }
-        )
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -452,8 +431,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun getLifecycle(lifecycle: Lifecycle)
         fun attach()
         fun onMethodCall(call: MethodCallProxy, result: ResultProxy)
-        fun getView(context: Context?, viewId: Int, args: Any?): View
-        fun dispose()
     }
 
     private interface MethodCallProxy {
@@ -802,14 +779,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             onMethodCall(call = call, result = result)
         }
 
-        override fun getView(context: Context?, viewId: Int, args: Any?): View = engineUnit {
-            return@engineUnit getView(context = context, viewId = viewId, args = args)
-        }
-
-        override fun dispose() = engineUnit {
-            dispose()
-        }
-
         override fun attach() = engineUnit {
             attach()
         }
@@ -868,19 +837,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             } catch (e: Exception) {
                 result.error(pluginTag, "", Log.getStackTraceString(e))
             }
-        }
-
-        override fun getView(context: Context?, viewId: Int, args: Any?): View {
-            return Button(context).apply {
-                layoutParams = ViewGroup.LayoutParams(100, 100)
-                text = "Button"
-                setOnClickListener {
-                    Toast.makeText(mActivity, "Button", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        override fun dispose() {
         }
 
         /**

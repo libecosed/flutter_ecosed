@@ -12,10 +12,7 @@ class Overview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 6,
-            horizontal: 12,
-          ),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
           child: StateCard(
             color: Theme.of(context).colorScheme.errorContainer,
             icon: Icons.keyboard_command_key,
