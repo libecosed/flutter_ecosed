@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 
 class StateCard extends StatelessWidget {
-  const StateCard(
-      {super.key,
-      required this.color,
-      required this.icon,
-      required this.title,
-      required this.subtitle});
+  const StateCard({super.key, required this.appName});
 
-  final Color color;
-  final IconData icon;
-  final String title;
-  final String subtitle;
+  final String appName;
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +12,27 @@ class StateCard extends StatelessWidget {
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
 
     return Card(
-      color: color,
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: GestureDetector(
         onTap: () {},
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Row(
             children: [
-              FlutterLogo(),
-              // Icon(
-              //   icon,
-              //   color: Theme.of(context).colorScheme.onErrorContainer,
-              // ),
+              const FlutterLogo(),
               Padding(
                 padding: const EdgeInsets.only(left: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      appName,
                       textAlign: TextAlign.left,
                       style: textTheme.titleMedium,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      subtitle,
+                      'Powered by FlutterEcosed',
                       textAlign: TextAlign.left,
                       style: textTheme.bodyMedium,
                     ),

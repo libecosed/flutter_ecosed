@@ -5,7 +5,9 @@ import '../widget/state_card.dart';
 import '../widget/warning_card.dart';
 
 class Overview extends StatefulWidget {
-  const Overview({super.key});
+  const Overview({super.key, required this.appName});
+
+  final String appName;
 
   @override
   State<Overview> createState() => _OverviewState();
@@ -26,14 +28,8 @@ class _OverviewState extends State<Overview> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-          child: StateCard(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            icon: Icons.check_circle_outline,
-            title: 'flutter_ecosed',
-            subtitle: 'flutter_ecosed',
-          ),
+          child: StateCard(appName: widget.appName),
         ),
-
         Visibility(
           visible: true,
           child: WarningCard(

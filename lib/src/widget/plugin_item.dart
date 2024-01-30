@@ -1,22 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/widget/ecosed_logo.dart';
 
+import '../../flutter_ecosed.dart';
+import '../layout/manager.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 
-class PluginItem extends StatelessWidget {
-  const PluginItem({super.key, required this.details});
+class PluginItem extends StatefulWidget {
+  const PluginItem(
+      {super.key, required this.details, required this.thirdPlugin});
 
   final PluginDetails details;
+  final EcosedPlugin? thirdPlugin;
 
+  @override
+  State<PluginItem> createState() => _PluginItemState();
+}
+
+class _PluginItemState extends State<PluginItem> {
   String _getType() {
-    switch (details.type) {
+    switch (widget.details.type) {
       case PluginType.native:
-        return '内置模块 - Native';
+        return '内置插件';
       case PluginType.flutter:
-        return details.initial ? '内置模块 - Flutter' : '普通模块';
+        return widget.details.initial ? '内置插件' : '普通插件';
       default:
         return 'Unknown';
     }
+  }
+
+  bool isAllowPush() {
+    return !widget.details.initial &&
+        widget.details.type == PluginType.flutter &&
+        widget.thirdPlugin != null;
   }
 
   @override
@@ -40,7 +56,7 @@ class PluginItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        details.title,
+                        widget.details.title,
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: textTheme.titleMedium?.fontSize,
@@ -51,7 +67,7 @@ class PluginItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '通道: ${details.channel}',
+                        '通道: ${widget.details.channel}',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: textTheme.bodySmall?.fontSize,
@@ -60,7 +76,7 @@ class PluginItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '作者: ${details.author}',
+                        '作者: ${widget.details.author}',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: textTheme.bodySmall?.fontSize,
@@ -73,13 +89,17 @@ class PluginItem extends StatelessWidget {
                   const Spacer(flex: 1),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [Switch(value: true, onChanged: (value) {})],
+                    children: [
+                      widget.details.type == PluginType.native
+                          ? const EcosedLogo()
+                          : const FlutterLogo(),
+                    ],
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
-                details.description,
+                widget.details.description,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   fontSize: textTheme.bodySmall?.fontSize,
@@ -100,7 +120,30 @@ class PluginItem extends StatelessWidget {
                     style: textTheme.bodySmall,
                   ),
                   const Spacer(flex: 1),
-                  TextButton(onPressed: () {}, child: const Text('设置')),
+                  IgnorePointer(
+                    ignoring: !isAllowPush(),
+                    child: TextButton(
+                      onPressed: () {
+                        if (isAllowPush()) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  widget.thirdPlugin!.pluginWidget(context),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text(
+                        isAllowPush() ? '打开' : '无界面',
+                        style: TextStyle(
+                            fontFamily: textTheme.labelMedium?.fontFamily,
+                            fontStyle: textTheme.labelMedium?.fontStyle,
+                            color: isAllowPush()
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],

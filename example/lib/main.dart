@@ -28,26 +28,21 @@ class ExampleApp extends EcosedPlugin {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-
   static const String appName = 'FlutterEcosed Example App';
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: EcosedApp(
-        home: (view, exec) => Scaffold(
+        home: (body, exec) => Scaffold(
           appBar: AppBar(
             title: const Text(appName),
             centerTitle: true,
           ),
-          body: view,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {},
-            child: const Icon(Icons.add),
-          ),
+          body: body,
         ),
         bannerLocation: BannerLocation.topStart,
-        title: appName,
+        appName: appName,
         plugins: [widget],
       ),
       themeMode: ThemeMode.system,

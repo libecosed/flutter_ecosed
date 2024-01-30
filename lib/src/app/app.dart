@@ -18,12 +18,12 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
       {super.key,
       required this.home,
       required this.bannerLocation,
-      required this.title,
+      required this.appName,
       required this.plugins});
 
   final EcosedHome home;
   final BannerLocation bannerLocation;
-  final String title;
+  final String appName;
   final List<EcosedPlugin> plugins;
 
   @override
@@ -39,7 +39,7 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   String pluginChannel() => appChannel;
 
   @override
-  String pluginDescription() => title;
+  String pluginDescription() => appName;
 
   @override
   Object? onEcosedMethodCall(String name) {
@@ -82,12 +82,13 @@ class _EcosedAppState extends State<EcosedApp> {
     for (var element in _initialPluginList) {
       pluginList.add(
         PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: true),
+          channel: element.pluginChannel(),
+          title: element.pluginName(),
+          description: element.pluginDescription(),
+          author: element.pluginAuthor(),
+          type: PluginType.flutter,
+          initial: true,
+        ),
       );
     }
     // 添加native层内置插件
@@ -118,12 +119,13 @@ class _EcosedAppState extends State<EcosedApp> {
     for (var element in _thirdPluginList) {
       pluginList.add(
         PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: false),
+          channel: element.pluginChannel(),
+          title: element.pluginName(),
+          description: element.pluginDescription(),
+          author: element.pluginAuthor(),
+          type: PluginType.flutter,
+          initial: false,
+        ),
       );
     }
     // 设置插件列表
@@ -156,6 +158,15 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
+  /// 管理器页面
+  Widget buildManager() {
+    return Manager(
+      pluginDetailsList: _pluginDetailsList,
+      appName: widget.appName,
+      thirdPluginList: _thirdPluginList,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Banner(
@@ -163,8 +174,11 @@ class _EcosedAppState extends State<EcosedApp> {
       location: widget.bannerLocation,
       color: Colors.pinkAccent,
       child: widget.home(
-        Manager(pluginDetailsList: _pluginDetailsList),
-        (channel, method) => _thirdExec(channel, method),
+        buildManager(),
+        (channel, method,) => _thirdExec(
+          channel,
+          method,
+        ),
       ),
     );
   }
