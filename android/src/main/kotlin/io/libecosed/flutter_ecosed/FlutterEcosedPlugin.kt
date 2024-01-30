@@ -29,11 +29,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -41,7 +39,6 @@ import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -105,10 +102,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private val mUserServiceArgs = Shizuku.UserServiceArgs(
         ComponentName(AppUtils.getAppPackageName(), UserService().javaClass.name)
-    )
-        .daemon(false)
-        .processNameSuffix("service")
-        .debuggable(mFullDebug)
+    ).daemon(false).processNameSuffix("service").debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
 
@@ -150,6 +144,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onCreate() {
         super<Service>.onCreate()
+
+
         // 添加Shizuku监听
         Shizuku.addBinderReceivedListener(mService)
         Shizuku.addBinderDeadListener(mService)
@@ -269,40 +265,35 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 调用方法
      */
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) = frameworkUnit {
-        onMethodCall(
-            call = object : MethodCallProxy {
+        onMethodCall(call = object : MethodCallProxy {
 
-                override val methodProxy: String
-                    get() = call.method
+            override val methodProxy: String
+                get() = call.method
 
-                override val bundleProxy: Bundle
-                    get() = Bundle().apply {
-                        putString(
-                            "channel", call.argument<String>("channel")
-                        )
-                    }
-            },
-            result = object : ResultProxy {
+            override val bundleProxy: Bundle
+                get() = Bundle().apply {
+                    putString(
+                        "channel", call.argument<String>("channel")
+                    )
+                }
+        }, result = object : ResultProxy {
 
-                override fun success(
-                    resultProxy: Any?,
-                ) = result.success(
-                    resultProxy
-                )
+            override fun success(
+                resultProxy: Any?,
+            ) = result.success(
+                resultProxy
+            )
 
-                override fun error(
-                    errorCodeProxy: String,
-                    errorMessageProxy: String?,
-                    errorDetailsProxy: Any?,
-                ) = result.error(
-                    errorCodeProxy,
-                    errorMessageProxy,
-                    errorDetailsProxy
-                )
+            override fun error(
+                errorCodeProxy: String,
+                errorMessageProxy: String?,
+                errorDetailsProxy: Any?,
+            ) = result.error(
+                errorCodeProxy, errorMessageProxy, errorDetailsProxy
+            )
 
-                override fun notImplemented() = result.notImplemented()
-            }
-        )
+            override fun notImplemented() = result.notImplemented()
+        })
     }
 
     /**
@@ -311,6 +302,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
     ) = frameworkUnit {
+
         // 获取活动
         getActivity(activity = binding.activity)
         // 获取生命周期
@@ -338,8 +330,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
                 when {
                     mIUserService != null -> {
-                        Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT).show()
                     }
 
                     else -> if (mFullDebug) Log.e(
@@ -448,27 +439,56 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         return mLifecycle
     }
 
-    override fun onCreate(owner: LifecycleOwner) {
+    /**
+     ***********************************************************************************************
+     * Activity生命周期函数，需要使用Activity上下文
+     ***********************************************************************************************
+     */
+
+    private lateinit var rootView: FrameLayout
+
+    /**
+     * 活动创建时执行
+     */
+    override fun onCreate(owner: LifecycleOwner) = activityUnit {
         super<DefaultLifecycleObserver>.onCreate(owner)
+
+
+
+        rootView = FrameLayout(this@activityUnit).apply {
+        }
+
+
+        // 添加内容视图
+        addContentView(
+            rootView,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
     }
 
-    override fun onStart(owner: LifecycleOwner) {
+    /**
+     * 活动启动时执行
+     */
+    override fun onStart(owner: LifecycleOwner) = activityUnit {
         super<DefaultLifecycleObserver>.onStart(owner)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
+    override fun onResume(owner: LifecycleOwner) = activityUnit {
         super.onResume(owner)
     }
 
-    override fun onPause(owner: LifecycleOwner) {
+    override fun onPause(owner: LifecycleOwner) = activityUnit {
         super.onPause(owner)
     }
 
-    override fun onStop(owner: LifecycleOwner) {
+    override fun onStop(owner: LifecycleOwner) = activityUnit {
         super.onStop(owner)
     }
 
-    override fun onDestroy(owner: LifecycleOwner) {
+    override fun onDestroy(owner: LifecycleOwner) = activityUnit {
         super<DefaultLifecycleObserver>.onDestroy(owner)
     }
 
@@ -478,22 +498,61 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      ***********************************************************************************************
      */
 
+    /**
+     * Flutter插件代理
+     */
     private interface FlutterPluginProxy {
+
+        /** Activity */
         fun getActivity(activity: Activity)
+
+        /** Lifecycle */
         fun getLifecycle(lifecycle: Lifecycle)
+
+        /** 引擎初始化 */
         fun attach()
+
+        /** 引擎销毁 */
         fun detach()
+
+        /** 方法调用 */
         fun onMethodCall(call: MethodCallProxy, result: ResultProxy)
     }
 
+    /**
+     * 方法调用代理
+     */
     private interface MethodCallProxy {
+
+        /** 方法名代理 */
         val methodProxy: String
+
+        /** 传入参数代理 */
         val bundleProxy: Bundle
     }
 
+    /**
+     * 返回内容代理
+     */
     private interface ResultProxy {
+
+        /**
+         * 处理成功结果.
+         * @param resultProxy 处理成功结果,注意可能为空.
+         */
         fun success(resultProxy: Any?)
+
+        /**
+         * 处理错误结果.
+         * @param errorCodeProxy 错误代码.
+         * @param errorMessageProxy 错误消息,注意可能为空.
+         * @param errorDetailsProxy 详细信息,注意可能为空.
+         */
         fun error(errorCodeProxy: String, errorMessageProxy: String?, errorDetailsProxy: Any?)
+
+        /**
+         * 处理对未实现方法的调用.
+         */
         fun notImplemented()
     }
 
@@ -531,9 +590,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @param errorDetails 详细信息,注意可能为空.
          */
         fun error(
-            errorCode: String,
-            errorMessage: String?,
-            errorDetails: Any?
+            errorCode: String, errorMessage: String?, errorDetails: Any?
         ): Nothing
 
         /**
@@ -542,10 +599,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun notImplemented()
     }
 
+    /**
+     * 引擎包装器
+     */
     private interface EngineWrapper : FlutterPluginProxy {
         fun <T> execMethodCall(channel: String, method: String, bundle: Bundle?): T?
     }
 
+    /**
+     * 回调
+     */
     private interface EcosedCallBack {
 
         /** 在服务绑定成功时回调 */
@@ -561,20 +624,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun onEcosedUnbind()
     }
 
+    /**
+     * 服务插件包装器
+     */
     private interface ServiceWrapper {
         fun getBinder(intent: Intent): IBinder
     }
 
+    /**
+     * 原生插件包装器
+     */
     private interface NativeWrapper {
         fun main()
     }
 
     /**
-     * 作者: wyq0918dev
-     * 仓库: https://github.com/ecosed/EcosedDroid
-     * 时间: 2023/10/01
-     * 描述: 基本插件
-     * 文档: https://github.com/ecosed/EcosedDroid/blob/master/README.md
+     * 基本插件
      */
     private abstract class EcosedPlugin : ContextWrapper(null) {
 
@@ -615,12 +680,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         val getPluginChannel: PluginChannel
             get() = mPluginChannel
 
+        /** 需要子类重写的插件标题 */
+        abstract val title: String
+
         /** 需要子类重写的通道名称 */
         abstract val channel: String
-        abstract val title: String
-        abstract val description: String
+
+        /** 需要子类重写的插件作者 */
         abstract val author: String
-        abstract val version: String
+
+        /** 需要子类重写的插件描述 */
+        abstract val description: String
 
         /** 供子类使用的判断调试模式的接口 */
         protected val isDebug: Boolean = mDebug
@@ -632,11 +702,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /**
-     * 作者: wyq0918dev
-     * 仓库: https://github.com/ecosed/plugin
-     * 时间: 2023/09/02
-     * 描述: 插件绑定器
-     * 文档: https://github.com/ecosed/plugin/blob/master/README.md
+     * 插件绑定器
      */
     private class PluginBinding(
         context: Context,
@@ -667,11 +733,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /**
-     * 作者: wyq0918dev
-     * 仓库: https://github.com/ecosed/plugin
-     * 时间: 2023/09/02
-     * 描述: 插件通信通道
-     * 文档: https://github.com/ecosed/plugin/blob/master/README.md
+     * 插件通信通道
      */
     private class PluginChannel(binding: PluginBinding, channel: String) {
 
@@ -737,8 +799,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mBundle = bundle
             if (name == mChannel) {
                 mPlugin?.onEcosedMethodCall(
-                    call = call,
-                    result = result
+                    call = call, result = result
                 )
             }
             return mResult as T?
@@ -774,13 +835,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
              * 处理错误结果.
              */
             override fun error(
-                errorCode: String,
-                errorMessage: String?,
-                errorDetails: Any?
+                errorCode: String, errorMessage: String?, errorDetails: Any?
             ): Nothing = error(
-                message = "错误代码:$errorCode\n" +
-                        "错误消息:$errorMessage\n" +
-                        "详细信息:$errorDetails"
+                message = "错误代码:$errorCode\n" + "错误消息:$errorMessage\n" + "详细信息:$errorDetails"
             )
 
             /**
@@ -795,31 +852,21 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     /**
      ***********************************************************************************************
-     * 分类: 关键内部类
+     * 分类: 关键内部类实现
      ***********************************************************************************************
      */
 
     /** 负责引擎和Flutter通信的框架 */
     private val mFramework = object : EcosedPlugin(), FlutterPluginProxy {
 
-        override val channel: String
-            get() = frameworkChannelName
         override val title: String
             get() = "Framework"
-        override val description: String
-            get() = "Ecosed Framework"
+        override val channel: String
+            get() = frameworkChannelName
         override val author: String
             get() = defaultAuthor
-        override val version: String
-            get() = "1"
-
-        override fun onEcosedAdded(binding: PluginBinding) {
-            super.onEcosedAdded(binding)
-        }
-
-        override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
-            super.onEcosedMethodCall(call, result)
-        }
+        override val description: String
+            get() = "Ecosed Framework"
 
         override fun getActivity(activity: Activity) = engineUnit {
             return@engineUnit getActivity(activity = activity)
@@ -845,16 +892,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 引擎 */
     private val mEngine = object : EcosedPlugin(), EngineWrapper {
 
-        override val channel: String
-            get() = engineChannelName
         override val title: String
             get() = "Engine"
+        override val channel: String
+            get() = engineChannelName
+        override val author: String
+            get() = defaultAuthor
         override val description: String
             get() = "Ecosed Engine"
-        override val author: String
-            get() = "wyq0918dev"
-        override val version: String
-            get() = "1"
 
         override fun getActivity(activity: Activity) {
             mActivity = activity
@@ -928,7 +973,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     put("title", title)
                                     put("description", description)
                                     put("author", author)
-                                    put("version", version)
                                 }.toString()
                             )
                             if (mBaseDebug) {
@@ -986,19 +1030,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    /** 客户端 */
+    /** 负责与服务通信的客户端 */
     private val mClient = object : EcosedPlugin(), EcosedCallBack {
 
-        override val channel: String
-            get() = clientChannelName
         override val title: String
             get() = "Client"
+        override val channel: String
+            get() = clientChannelName
+        override val author: String
+            get() = defaultAuthor
         override val description: String
             get() = "Ecosed Client"
-        override val author: String
-            get() = "wyq0918dev"
-        override val version: String
-            get() = "1"
+
 
         override fun onEcosedAdded(binding: PluginBinding) = run {
             super.onEcosedAdded(binding)
@@ -1049,22 +1092,21 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    /** 服务 */
+    /** 服务相当于整个服务类部分无法在大类中实现的方法在此实现并调用 */
     private val mService = object : EcosedPlugin(), ServiceWrapper,
         Shizuku.OnBinderReceivedListener,
         Shizuku.OnBinderDeadListener,
         Shizuku.OnRequestPermissionResultListener {
 
-        override val channel: String
-            get() = serviceChannelName
         override val title: String
             get() = "Service"
+        override val channel: String
+            get() = serviceChannelName
+        override val author: String
+            get() = defaultAuthor
         override val description: String
             get() = "Ecosed Service"
-        override val author: String
-            get() = "wyq0918dev"
-        override val version: String
-            get() = "1"
+
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
@@ -1097,24 +1139,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
-            Toast.makeText(this, "onRequestPermissionResult", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(this, "onRequestPermissionResult", Toast.LENGTH_SHORT).show()
         }
     }
 
-    /** 原生 */
+    /** 原生方法调用 */
     private val mNative = object : EcosedPlugin(), NativeWrapper {
 
-        override val channel: String
-            get() = nativeChannelName
         override val title: String
             get() = "Native"
+        override val channel: String
+            get() = nativeChannelName
+        override val author: String
+            get() = defaultAuthor
         override val description: String
             get() = "Ecosed Native"
-        override val author: String
-            get() = "wyq0918dev"
-        override val version: String
-            get() = "1"
+
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
@@ -1147,7 +1187,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             Log.d("", "Shizuku - poem")
         }
     }
-
 
     /**
      ***********************************************************************************************
@@ -1209,6 +1248,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(mService)
 
     /**
+     * Activity上下文调用单元
+     * Activity生命周期观察者通过此调用单元执行基于Activity上下文的代码
+     * @param content 内容
+     * @return content 返回值
+     */
+
+    private fun <R> activityUnit(
+        content: Activity.() -> R,
+    ): R = content.invoke(mActivity)
+
+    /**
      *
      */
     private fun <R> nativeUnit(
@@ -1221,6 +1271,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      ***********************************************************************************************
      */
 
+    /**
+     * 原生代码执行入口
+     */
     private external fun main(args: Array<String>)
 
     /**
@@ -1228,20 +1281,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 分类: 私有函数
      ***********************************************************************************************
      */
-
-    private fun findFlutterView(view: View?): FlutterView? {
-        when (view) {
-            is FlutterView -> return view
-            is ViewGroup -> for (i in 0 until view.childCount) {
-                findFlutterView(view.getChildAt(i))?.let {
-                    return it
-                }
-            }
-
-            else -> return null
-        }
-        return null
-    }
 
     /**
      * 绑定服务
@@ -1251,9 +1290,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         try {
             if (!mIsBind) {
                 context.bindService(
-                    mEcosedServicesIntent,
-                    this@FlutterEcosedPlugin,
-                    Context.BIND_AUTO_CREATE
+                    mEcosedServicesIntent, this@FlutterEcosedPlugin, Context.BIND_AUTO_CREATE
                 ).let { bind ->
                     callBackUnit {
                         if (!bind) onEcosedDead()
@@ -1379,10 +1416,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             System.loadLibrary("flutter_ecosed")
         }
 
+        /** 操作栏是否应该在[autoHideDelayMillis]毫秒后自动隐藏。*/
+        const val autoHide = false
+
+        /** 如果设置了[autoHide]，则在用户交互后隐藏操作栏之前等待的毫秒数。*/
+        const val autoHideDelayMillis = 3000
+
+        /** 一些较老的设备需要在小部件更新和状态和导航栏更改之间有一个小的延迟。*/
+        const val uiAnimatorDelay = 300
+
         // 打印日志的标签
         const val pluginTag: String = "FlutterEcosedPlugin"
-
-        const val viewTypeId: String = "ecosed_view"
 
         // Flutter插件通道名称
         const val flutterChannelName = "flutter_ecosed"
@@ -1408,4 +1452,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
     }
+
+
 }

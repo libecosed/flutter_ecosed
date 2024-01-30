@@ -25,7 +25,7 @@ class PluginItem extends StatelessWidget {
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         color: Theme.of(context).colorScheme.surface,
         child: Padding(

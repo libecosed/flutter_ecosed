@@ -11,7 +11,7 @@ class Plugin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
       child: Column(
         children: pluginDetailsList
             .map((element) => PluginItem(details: element))

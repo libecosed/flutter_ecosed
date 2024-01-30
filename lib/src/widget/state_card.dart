@@ -27,10 +27,11 @@ class StateCard extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
+              FlutterLogo(),
+              // Icon(
+              //   icon,
+              //   color: Theme.of(context).colorScheme.onErrorContainer,
+              // ),
               Padding(
                 padding: const EdgeInsets.only(left: 24),
                 child: Column(
