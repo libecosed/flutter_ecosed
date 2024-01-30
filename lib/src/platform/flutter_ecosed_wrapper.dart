@@ -1,5 +1,13 @@
 abstract class EcosedWrapper {
-  Future<String?> getPlatformVersion();
+
+  Future<bool?> isShizukuInstalled();
+  void installShizuku();
+  Future<bool?> isMicroGInstalled();
+  void installMicroG();
+  Future<bool?> isShizukuGranted();
+  void requestPermissions();
+
+  Future<String?> getShizukuVersion();
 
   Future<List?> getPluginList();
 }

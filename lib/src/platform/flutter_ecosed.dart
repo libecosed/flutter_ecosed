@@ -23,18 +23,11 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
   @override
   Object? onEcosedMethodCall(String name) {
     switch (name) {
-      case 'platform':
-        return getPlatformVersion();
       case pluginMethod:
         return getPluginList();
       default:
         return null;
     }
-  }
-
-  @override
-  Future<String?> getPlatformVersion() {
-    return FlutterEcosedPlatform.instance.getPlatformVersion();
   }
 
   @override
@@ -44,11 +37,50 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
 
   @override
   State<FlutterEcosed> createState() => _FlutterEcosedState();
+
+  @override
+  Future<String?> getShizukuVersion() {
+    // TODO: implement getShizukuVersion
+    throw UnimplementedError();
+  }
+
+  @override
+  void installMicroG() {
+    // TODO: implement installMicroG
+  }
+
+  @override
+  void installShizuku() {
+    // TODO: implement installShizuku
+  }
+
+  @override
+  Future<bool?> isMicroGInstalled() {
+    // TODO: implement isMicroGInstalled
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> isShizukuGranted() {
+    // TODO: implement isShizukuGranted
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> isShizukuInstalled() {
+    // TODO: implement isShizukuInstalled
+    throw UnimplementedError();
+  }
+
+  @override
+  void requestPermissions() {
+    // TODO: implement requestPermissions
+  }
 }
 
 class _FlutterEcosedState extends State<FlutterEcosed> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container();
   }
 }

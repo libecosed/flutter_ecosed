@@ -50,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
+import kotlin.IllegalStateException
 import kotlin.system.exitProcess
 
 /**
@@ -107,11 +108,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
     private fun checkShizukuPermission(): Boolean {
-        return when {
-            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED -> true
-            Shizuku.shouldShowRequestPermissionRationale() -> false
-            else -> false
+        return try {
+            when {
+                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED -> true
+                Shizuku.shouldShowRequestPermissionRationale() -> false
+                else -> false
+            }
+        } catch (e: IllegalStateException) {
+            false
         }
+
+
 //        return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
 //            // Granted
 //            true
@@ -127,7 +134,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         } else false
     }
 
-    private fun isEnableGMS(): Boolean {
+    private fun isSupportGMS(): Boolean {
         val code = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(this@FlutterEcosedPlugin)
         return if (code == ConnectionResult.SUCCESS) true else {
@@ -135,8 +142,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    private fun requestSignature() {
-        PermissionUtils.permission(EcosedManifest.fakePackageSignature).request()
+    private fun requestPermissions() {
+        try {
+            Shizuku.requestPermission(0)
+            PermissionUtils.permission(EcosedManifest.fakePackageSignature).request()
+        } catch (e: IllegalStateException) {
+
+        }
+
     }
 
     /**
@@ -265,35 +278,36 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 调用方法
      */
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) = frameworkUnit {
-        onMethodCall(call = object : MethodCallProxy {
+        onMethodCall(
+            call = object : MethodCallProxy {
 
-            override val methodProxy: String
-                get() = call.method
+                override val methodProxy: String
+                    get() = call.method
 
-            override val bundleProxy: Bundle
-                get() = Bundle().apply {
-                    putString(
-                        "channel", call.argument<String>("channel")
-                    )
-                }
-        }, result = object : ResultProxy {
+                override val bundleProxy: Bundle
+                    get() = Bundle().apply {
+                        putString("channel", call.argument<String>("channel"))
+                    }
+            },
+            result = object : ResultProxy {
 
-            override fun success(
-                resultProxy: Any?,
-            ) = result.success(
-                resultProxy
-            )
+                override fun success(
+                    resultProxy: Any?,
+                ) = result.success(
+                    resultProxy
+                )
 
-            override fun error(
-                errorCodeProxy: String,
-                errorMessageProxy: String?,
-                errorDetailsProxy: Any?,
-            ) = result.error(
-                errorCodeProxy, errorMessageProxy, errorDetailsProxy
-            )
+                override fun error(
+                    errorCodeProxy: String,
+                    errorMessageProxy: String?,
+                    errorDetailsProxy: Any?,
+                ) = result.error(
+                    errorCodeProxy, errorMessageProxy, errorDetailsProxy
+                )
 
-            override fun notImplemented() = result.notImplemented()
-        })
+                override fun notImplemented() = result.notImplemented()
+            }
+        )
     }
 
     /**
@@ -445,28 +459,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      ***********************************************************************************************
      */
 
-    private lateinit var rootView: FrameLayout
-
     /**
      * 活动创建时执行
      */
     override fun onCreate(owner: LifecycleOwner) = activityUnit {
         super<DefaultLifecycleObserver>.onCreate(owner)
-
-
-
-        rootView = FrameLayout(this@activityUnit).apply {
-        }
-
-
-        // 添加内容视图
-        addContentView(
-            rootView,
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
     }
 
     /**
@@ -837,7 +834,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             override fun error(
                 errorCode: String, errorMessage: String?, errorDetails: Any?
             ): Nothing = error(
-                message = "错误代码:$errorCode\n" + "错误消息:$errorMessage\n" + "详细信息:$errorDetails"
+                message = "错误代码:$errorCode\n错误消息:$errorMessage\n详细信息:$errorDetails"
             )
 
             /**
@@ -938,7 +935,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     result.notImplemented()
                 }
             } catch (e: Exception) {
-                result.error(pluginTag, "", Log.getStackTraceString(e))
+                result.error(pluginTag, "engine: onMethodCall", Log.getStackTraceString(e))
             }
         }
 
@@ -1112,9 +1109,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             super.onEcosedMethodCall(call, result)
             when (call.method) {
                 "isShizukuInstalled" -> result.success(isShizukuInstalled())
+                "installShizuku" -> {}
+                "isMicroGInstalled" -> result.success(isSupportGMS())
+                "installMicroG" -> {}
                 "isShizukuGranted" -> result.success(checkShizukuPermission())
-                "isEnableGMS" -> result.success(isEnableGMS())
+                "requestPermissions" -> requestPermissions()
+
+
+
             }
+
+            call.bundle?.getString("", "")
         }
 
         override fun getBinder(intent: Intent): IBinder {
