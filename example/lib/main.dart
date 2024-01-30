@@ -19,7 +19,7 @@ class ExampleApp extends EcosedPlugin {
   String pluginDescription() => 'example';
 
   @override
-  Object? onEcosedMethodCall(String name) {
+  Future<Object?> onEcosedMethodCall(String name) async {
     return null;
   }
 
@@ -32,6 +32,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: EcosedApp(
         home: (body, exec) => Scaffold(

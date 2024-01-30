@@ -7,6 +7,7 @@ abstract class EcosedWrapper {
   Future<bool?> isShizukuGranted();
   void requestPermissions();
 
+  Future<String?> getPoem();
   Future<String?> getShizukuVersion();
 
   Future<List?> getPluginList();

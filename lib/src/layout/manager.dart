@@ -12,11 +12,11 @@ class Manager extends StatelessWidget {
       {super.key,
       required this.pluginDetailsList,
       required this.appName,
-      required this.thirdPluginList});
+      required this.pluginList});
 
   final String appName;
   final List<PluginDetails> pluginDetailsList;
-  final List<EcosedPlugin> thirdPluginList;
+  final List<EcosedPlugin> pluginList;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class Manager extends StatelessWidget {
           ),
           Plugin(
             pluginDetailsList: pluginDetailsList,
-            thirdPluginList: thirdPluginList,
+            pluginList: pluginList,
           ),
         ],
       ),

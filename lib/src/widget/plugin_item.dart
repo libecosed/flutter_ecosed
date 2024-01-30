@@ -8,10 +8,10 @@ import '../plugin/plugin_type.dart';
 
 class PluginItem extends StatefulWidget {
   const PluginItem(
-      {super.key, required this.details, required this.thirdPlugin});
+      {super.key, required this.details, required this.plugin});
 
   final PluginDetails details;
-  final EcosedPlugin? thirdPlugin;
+  final EcosedPlugin? plugin;
 
   @override
   State<PluginItem> createState() => _PluginItemState();
@@ -30,9 +30,9 @@ class _PluginItemState extends State<PluginItem> {
   }
 
   bool isAllowPush() {
-    return !widget.details.initial &&
+    return
         widget.details.type == PluginType.flutter &&
-        widget.thirdPlugin != null;
+        widget.plugin != null;
   }
 
   @override
@@ -128,7 +128,7 @@ class _PluginItemState extends State<PluginItem> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  widget.thirdPlugin!.pluginWidget(context),
+                                  widget.plugin!.pluginWidget(context),
                             ),
                           );
                         }

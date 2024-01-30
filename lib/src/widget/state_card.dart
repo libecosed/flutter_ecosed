@@ -32,7 +32,7 @@ class StateCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Powered by FlutterEcosed',
+                      'Powered by Flutter Ecosed',
                       textAlign: TextAlign.left,
                       style: textTheme.bodyMedium,
                     ),

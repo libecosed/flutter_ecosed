@@ -21,13 +21,68 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
   String pluginDescription() => 'Ecosed Platform';
 
   @override
-  Object? onEcosedMethodCall(String name) {
+  Future<Object?> onEcosedMethodCall(String name) async {
     switch (name) {
-      case pluginMethod:
+      case isShizukuInstalledMethod:
+        return isShizukuInstalled();
+      case installShizukuMethod:
+        installShizuku();
+        return null;
+      case isMicroGInstalledMethod:
+        return isMicroGInstalled();
+      case installMicroGMethod:
+        installMicroG();
+        return null;
+      case isShizukuGrantedMethod:
+        return isShizukuGranted();
+      case requestPermissionsMethod:
+        requestPermissions();
+        return null;
+      case getPluginMethod:
         return getPluginList();
       default:
         return null;
     }
+  }
+
+  @override
+  Future<bool?> isShizukuInstalled() {
+    return FlutterEcosedPlatform.instance.isShizukuInstalled();
+  }
+
+  @override
+  void installShizuku() {
+    FlutterEcosedPlatform.instance.installShizuku();
+  }
+
+  @override
+  Future<bool?> isMicroGInstalled() {
+    return FlutterEcosedPlatform.instance.isMicroGInstalled();
+  }
+
+  @override
+  void installMicroG() {
+    FlutterEcosedPlatform.instance.installMicroG();
+  }
+
+  @override
+  Future<bool?> isShizukuGranted() {
+    return FlutterEcosedPlatform.instance.isShizukuGranted();
+  }
+
+  @override
+  void requestPermissions() {
+    FlutterEcosedPlatform.instance.requestPermissions();
+  }
+
+  @override
+  Future<String?> getPoem() {
+    return FlutterEcosedPlatform.instance.getPoem();
+  }
+
+  @override
+  Future<String?> getShizukuVersion() {
+    return FlutterEcosedPlatform.instance.getShizukuVersion();
   }
 
   @override
@@ -37,50 +92,16 @@ class FlutterEcosed extends EcosedPlugin implements EcosedWrapper {
 
   @override
   State<FlutterEcosed> createState() => _FlutterEcosedState();
-
-  @override
-  Future<String?> getShizukuVersion() {
-    // TODO: implement getShizukuVersion
-    throw UnimplementedError();
-  }
-
-  @override
-  void installMicroG() {
-    // TODO: implement installMicroG
-  }
-
-  @override
-  void installShizuku() {
-    // TODO: implement installShizuku
-  }
-
-  @override
-  Future<bool?> isMicroGInstalled() {
-    // TODO: implement isMicroGInstalled
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool?> isShizukuGranted() {
-    // TODO: implement isShizukuGranted
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool?> isShizukuInstalled() {
-    // TODO: implement isShizukuInstalled
-    throw UnimplementedError();
-  }
-
-  @override
-  void requestPermissions() {
-    // TODO: implement requestPermissions
-  }
 }
 
 class _FlutterEcosedState extends State<FlutterEcosed> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Ecosed Platform')),
+      body: Center(
+        child: Text('Platform'),
+      ),
+    );
   }
 }

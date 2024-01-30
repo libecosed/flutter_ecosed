@@ -136,7 +136,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private fun isSupportGMS(): Boolean {
         val code = GoogleApiAvailability.getInstance()
-            .isGooglePlayServicesAvailable(this@FlutterEcosedPlugin)
+            .isGooglePlayServicesAvailable(mActivity)
         return if (code == ConnectionResult.SUCCESS) true else {
             AppUtils.isAppInstalled(EcosedManifest.GmsPackage)
         }

@@ -19,5 +19,5 @@ abstract class EcosedPlugin extends StatefulWidget {
   Widget pluginWidget(BuildContext context) => this;
 
   ///方法调用
-  Object? onEcosedMethodCall(String name);
+  Future<Object?> onEcosedMethodCall(String name);
 }
