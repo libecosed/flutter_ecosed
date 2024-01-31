@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../flutter_ecosed.dart';
-import '../plugin/plugin_details.dart';
 import 'overview.dart';
 import 'plugin.dart';
 

@@ -19,43 +19,120 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../layout/manager.dart';
-import '../platform/flutter_ecosed_platform_interface.dart';
-import '../plugin/plugin.dart';
-import '../plugin/plugin_details.dart';
-import '../plugin/plugin_type.dart';
-import '../value/default.dart';
+import 'layout/manager.dart';
+import 'value/default.dart';
+
+typedef EcosedExec = Object? Function(String channel, String method);
+typedef EcosedHome = Widget Function(Widget body, EcosedExec exec);
+
+enum PluginType { native, flutter, unknown }
 
 abstract class _EcosedAppWrapper {
   List<EcosedPlugin> initialPlugin();
 }
 
-abstract class _EcosedPlatformWrapper {
-  Future<bool?> isShizukuInstalled();
+abstract class _EcosedPlatform extends PlatformInterface {
+  _EcosedPlatform() : super(token: _token);
 
-  void installShizuku();
+  static final Object _token = Object();
 
-  Future<bool?> isMicroGInstalled();
+  static final _EcosedPlatform _instance = _MethodChannelFlutterEcosed();
 
-  void installMicroG();
+  static _EcosedPlatform get instance => _instance;
 
-  Future<bool?> isShizukuGranted();
+  Future<bool?> isShizukuInstalled() {
+    throw UnimplementedError('isShizukuInstalled() has not been implemented.');
+  }
 
-  void requestPermissions();
+  void installShizuku() {
+    throw UnimplementedError('installShizuku() has not been implemented.');
+  }
 
-  Future<String?> getPoem();
+  Future<bool?> isMicroGInstalled() {
+    throw UnimplementedError('isMicroGInstalled() has not been implemented.');
+  }
 
-  Future<String?> getShizukuVersion();
+  void installMicroG() {
+    throw UnimplementedError('installMicroG() has not been implemented.');
+  }
 
-  Future<List?> getPluginList();
+  Future<bool?> isShizukuGranted() {
+    throw UnimplementedError('isShizukuGranted() has not been implemented.');
+  }
+
+  void requestPermissions() {
+    throw UnimplementedError('requestPermissions() has not been implemented.');
+  }
+
+  Future<String?> getPoem() {
+    throw UnimplementedError('getPoem() has not been implemented.');
+  }
+
+  Future<String?> getShizukuVersion() {
+    throw UnimplementedError('getShizukuVersion() has not been implemented.');
+  }
+
+  Future<List?> getPluginList() {
+    throw UnimplementedError('getPluginList() has not been implemented.');
+  }
 }
 
-typedef EcosedExec = Object? Function(String channel, String method);
-typedef EcosedHome = Widget Function(Widget body, EcosedExec exec);
+
+
+abstract class EcosedPlugin extends StatefulWidget {
+  const EcosedPlugin({super.key});
+
+  ///插件信息
+  String pluginChannel();
+
+  ///插件名称
+  String pluginName();
+
+  ///插件描述
+  String pluginDescription();
+
+  ///插件作者
+  String pluginAuthor();
+
+  ///插件界面
+  Widget pluginWidget(BuildContext context) => this;
+
+  ///方法调用
+  Future<Object?> onEcosedMethodCall(String name);
+}
+
+class PluginDetails {
+  const PluginDetails(
+      {required this.channel,
+        required this.title,
+        required this.description,
+        required this.author,
+        required this.type,
+        required this.initial});
+
+  final String channel;
+  final String title;
+  final String description;
+  final String author;
+  final PluginType type;
+  final bool initial;
+
+  factory PluginDetails.formJSON(
+      Map<String, dynamic> json, PluginType type, bool initial) {
+    return PluginDetails(
+        channel: json['channel'],
+        title: json['title'],
+        description: json['description'],
+        author: json['author'],
+        type: type,
+        initial: initial);
+  }
+}
 
 class EcosedApp extends EcosedPlugin
-    implements _EcosedAppWrapper, _EcosedPlatformWrapper {
+    implements _EcosedAppWrapper, _EcosedPlatform {
   const EcosedApp(
       {super.key,
       required this.home,
@@ -123,47 +200,125 @@ class EcosedApp extends EcosedPlugin
 
   @override
   Future<bool?> isShizukuInstalled() {
-    return FlutterEcosedPlatform.instance.isShizukuInstalled();
+    return _EcosedPlatform.instance.isShizukuInstalled();
   }
 
   @override
   void installShizuku() {
-    FlutterEcosedPlatform.instance.installShizuku();
+    _EcosedPlatform.instance.installShizuku();
   }
 
   @override
   Future<bool?> isMicroGInstalled() {
-    return FlutterEcosedPlatform.instance.isMicroGInstalled();
+    return _EcosedPlatform.instance.isMicroGInstalled();
   }
 
   @override
   void installMicroG() {
-    FlutterEcosedPlatform.instance.installMicroG();
+    _EcosedPlatform.instance.installMicroG();
   }
 
   @override
   Future<bool?> isShizukuGranted() {
-    return FlutterEcosedPlatform.instance.isShizukuGranted();
+    return _EcosedPlatform.instance.isShizukuGranted();
   }
 
   @override
   void requestPermissions() {
-    FlutterEcosedPlatform.instance.requestPermissions();
+    _EcosedPlatform.instance.requestPermissions();
   }
 
   @override
   Future<String?> getPoem() {
-    return FlutterEcosedPlatform.instance.getPoem();
+    return _EcosedPlatform.instance.getPoem();
   }
 
   @override
   Future<String?> getShizukuVersion() {
-    return FlutterEcosedPlatform.instance.getShizukuVersion();
+    return _EcosedPlatform.instance.getShizukuVersion();
   }
 
   @override
   Future<List?> getPluginList() {
-    return FlutterEcosedPlatform.instance.getPluginList();
+    return _EcosedPlatform.instance.getPluginList();
+  }
+}
+
+class _MethodChannelFlutterEcosed extends _EcosedPlatform {
+  @visibleForTesting
+  final methodChannel = const MethodChannel('flutter_ecosed');
+
+  @override
+  Future<bool?> isShizukuInstalled() async {
+    return await methodChannel.invokeMethod<bool>(
+      'isShizukuInstalled',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  void installShizuku() {
+    methodChannel.invokeMethod<void>(
+      'installShizuku',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  Future<bool?> isMicroGInstalled() async {
+    return await methodChannel.invokeMethod<bool>(
+      'isMicroGInstalled',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  void installMicroG() {
+    methodChannel.invokeMethod<void>(
+      'installMicroG',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  Future<bool?> isShizukuGranted() async {
+    return await methodChannel.invokeMethod<bool>(
+      'isShizukuGranted',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  void requestPermissions() {
+    methodChannel.invokeMethod<void>(
+      'requestPermissions',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  Future<String?> getPoem() async {
+    return await methodChannel.invokeMethod<String>(
+      'getPoem',
+      {'channel': serviceChannel},
+    );
+  }
+
+  @override
+  Future<String?> getShizukuVersion() async {
+    return await methodChannel.invokeMethod<String>(
+      'getShizukuVersion',
+      {'channel': serviceChannel},
+    );
+  }
+
+  /// 通过引擎实现
+  @override
+  Future<List?> getPluginList() async {
+    return await methodChannel.invokeMethod<List>(
+      'getPlugins',
+      {'channel': engineChannel},
+    );
   }
 }
 
