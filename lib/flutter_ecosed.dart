@@ -1,3 +1,3 @@
-library flutter_library;
+library flutter_ecosed;
 
 export 'src/app.dart';

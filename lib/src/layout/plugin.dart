@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../flutter_ecosed.dart';
+import '../app.dart';
+
+
 
 class Plugin extends StatefulWidget {
   const Plugin(

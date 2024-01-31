@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../flutter_ecosed.dart';
+import '../app.dart';
 import 'overview.dart';
 import 'plugin.dart';
-
-typedef PushPlugin = void Function(BuildContext context, String channel);
 
 class Manager extends StatelessWidget {
   const Manager(

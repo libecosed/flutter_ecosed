@@ -10,13 +10,6 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> {
-  int currentStep = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
@@ -69,7 +62,7 @@ class _OverviewState extends State<Overview> {
               ),
             ),
             backgroundColor: Colors.transparent,
-            content: Text('哦豁,环境异常:('),
+            content: const Text('哦豁,环境异常:('),
             actions: [
               Visibility(
                 visible: true,
@@ -122,7 +115,6 @@ class _OverviewState extends State<Overview> {
                         style: textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 16),
-
                       Text(
                         '内核版本',
                         textAlign: TextAlign.start,
@@ -156,7 +148,7 @@ class _OverviewState extends State<Overview> {
                         style: textTheme.bodyMedium,
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

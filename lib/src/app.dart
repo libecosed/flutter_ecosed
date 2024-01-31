@@ -22,12 +22,26 @@ import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'layout/manager.dart';
-import 'value/default.dart';
 
 typedef EcosedExec = Object? Function(String channel, String method);
 typedef EcosedHome = Widget Function(Widget body, EcosedExec exec);
 
 enum PluginType { native, flutter, unknown }
+
+const String defaultAuthor = 'wyq0918dev';
+const String appChannel = 'ecosed_app';
+
+const String engineChannel = 'ecosed_engine';
+const String serviceChannel = 'ecosed_service';
+
+const String isShizukuInstalledMethod = 'is_shizuku_installed';
+const String installShizukuMethod = 'install_shizuku';
+const String isMicroGInstalledMethod = 'is_microg_installed';
+const String installMicroGMethod = 'install_microg';
+const String isShizukuGrantedMethod = 'is_shizuku_granted';
+const String requestPermissionsMethod = 'request_permissions';
+
+const String getPluginMethod = 'get_plugins';
 
 abstract class _EcosedAppWrapper {
   List<EcosedPlugin> initialPlugin();
@@ -78,8 +92,6 @@ abstract class _EcosedPlatform extends PlatformInterface {
     throw UnimplementedError('getPluginList() has not been implemented.');
   }
 }
-
-
 
 abstract class EcosedPlugin extends StatefulWidget {
   const EcosedPlugin({super.key});
@@ -384,7 +396,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取Shizuku是否已安装
     try {
       shizukuInstalled = await _exec(
-        appChannel,
+        widget.pluginChannel(),
         isShizukuInstalledMethod,
       ) as bool;
     } on PlatformException {
@@ -393,7 +405,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取谷歌基础服务(microG)是否已安装
     try {
       microGInstalled = await _exec(
-        appChannel,
+        widget.pluginChannel(),
         isMicroGInstalledMethod,
       ) as bool;
     } on PlatformException {
@@ -402,7 +414,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取Shizuku权限是否已授权
     try {
       shizukuGranted = await _exec(
-        appChannel,
+        widget.pluginChannel(),
         isShizukuGrantedMethod,
       ) as bool;
     } on PlatformException {
@@ -415,7 +427,7 @@ class _EcosedAppState extends State<EcosedApp> {
       try {
         // 遍历原生插件
         for (var element in (await _exec(
-              appChannel,
+          widget.pluginChannel(),
               getPluginMethod,
             ) as List? ??
             [_unknownPlugin])) {
