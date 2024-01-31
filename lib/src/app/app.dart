@@ -1,3 +1,19 @@
+///
+/// Copyright flutter_ecosed
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///   http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,15 +21,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../layout/manager.dart';
-import '../platform/flutter_ecosed.dart';
+import '../platform/flutter_ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../value/default.dart';
-import 'app_type.dart';
-import 'app_wrapper.dart';
 
-class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
+abstract class _EcosedAppWrapper {
+  List<EcosedPlugin> initialPlugin();
+}
+
+abstract class _EcosedPlatformWrapper {
+  Future<bool?> isShizukuInstalled();
+
+  void installShizuku();
+
+  Future<bool?> isMicroGInstalled();
+
+  void installMicroG();
+
+  Future<bool?> isShizukuGranted();
+
+  void requestPermissions();
+
+  Future<String?> getPoem();
+
+  Future<String?> getShizukuVersion();
+
+  Future<List?> getPluginList();
+}
+
+typedef EcosedExec = Object? Function(String channel, String method);
+typedef EcosedHome = Widget Function(Widget body, EcosedExec exec);
+
+class EcosedApp extends EcosedPlugin
+    implements _EcosedAppWrapper, _EcosedPlatformWrapper {
   const EcosedApp(
       {super.key,
       required this.home,
@@ -25,9 +67,6 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
   final BannerLocation bannerLocation;
   final String appName;
   final List<EcosedPlugin> plugins;
-
-  @override
-  State<EcosedApp> createState() => _EcosedAppState();
 
   @override
   String pluginName() => 'Application';
@@ -53,11 +92,79 @@ class EcosedApp extends EcosedPlugin implements EcosedAppWrapper {
 
   @override
   Future<Object?> onEcosedMethodCall(String name) async {
-    return null;
+    switch (name) {
+      case isShizukuInstalledMethod:
+        return isShizukuInstalled();
+      case installShizukuMethod:
+        installShizuku();
+        return null;
+      case isMicroGInstalledMethod:
+        return isMicroGInstalled();
+      case installMicroGMethod:
+        installMicroG();
+        return null;
+      case isShizukuGrantedMethod:
+        return isShizukuGranted();
+      case requestPermissionsMethod:
+        requestPermissions();
+        return null;
+      case getPluginMethod:
+        return getPluginList();
+      default:
+        return null;
+    }
   }
 
   @override
-  List<EcosedPlugin> initialPlugin() => [this, const FlutterEcosed()];
+  State<EcosedApp> createState() => _EcosedAppState();
+
+  @override
+  List<EcosedPlugin> initialPlugin() => [this];
+
+  @override
+  Future<bool?> isShizukuInstalled() {
+    return FlutterEcosedPlatform.instance.isShizukuInstalled();
+  }
+
+  @override
+  void installShizuku() {
+    FlutterEcosedPlatform.instance.installShizuku();
+  }
+
+  @override
+  Future<bool?> isMicroGInstalled() {
+    return FlutterEcosedPlatform.instance.isMicroGInstalled();
+  }
+
+  @override
+  void installMicroG() {
+    FlutterEcosedPlatform.instance.installMicroG();
+  }
+
+  @override
+  Future<bool?> isShizukuGranted() {
+    return FlutterEcosedPlatform.instance.isShizukuGranted();
+  }
+
+  @override
+  void requestPermissions() {
+    FlutterEcosedPlatform.instance.requestPermissions();
+  }
+
+  @override
+  Future<String?> getPoem() {
+    return FlutterEcosedPlatform.instance.getPoem();
+  }
+
+  @override
+  Future<String?> getShizukuVersion() {
+    return FlutterEcosedPlatform.instance.getShizukuVersion();
+  }
+
+  @override
+  Future<List?> getPluginList() {
+    return FlutterEcosedPlatform.instance.getPluginList();
+  }
 }
 
 class _EcosedAppState extends State<EcosedApp> {
@@ -122,7 +229,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取Shizuku是否已安装
     try {
       shizukuInstalled = await _exec(
-        platformChannel,
+        appChannel,
         isShizukuInstalledMethod,
       ) as bool;
     } on PlatformException {
@@ -131,7 +238,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取谷歌基础服务(microG)是否已安装
     try {
       microGInstalled = await _exec(
-        platformChannel,
+        appChannel,
         isMicroGInstalledMethod,
       ) as bool;
     } on PlatformException {
@@ -140,7 +247,7 @@ class _EcosedAppState extends State<EcosedApp> {
     // 获取Shizuku权限是否已授权
     try {
       shizukuGranted = await _exec(
-        platformChannel,
+        appChannel,
         isShizukuGrantedMethod,
       ) as bool;
     } on PlatformException {
@@ -153,7 +260,7 @@ class _EcosedAppState extends State<EcosedApp> {
       try {
         // 遍历原生插件
         for (var element in (await _exec(
-              platformChannel,
+              appChannel,
               getPluginMethod,
             ) as List? ??
             [_unknownPlugin])) {

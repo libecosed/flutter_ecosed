@@ -29,8 +29,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -50,7 +48,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
-import kotlin.IllegalStateException
+import kotlin.concurrent.thread
+import kotlin.coroutines.CoroutineContext
 import kotlin.system.exitProcess
 
 /**
@@ -1171,6 +1170,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         override fun main() {
             main(arrayOf(""))
+
+
         }
     }
 
@@ -1205,7 +1206,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Flutter插件代理单元
      * @return content 返回值
      */
-    private fun <R> frameworkUnit(
+    private inline fun <R> frameworkUnit(
         content: FlutterPluginProxy.() -> R,
     ): R = content.invoke(mFramework)
 
@@ -1215,7 +1216,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 引擎包装器单元
      * @return content 返回值
      */
-    private fun <R> engineUnit(
+    private inline fun <R> engineUnit(
         content: EngineWrapper.() -> R,
     ): R = content.invoke(mEngine)
 
@@ -1225,7 +1226,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 插件列表单元, 插件绑定器
      * @return content 返回值
      */
-    private fun <R> pluginUnit(
+    private inline fun <R> pluginUnit(
         content: (ArrayList<EcosedPlugin>, PluginBinding) -> R
     ): R = content.invoke(
         arrayListOf(mFramework, mEngine, mClient, mService, mNative),
@@ -1238,7 +1239,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 客户端回调单元
      * @return content 返回值
      */
-    private fun <R> callBackUnit(
+    private inline fun <R> callBackUnit(
         content: EcosedCallBack.() -> R,
     ): R = content.invoke(mClient)
 
@@ -1248,7 +1249,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 服务
      * @return content 返回值
      */
-    private fun <R> serviceUnit(
+    private inline fun <R> serviceUnit(
         content: ServiceWrapper.() -> R,
     ): R = content.invoke(mService)
 
@@ -1259,14 +1260,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @return content 返回值
      */
 
-    private fun <R> activityUnit(
+    private inline fun <R> activityUnit(
         content: Activity.() -> R,
     ): R = content.invoke(mActivity)
 
     /**
      *
      */
-    private fun <R> nativeUnit(
+    private inline fun <R> nativeUnit(
         content: NativeWrapper.() -> R,
     ): R = content.invoke(mNative)
 

@@ -1,7 +1,7 @@
 const String defaultAuthor = 'wyq0918dev';
 
 const String appChannel = 'ecosed_app';
-const String platformChannel = 'ecosed_platform';
+//const String platformChannel = 'ecosed_platform';
 
 const String engineChannel = 'ecosed_engine';
 const String serviceChannel = 'ecosed_service';

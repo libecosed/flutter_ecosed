@@ -32,7 +32,6 @@ class _ExampleAppState extends State<ExampleApp> {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       home: EcosedApp(
         home: (body, exec) => Scaffold(
