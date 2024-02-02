@@ -25,16 +25,22 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.VibrateUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -48,8 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
-import kotlin.concurrent.thread
-import kotlin.coroutines.CoroutineContext
+import kotlin.math.abs
 import kotlin.system.exitProcess
 
 /**
@@ -60,7 +65,8 @@ import kotlin.system.exitProcess
  * 文档: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
  */
 class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
-    ActivityAware, ServiceConnection, LifecycleOwner, DefaultLifecycleObserver {
+    ActivityAware, ServiceConnection, LifecycleOwner, DefaultLifecycleObserver,
+    SensorEventListener {
 
 
     /** Flutter插件方法通道 */
@@ -98,6 +104,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
     private lateinit var poem: ArrayList<String>
+
+    private lateinit var mSensorManager: SensorManager
+    private lateinit var mDebugDialog: AlertDialog
 
 
     private val mUserServiceArgs = Shizuku.UserServiceArgs(
@@ -413,7 +422,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     override fun onBindingDied(name: ComponentName?) {
         super.onBindingDied(name)
-
         when (name?.className) {
             UserService().javaClass.name -> {
 
@@ -448,9 +456,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    override fun getLifecycle(): Lifecycle {
-        return mLifecycle
-    }
+    override val lifecycle: Lifecycle
+        get() = mLifecycle
 
     /**
      ***********************************************************************************************
@@ -461,32 +468,85 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 活动创建时执行
      */
-    override fun onCreate(owner: LifecycleOwner) = activityUnit {
+    override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
         super<DefaultLifecycleObserver>.onCreate(owner)
+        // 从系统服务中获取传感管理器对象
+        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        // 创建调试对话框
+        AlertDialog.Builder(
+            this@activityUnit,
+            R.style.Theme_AppCompat_DayNight_Dialog_Alert
+        ).apply {
+            setTitle("Flutter Ecosed Debug Menu (Native)")
+            setMessage("oi")
+
+            setNegativeButton("NO") { dialog, which ->
+
+            }
+            setPositiveButton("OK") { dialog, which ->
+
+            }
+            mDebugDialog = create()
+        }
     }
 
     /**
      * 活动启动时执行
      */
-    override fun onStart(owner: LifecycleOwner) = activityUnit {
+    override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
         super<DefaultLifecycleObserver>.onStart(owner)
     }
 
-    override fun onResume(owner: LifecycleOwner) = activityUnit {
+    override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
         super.onResume(owner)
+        // 注册监听
+        mSensorManager.registerListener(
+            this@FlutterEcosedPlugin,
+            mSensorManager.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER
+            ),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
     }
 
-    override fun onPause(owner: LifecycleOwner) = activityUnit {
+    override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
         super.onPause(owner)
+        // 注销监听
+        mSensorManager.unregisterListener(this@FlutterEcosedPlugin)
     }
 
-    override fun onStop(owner: LifecycleOwner) = activityUnit {
+    override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
         super.onStop(owner)
     }
 
-    override fun onDestroy(owner: LifecycleOwner) = activityUnit {
+    override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
         super<DefaultLifecycleObserver>.onDestroy(owner)
     }
+
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event?.let {
+            when (event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    if (
+                        (abs(event.values[0]) > 15) or
+                        (abs(event.values[1]) > 15) or
+                        (abs(event.values[2]) > 15)
+                    ) {
+                        if (mBaseDebug and !mDebugDialog.isShowing) {
+                            VibrateUtils.vibrate(100)
+                            mDebugDialog.show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(
+        sensor: Sensor?,
+        accuracy: Int
+    ) = Unit
 
     /**
      ***********************************************************************************************
@@ -911,6 +971,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mFullDebug = isDebug
             // 添加生命周期观察者
             lifecycle.addObserver(this@FlutterEcosedPlugin)
+
+            Toast.makeText(this, isDebug.toString(), Toast.LENGTH_SHORT).show()
         }
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
@@ -1113,7 +1175,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 "installMicroG" -> {}
                 "isShizukuGranted" -> result.success(checkShizukuPermission())
                 "requestPermissions" -> requestPermissions()
-
 
 
             }
