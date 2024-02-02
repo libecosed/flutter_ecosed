@@ -324,7 +324,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
     ) = frameworkUnit {
-
         // 获取活动
         getActivity(activity = binding.activity)
         // 获取生命周期
@@ -333,16 +332,25 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         attach()
     }
 
-    override fun onDetachedFromActivityForConfigChanges() = Unit
+    override fun onDetachedFromActivityForConfigChanges() = frameworkUnit {
+        detach()
+    }
 
     override fun onReattachedToActivityForConfigChanges(
         binding: ActivityPluginBinding,
     ) = frameworkUnit {
+        // 获取活动
         getActivity(activity = binding.activity)
+        // 获取生命周期
         getLifecycle(lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding))
     }
 
-    override fun onDetachedFromActivity() = Unit
+    /**
+     * 从活动分离
+     */
+    override fun onDetachedFromActivity() = frameworkUnit {
+        detach()
+    }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         when (name?.className) {
@@ -456,6 +464,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /**
+     * 获取生命周期
+     */
     override val lifecycle: Lifecycle
         get() = mLifecycle
 
@@ -468,8 +479,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 活动创建时执行
      */
-    override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onCreate(owner)
+    override fun onCreate(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super<DefaultLifecycleObserver>.onCreate(owner)
+        }
+    ) {
         // 从系统服务中获取传感管理器对象
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         // 创建调试对话框
@@ -493,12 +507,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 活动启动时执行
      */
-    override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onStart(owner)
+    override fun onStart(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super<DefaultLifecycleObserver>.onStart(owner)
+        }
+    ) {
+
     }
 
-    override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
-        super.onResume(owner)
+    /**
+     * 活动恢复时执行
+     */
+    override fun onResume(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super.onResume(owner)
+        }
+    ) {
         // 注册监听
         mSensorManager.registerListener(
             this@FlutterEcosedPlugin,
@@ -509,18 +533,38 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
-    override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
-        super.onPause(owner)
+    /**
+     * 活动暂停时执行
+     */
+    override fun onPause(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super.onPause(owner)
+        }
+    ) {
         // 注销监听
         mSensorManager.unregisterListener(this@FlutterEcosedPlugin)
     }
 
-    override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
-        super.onStop(owner)
+    /**
+     * 活动停止时执行
+     */
+    override fun onStop(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super.onStop(owner)
+        }
+    ) {
+
     }
 
-    override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onDestroy(owner)
+    /**
+     * 活动销毁时执行
+     */
+    override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit(
+        superUnit = {
+            super<DefaultLifecycleObserver>.onDestroy(owner)
+        }
+    ) {
+
     }
 
 
@@ -659,6 +703,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 引擎包装器
      */
     private interface EngineWrapper : FlutterPluginProxy {
+
+        /**
+         * 执行方法
+         * @param channel 插件通道
+         * @param method 插件方法
+         * @param bundle 传值
+         * @return 执行插件方法返回值
+         */
         fun <T> execMethodCall(channel: String, method: String, bundle: Bundle?): T?
     }
 
@@ -684,6 +736,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 服务插件包装器
      */
     private interface ServiceWrapper {
+
+        /**
+         * 获取Binder
+         */
         fun getBinder(intent: Intent): IBinder
     }
 
@@ -691,6 +747,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 原生插件包装器
      */
     private interface NativeWrapper {
+
+        /** 调用原生代码 */
         fun main()
     }
 
@@ -915,12 +973,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 负责引擎和Flutter通信的框架 */
     private val mFramework = object : EcosedPlugin(), FlutterPluginProxy {
 
+        /** 插件标题 */
         override val title: String
             get() = "Framework"
+
+        /** 插件通道 */
         override val channel: String
             get() = frameworkChannelName
+
+        /** 插件作者 */
         override val author: String
             get() = defaultAuthor
+
+        /** 插件描述 */
         override val description: String
             get() = "Ecosed Framework"
 
@@ -948,12 +1013,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 引擎 */
     private val mEngine = object : EcosedPlugin(), EngineWrapper {
 
+        /** 插件标题 */
         override val title: String
             get() = "Engine"
+
+        /** 插件通道 */
         override val channel: String
             get() = engineChannelName
+
+        /** 插件作者 */
         override val author: String
             get() = defaultAuthor
+
+        /** 插件描述 */
         override val description: String
             get() = "Ecosed Engine"
 
@@ -1001,7 +1073,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         /**
-         * 将引擎附加到应用.
+         * 引擎初始化.
          */
         override fun attach() {
             when {
@@ -1044,6 +1116,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
         }
 
+        /**
+         * 销毁引擎释放资源.
+         */
         override fun detach() {
 
         }
@@ -1091,16 +1166,25 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 负责与服务通信的客户端 */
     private val mClient = object : EcosedPlugin(), EcosedCallBack {
 
+        /** 插件标题 */
         override val title: String
             get() = "Client"
+
+        /** 插件通道 */
         override val channel: String
             get() = clientChannelName
+
+        /** 插件作者 */
         override val author: String
             get() = defaultAuthor
+
+        /** 插件描述 */
         override val description: String
             get() = "Ecosed Client"
 
-
+        /**
+         * 插件添加时执行
+         */
         override fun onEcosedAdded(binding: PluginBinding) = run {
             super.onEcosedAdded(binding)
             mEcosedServicesIntent = Intent(this@run, this@FlutterEcosedPlugin.javaClass)
@@ -1115,6 +1199,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         }
 
+        /**
+         * 插件方法调用
+         */
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
@@ -1133,18 +1220,30 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
         }
 
+        /**
+         * 在服务绑定成功时回调
+         */
         override fun onEcosedConnected() {
             Toast.makeText(this, "onEcosedConnected", Toast.LENGTH_SHORT).show()
         }
 
+        /**
+         * 在服务解绑或意外断开链接时回调
+         */
         override fun onEcosedDisconnected() {
             Toast.makeText(this, "onEcosedDisconnected", Toast.LENGTH_SHORT).show()
         }
 
+        /**
+         * 在服务端服务未启动时绑定服务时回调
+         */
         override fun onEcosedDead() {
             Toast.makeText(this, "onEcosedDead", Toast.LENGTH_SHORT).show()
         }
 
+        /**
+         * 在未绑定服务状态下调用API时回调
+         */
         override fun onEcosedUnbind() {
             Toast.makeText(this, "onEcosedUnbind", Toast.LENGTH_SHORT).show()
         }
@@ -1156,12 +1255,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         Shizuku.OnBinderDeadListener,
         Shizuku.OnRequestPermissionResultListener {
 
+        /** 插件标题 */
         override val title: String
             get() = "Service"
+
+        /** 插件通道 */
         override val channel: String
             get() = serviceChannelName
+
+        /** 插件作者 */
         override val author: String
             get() = defaultAuthor
+
+        /** 插件描述 */
         override val description: String
             get() = "Ecosed Service"
 
@@ -1182,6 +1288,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             call.bundle?.getString("", "")
         }
 
+        /**
+         * 获取Binder
+         * @param intent 意图
+         * @return IBinder
+         */
         override fun getBinder(intent: Intent): IBinder {
             return object : FlutterEcosed.Stub() {
                 override fun getFrameworkVersion(): String = frameworkVersion()
@@ -1211,15 +1322,21 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 原生方法调用 */
     private val mNative = object : EcosedPlugin(), NativeWrapper {
 
+        /** 插件标题 */
         override val title: String
             get() = "Native"
+
+        /** 插件通道 */
         override val channel: String
             get() = nativeChannelName
+
+        /** 插件作者 */
         override val author: String
             get() = defaultAuthor
+
+        /** 插件描述 */
         override val description: String
             get() = "Ecosed Native"
-
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
@@ -1317,13 +1434,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * Activity上下文调用单元
      * Activity生命周期观察者通过此调用单元执行基于Activity上下文的代码
+     * @param superUnit 执行父类函数
      * @param content 内容
      * @return content 返回值
      */
-
     private inline fun <R> activityUnit(
-        content: Activity.() -> R,
-    ): R = content.invoke(mActivity)
+        superUnit: (() -> R) -> R,
+        crossinline content: Activity.() -> R,
+    ): R = superUnit {
+        return@superUnit content.invoke(mActivity)
+    }
 
     /**
      *
