@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_author">水彤</string>
+    <string name="framework_title">框架</string>
+    <string name="framework_description">Ecosed 框架</string>
+    <string name="engine_title">引擎</string>
+    <string name="engine_description">Ecosed 引擎</string>
+    <string name="client_title">客户端</string>
+    <string name="client_description">Ecosed 客户端</string>
+    <string name="service_title">服务</string>
+    <string name="service_description">Ecosed 服务</string>
+    <string name="native_title">原生</string>
+    <string name="native_description">Ecosed 原生</string>
+</resources>

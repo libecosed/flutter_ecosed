@@ -151,13 +151,15 @@ class EcosedApp extends EcosedPlugin
   const EcosedApp(
       {super.key,
       required this.materialHome,
-      required this.materialApp,
+    //  required this.materialApp,
       required this.bannerLocation,
       required this.appName,
       required this.plugins});
 
   final MaterialEcosedHome materialHome;
-  final MaterialEcosedApp materialApp;
+//  final MaterialEcosedApp materialApp;
+
+
 
   final BannerLocation bannerLocation;
   final String appName;
@@ -551,15 +553,17 @@ class _EcosedAppState extends State<EcosedApp> {
   //   );
   // }
 
-  late BuildContext NavContext;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
-    return widget.materialApp(
-      widget.materialHome(
+    return Banner(
+      message: 'EcosedApp',
+      location: widget.bannerLocation,
+      color: Colors.pinkAccent,
+      child: widget.materialHome(
         Scrollbar(
           child: ListView(
             children: [
@@ -805,7 +809,7 @@ class _EcosedAppState extends State<EcosedApp> {
                                     child: TextButton(
                                       onPressed: () {
                                         if (_isAllowPush(element)) {
-                                          Navigator.of(NavContext).push(
+                                          Navigator.of(context).push(
                                             MaterialPageRoute(
                                               builder: (context) => _plugin(element)!
                                                   .pluginWidget(context),
@@ -840,18 +844,8 @@ class _EcosedAppState extends State<EcosedApp> {
             ],
           ),
         ),
-        (channel, method) => _exec(channel, method),
+            (channel, method) => _exec(channel, method),
       ),
-      (context, child) {
-        NavContext = context;
-        return Banner(
-          message: 'EcosedApp',
-          location: widget.bannerLocation,
-          color: Colors.pinkAccent,
-          child: child,
-        );
-      },
-      widget.appName,
     );
     // return MaterialApp(
     //   home: Banner(
