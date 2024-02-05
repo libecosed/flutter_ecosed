@@ -32,30 +32,6 @@ class _ExampleAppState extends State<ExampleApp> {
 
   @override
   Widget build(BuildContext context) {
-
-    // return MaterialApp(
-    //   home: EcosedApp(
-    //     materialHome: (body, exec) {
-    //       return Scaffold(
-    //         appBar: AppBar(
-    //           title: const Text(appName),
-    //           centerTitle: true,
-    //         ),
-    //         body: body,
-    //       );
-    //     },
-    //     materialApp: (home, builder, title) {
-    //       return MaterialApp(
-    //         home: home,
-    //         builder: builder,
-    //         title: title,
-    //       );
-    //     },
-    //     bannerLocation: BannerLocation.topStart,
-    //     appName: appName,
-    //     plugins: [widget],
-    //   ),
-    // );
     return MaterialApp(
       home: EcosedApp(
         materialHome: (body, exec) {
