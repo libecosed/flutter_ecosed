@@ -30,7 +30,7 @@ class MainActivity : FlutterFragmentActivity() {
                     TransparencyMode.transparent
                 }
             )
-            .shouldAttachEngineToActivity(false)
+            .shouldAttachEngineToActivity(true)
             .build()
     }
 }
