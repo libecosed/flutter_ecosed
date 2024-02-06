@@ -81,7 +81,8 @@ import kotlin.system.exitProcess
  * 文档: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
  */
 class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
-    ActivityAware, LifecycleOwner, ServiceConnection, DefaultLifecycleObserver, SensorEventListener {
+    ActivityAware, LifecycleOwner, ServiceConnection, DefaultLifecycleObserver,
+    SensorEventListener {
 
 
     /** Flutter插件方法通道 */
@@ -178,8 +179,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             Shizuku.addBinderDeadListener(this@shizukuUnit)
             Shizuku.addRequestPermissionResultListener(this@shizukuUnit)
         }
-
-
 
 
         // 申请Shizuku权限
@@ -292,7 +291,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
-        onCreateEngine(context = binding.applicationContext)
+        return@frameworkUnit this@frameworkUnit.onCreateEngine(context = binding.applicationContext)
     }
 
     /**
@@ -302,23 +301,23 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 清空回调程序释放内存
         mMethodChannel.setMethodCallHandler(null)
         // 销毁引擎释放资源
-        onDestroyEngine()
+        return@frameworkUnit this@frameworkUnit.onDestroyEngine()
     }
 
     /**
      * 调用方法
      */
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) = frameworkUnit {
-        // 调用插件方法
-        onMethodCall(
+        return@frameworkUnit this@frameworkUnit.onMethodCall(
             call = object : MethodCallProxy {
 
                 override val methodProxy: String
                     get() = call.method
 
                 override val bundleProxy: Bundle
-                    get() = Bundle().apply {
-                        putString("channel", call.argument<String>("channel"))
+                    get() = Bundle().let { bundle ->
+                        bundle.putString("channel", call.argument<String>("channel"))
+                        return@let bundle
                     }
             },
             result = object : ResultProxy {
@@ -345,31 +344,41 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /**
-     * 附加到活动
+     * 附加到Activity
      */
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
     ) = frameworkUnit {
         // 获取活动
-        onCreateActivity(activity = binding.activity)
+        this@frameworkUnit.onCreateActivity(
+            activity = binding.activity
+        )
         // 获取生命周期
-        onCreateLifecycle(lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding))
+        this@frameworkUnit.onCreateLifecycle(
+            lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
+        )
     }
 
+    /**
+     * 配置变更时从Activity分离
+     */
     override fun onDetachedFromActivityForConfigChanges() {
         this@FlutterEcosedPlugin.onDetachedFromActivity()
     }
 
+    /**
+     * 配置变更完成后重新附加到Activity
+     */
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         this@FlutterEcosedPlugin.onAttachedToActivity(binding = binding)
     }
 
     /**
-     * 从活动分离
+     * 从Activity分离
      */
     override fun onDetachedFromActivity() = frameworkUnit {
-        onDestroyActivity()
-        onDestroyLifecycle()
+        this@frameworkUnit.onDestroyActivity()
+        this@frameworkUnit.onDestroyLifecycle()
     }
 
     override fun getLifecycle(): Lifecycle {
@@ -871,7 +880,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * Shizuku包装器
      * 具有Shizuku监听器方法
      */
-    private interface ShizukuWrapper: Shizuku.OnBinderReceivedListener,
+    private interface ShizukuWrapper : Shizuku.OnBinderReceivedListener,
         Shizuku.OnBinderDeadListener,
         Shizuku.OnRequestPermissionResultListener
 
@@ -879,13 +888,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * AppCompat包装器
      * 方法回调和操作栏抽屉状态切换
      */
-    private interface AppCompatWrapper: AppCompatCallback,
+    private interface AppCompatWrapper : AppCompatCallback,
         ActionBarDrawerToggle.DelegateProvider
 
     /**
      * 服务插件包装器
      */
-    private interface ServiceWrapper: ShizukuWrapper, AppCompatWrapper {
+    private interface ServiceWrapper : ShizukuWrapper, AppCompatWrapper {
 
         /**
          * 获取Binder
@@ -1142,32 +1151,32 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override val description: String
             get() = getString(R.string.framework_description)
 
-        override fun onCreateActivity(activity: Activity): Unit = engineUnit {
-            return@engineUnit onCreateActivity(activity = activity)
+        override fun onCreateActivity(activity: Activity) = engineUnit {
+            return@engineUnit this@engineUnit.onCreateActivity(activity = activity)
         }
 
-        override fun onDestroyActivity(): Unit = engineUnit {
-            return@engineUnit onDestroyActivity()
+        override fun onDestroyActivity() = engineUnit {
+            return@engineUnit this@engineUnit.onDestroyActivity()
         }
 
-        override fun onCreateLifecycle(lifecycle: Lifecycle): Unit = engineUnit {
-            return@engineUnit onCreateLifecycle(lifecycle = lifecycle)
+        override fun onCreateLifecycle(lifecycle: Lifecycle) = engineUnit {
+            return@engineUnit this@engineUnit.onCreateLifecycle(lifecycle = lifecycle)
         }
 
-        override fun onDestroyLifecycle(): Unit = engineUnit {
-            return@engineUnit onDestroyLifecycle()
+        override fun onDestroyLifecycle() = engineUnit {
+            return@engineUnit this@engineUnit.onDestroyLifecycle()
         }
 
-        override fun onCreateEngine(context: Context): Unit = engineUnit {
-            return@engineUnit onCreateEngine(context = context)
+        override fun onCreateEngine(context: Context) = engineUnit {
+            return@engineUnit this@engineUnit.onCreateEngine(context = context)
         }
 
-        override fun onDestroyEngine(): Unit = engineUnit {
-            return@engineUnit onDestroyEngine()
+        override fun onDestroyEngine() = engineUnit {
+            return@engineUnit this@engineUnit.onDestroyEngine()
         }
 
-        override fun onMethodCall(call: MethodCallProxy, result: ResultProxy): Unit = engineUnit {
-            return@engineUnit onMethodCall(call = call, result = result)
+        override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) = engineUnit {
+            return@engineUnit this@engineUnit.onMethodCall(call = call, result = result)
         }
     }
 
@@ -1195,7 +1204,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun onDestroyActivity() {
-           // mActivity = null
+            // mActivity = null
         }
 
         override fun onCreateLifecycle(lifecycle: Lifecycle) {

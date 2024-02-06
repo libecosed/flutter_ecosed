@@ -19,25 +19,19 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  static const String appName = 'FlutterEcosed Example App';
+  static const String appName = 'flutter_ecosed 示例应用';
 
   static Map<String, FlutterBoostRouteFactory> routerMap = {
     '/': (settings, uniqueId) {
       return MaterialPageRoute(
-          settings: settings,
-          builder: (_) {
-            return const MyHomePage(title: appName);
-          });
+        settings: settings,
+        builder: (_) => const MyHomePage(title: appName),
+      );
     },
     '/manager': (settings, uniqueId) {
       return MaterialPageRoute(
         settings: settings,
-        builder: (_) => Scaffold(
-          appBar: AppBar(
-            title: const Text(appName),
-          ),
-          body: const EcosedManager(),
-        ),
+        builder: (_) => const MyManagerPage(title: appName),
       );
     },
   };
@@ -98,13 +92,46 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: TextButton(
-          onPressed: () {
-            BoostNavigator.instance.push('/manager', withContainer: false);
-          },
-          child: const Text('open manager'),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'flutter_ecosed与flutter_boost不完全兼容',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Text(
+              '注意: 如果需要使用flutter_boost库, 在切换页面时请勿使用withContainer: true, 这样会导致页面在新的Activity中打开, flutter_ecosed无法按照预期正常工作.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                  color: Theme.of(context).colorScheme.error),
+            ),
+            FilledButton(
+              onPressed: () {
+                BoostNavigator.instance.push('/manager', withContainer: false);
+              },
+              child: const Text('open manager'),
+            )
+          ],
         ),
       ),
+    );
+  }
+}
+
+class MyManagerPage extends StatelessWidget {
+  const MyManagerPage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: const EcosedManager(),
     );
   }
 }

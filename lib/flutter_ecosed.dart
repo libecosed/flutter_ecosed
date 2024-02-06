@@ -29,25 +29,18 @@ typedef MaterialEcosedHome = Widget Function(Widget body, EcosedExec exec);
 typedef MaterialEcosedApp = MaterialApp Function(
     Widget home, TransitionBuilder build, String title);
 
-enum PluginType { native, flutter, unknown }
+enum _PluginType { native, flutter, unknown }
 
-const String defaultAuthor = 'wyq0918dev';
-const String appChannel = 'ecosed_app';
+const String _defaultAuthor = 'wyq0918dev';
+const String _appChannel = 'ecosed_app';
 
-const String engineChannel = 'ecosed_engine';
-const String serviceChannel = 'ecosed_service';
+const String _engineChannel = 'ecosed_engine';
+const String _serviceChannel = 'ecosed_service';
 
-const String isShizukuInstalledMethod = 'is_shizuku_installed';
-const String installShizukuMethod = 'install_shizuku';
-const String isMicroGInstalledMethod = 'is_microg_installed';
-const String installMicroGMethod = 'install_microg';
-const String isShizukuGrantedMethod = 'is_shizuku_granted';
-const String requestPermissionsMethod = 'request_permissions';
-
-const String getPluginMethod = 'get_plugins';
+const String _getPluginMethod = 'get_plugins';
 
 abstract class _EcosedAppWrapper {
-  List<EcosedPlugin> initialPlugin();
+  List<_EcosedPlugin> initialPlugin();
 }
 
 abstract class _EcosedPlatform extends PlatformInterface {
@@ -60,44 +53,44 @@ abstract class _EcosedPlatform extends PlatformInterface {
   static _EcosedPlatform get instance => _instance;
 
   Future<bool?> isShizukuInstalled() {
-    throw UnimplementedError('isShizukuInstalled() has not been implemented.');
+    throw UnimplementedError('isShizukuInstalled()方法未实现');
   }
 
   void installShizuku() {
-    throw UnimplementedError('installShizuku() has not been implemented.');
+    throw UnimplementedError('installShizuku()方法未实现');
   }
 
   Future<bool?> isMicroGInstalled() {
-    throw UnimplementedError('isMicroGInstalled() has not been implemented.');
+    throw UnimplementedError('isMicroGInstalled()方法未实现');
   }
 
   void installMicroG() {
-    throw UnimplementedError('installMicroG() has not been implemented.');
+    throw UnimplementedError('installMicroG()方法未实现');
   }
 
   Future<bool?> isShizukuGranted() {
-    throw UnimplementedError('isShizukuGranted() has not been implemented.');
+    throw UnimplementedError('isShizukuGranted()方法未实现');
   }
 
   void requestPermissions() {
-    throw UnimplementedError('requestPermissions() has not been implemented.');
+    throw UnimplementedError('requestPermissions()方法未实现');
   }
 
   Future<String?> getPoem() {
-    throw UnimplementedError('getPoem() has not been implemented.');
+    throw UnimplementedError('getPoem()方法未实现');
   }
 
   Future<String?> getShizukuVersion() {
-    throw UnimplementedError('getShizukuVersion() has not been implemented.');
+    throw UnimplementedError('getShizukuVersion()方法未实现');
   }
 
   Future<List?> getPluginList() {
-    throw UnimplementedError('getPluginList() has not been implemented.');
+    throw UnimplementedError('getPluginList()方法未实现');
   }
 }
 
-abstract class EcosedPlugin extends StatefulWidget {
-  const EcosedPlugin({super.key});
+abstract class _EcosedPlugin extends StatefulWidget {
+  const _EcosedPlugin({super.key});
 
   ///插件信息
   String pluginChannel();
@@ -118,8 +111,8 @@ abstract class EcosedPlugin extends StatefulWidget {
   Future<Object?> onEcosedMethodCall(String name);
 }
 
-class PluginDetails {
-  const PluginDetails(
+class _PluginDetails {
+  const _PluginDetails(
       {required this.channel,
       required this.title,
       required this.description,
@@ -131,51 +124,37 @@ class PluginDetails {
   final String title;
   final String description;
   final String author;
-  final PluginType type;
+  final _PluginType type;
   final bool initial;
 
-  factory PluginDetails.formJSON(
-      Map<String, dynamic> json, PluginType type, bool initial) {
-    return PluginDetails(
-        channel: json['channel'],
-        title: json['title'],
-        description: json['description'],
-        author: json['author'],
-        type: type,
-        initial: initial);
+  factory _PluginDetails.formJSON(
+      Map<String, dynamic> json, _PluginType type, bool initial) {
+    return _PluginDetails(
+      channel: json['channel'],
+      title: json['title'],
+      description: json['description'],
+      author: json['author'],
+      type: type,
+      initial: initial,
+    );
   }
 }
 
-class EcosedApp extends EcosedPlugin
+class EcosedManager extends _EcosedPlugin
     implements _EcosedAppWrapper, _EcosedPlatform {
-  const EcosedApp(
-      {super.key,
-      required this.materialHome,
-    //  required this.materialApp,
-      required this.bannerLocation,
-      required this.appName,
-      required this.plugins});
-
-  final MaterialEcosedHome materialHome;
-//  final MaterialEcosedApp materialApp;
-
-
-
-  final BannerLocation bannerLocation;
-  final String appName;
-  final List<EcosedPlugin> plugins;
+  const EcosedManager({super.key});
 
   @override
-  String pluginName() => 'Application';
+  String pluginName() => 'Manager';
 
   @override
-  String pluginAuthor() => defaultAuthor;
+  String pluginAuthor() => _defaultAuthor;
 
   @override
-  String pluginChannel() => appChannel;
+  String pluginChannel() => _appChannel;
 
   @override
-  String pluginDescription() => appName;
+  String pluginDescription() => 'Manager';
 
   @override
   Widget pluginWidget(BuildContext context) {
@@ -190,22 +169,7 @@ class EcosedApp extends EcosedPlugin
   @override
   Future<Object?> onEcosedMethodCall(String name) async {
     switch (name) {
-      case isShizukuInstalledMethod:
-        return isShizukuInstalled();
-      case installShizukuMethod:
-        installShizuku();
-        return null;
-      case isMicroGInstalledMethod:
-        return isMicroGInstalled();
-      case installMicroGMethod:
-        installMicroG();
-        return null;
-      case isShizukuGrantedMethod:
-        return isShizukuGranted();
-      case requestPermissionsMethod:
-        requestPermissions();
-        return null;
-      case getPluginMethod:
+      case _getPluginMethod:
         return getPluginList();
       default:
         return null;
@@ -213,10 +177,10 @@ class EcosedApp extends EcosedPlugin
   }
 
   @override
-  State<EcosedApp> createState() => _EcosedAppState();
+  State<EcosedManager> createState() => _EcosedAppState();
 
   @override
-  List<EcosedPlugin> initialPlugin() => [this];
+  List<_EcosedPlugin> initialPlugin() => [this];
 
   @override
   Future<bool?> isShizukuInstalled() {
@@ -272,7 +236,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<bool?> isShizukuInstalled() async {
     return await methodChannel.invokeMethod<bool>(
       'isShizukuInstalled',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -280,7 +244,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   void installShizuku() {
     methodChannel.invokeMethod<void>(
       'installShizuku',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -288,7 +252,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<bool?> isMicroGInstalled() async {
     return await methodChannel.invokeMethod<bool>(
       'isMicroGInstalled',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -296,7 +260,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   void installMicroG() {
     methodChannel.invokeMethod<void>(
       'installMicroG',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -304,7 +268,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<bool?> isShizukuGranted() async {
     return await methodChannel.invokeMethod<bool>(
       'isShizukuGranted',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -312,7 +276,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   void requestPermissions() {
     methodChannel.invokeMethod<void>(
       'requestPermissions',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -320,7 +284,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<String?> getPoem() async {
     return await methodChannel.invokeMethod<String>(
       'getPoem',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -328,7 +292,7 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<String?> getShizukuVersion() async {
     return await methodChannel.invokeMethod<String>(
       'getShizukuVersion',
-      {'channel': serviceChannel},
+      {'channel': _serviceChannel},
     );
   }
 
@@ -337,24 +301,22 @@ class _MethodChannelFlutterEcosed extends _EcosedPlatform {
   Future<List?> getPluginList() async {
     return await methodChannel.invokeMethod<List>(
       'getPlugins',
-      {'channel': engineChannel},
+      {'channel': _engineChannel},
     );
   }
 }
 
-class _EcosedAppState extends State<EcosedApp> {
+class _EcosedAppState extends State<EcosedManager> {
   /// 占位用空模块
   static const String _unknownPlugin =
       '{"channel":"unknown","title":"unknown","description":"unknown","author":"unknown"}';
 
   /// Dart层插件列表
-  List<EcosedPlugin> _pluginList = [];
+  List<_EcosedPlugin> _pluginList = [];
 
-  bool _shizukuInstalled = false;
-  bool _microGInstalled = false;
-  bool _shizukuGranted = false;
-  List<PluginDetails> _pluginDetailsList = [
-    PluginDetails.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
+  List<_PluginDetails> _pluginDetailsList = [
+    _PluginDetails.formJSON(
+        jsonDecode(_unknownPlugin), _PluginType.unknown, true)
   ];
 
   /// 加载状态
@@ -367,17 +329,10 @@ class _EcosedAppState extends State<EcosedApp> {
   /// 加载插件
   Future<void> _initState() async {
     // 内置插件列表
-    List<EcosedPlugin> initialPluginList = [];
-    // Shizuku是否已安装
-    bool shizukuInstalled;
-    // 谷歌基础服务是否已启用
-    bool microGInstalled;
-    // Shizuku是否已授权
-    bool shizukuGranted;
-    //
+    List<_EcosedPlugin> initialPluginList = [];
 
     // 插件详细信息列表
-    List<PluginDetails> pluginDetailsList = [];
+    List<_PluginDetails> pluginDetailsList = [];
 
     //预加载Dart层关键内置插件
     if (widget.initialPlugin().isNotEmpty) {
@@ -387,46 +342,18 @@ class _EcosedAppState extends State<EcosedApp> {
         initialPluginList.add(element);
         // 添加到插件详细信息列表
         pluginDetailsList.add(
-          PluginDetails(
+          _PluginDetails(
             channel: element.pluginChannel(),
             title: element.pluginName(),
             description: element.pluginDescription(),
             author: element.pluginAuthor(),
-            type: PluginType.flutter,
+            type: _PluginType.flutter,
             initial: true,
           ),
         );
       }
       // 设置插件列表
       _pluginList = initialPluginList;
-    }
-
-    // 获取Shizuku是否已安装
-    try {
-      shizukuInstalled = await _exec(
-        widget.pluginChannel(),
-        isShizukuInstalledMethod,
-      ) as bool;
-    } on PlatformException {
-      shizukuInstalled = false;
-    }
-    // 获取谷歌基础服务(microG)是否已安装
-    try {
-      microGInstalled = await _exec(
-        widget.pluginChannel(),
-        isMicroGInstalledMethod,
-      ) as bool;
-    } on PlatformException {
-      microGInstalled = false;
-    }
-    // 获取Shizuku权限是否已授权
-    try {
-      shizukuGranted = await _exec(
-        widget.pluginChannel(),
-        isShizukuGrantedMethod,
-      ) as bool;
-    } on PlatformException {
-      shizukuGranted = false;
     }
     // 加载详细信息
 
@@ -436,14 +363,14 @@ class _EcosedAppState extends State<EcosedApp> {
         // 遍历原生插件
         for (var element in (await _exec(
               widget.pluginChannel(),
-              getPluginMethod,
+              _getPluginMethod,
             ) as List? ??
             [_unknownPlugin])) {
           // 添加到插件详细信息列表
           pluginDetailsList.add(
-            PluginDetails.formJSON(
+            _PluginDetails.formJSON(
               jsonDecode(element),
-              PluginType.native,
+              _PluginType.native,
               true,
             ),
           );
@@ -452,32 +379,9 @@ class _EcosedAppState extends State<EcosedApp> {
         pluginDetailsList.add(_pluginDetailsList.first);
       }
     }
-    //加载dart层普通插件
-    if (widget.plugins.isNotEmpty) {
-      // 遍历普通插件
-      for (var element in widget.plugins) {
-        // 添加到插件列表
-        _pluginList.add(element);
-        // 添加到插件详细信息列表
-        pluginDetailsList.add(
-          PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: false,
-          ),
-        );
-      }
-    }
     // 设置状态，更新界面
     if (mounted) {
       setState(() {
-        _shizukuInstalled = shizukuInstalled;
-        _microGInstalled = microGInstalled;
-        _shizukuGranted = shizukuGranted;
-
         _pluginDetailsList = pluginDetailsList;
       });
     } else {
@@ -497,7 +401,7 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
-  EcosedPlugin? _plugin(PluginDetails details) {
+  _EcosedPlugin? _plugin(_PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel() == details.channel) {
@@ -508,216 +412,141 @@ class _EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
-  String _getType(PluginDetails details) {
+  String _getType(_PluginDetails details) {
     switch (details.type) {
-      case PluginType.native:
+      case _PluginType.native:
         return '内置插件 - Platform';
-      case PluginType.flutter:
+      case _PluginType.flutter:
         return details.initial ? '内置插件 - Flutter' : '普通插件';
       default:
         return 'Unknown';
     }
   }
 
-  bool _isAllowPush(PluginDetails details) {
-    return details.type == PluginType.flutter && _plugin(details) != null;
+  bool _isAllowPush(_PluginDetails details) {
+    return details.type == _PluginType.flutter && _plugin(details) != null;
   }
-
-  // Widget buildOverview(BuildContext context) {
-  //   final textTheme = Theme.of(context)
-  //       .textTheme
-  //       .apply(displayColor: Theme.of(context).colorScheme.onSurface);
-  //   return ;
-  // }
-  //
-  // Widget buildPlugin(BuildContext context) {
-  //   final textTheme = Theme.of(context)
-  //       .textTheme
-  //       .apply(displayColor: Theme.of(context).colorScheme.onSurface);
-  //   return ;
-  // }
-
-  // /// 管理器页面
-  // Widget buildManager(BuildContext context) {
-  //   return Scrollbar(
-  //     child: ListView(
-  //       children: [
-  //         buildOverview(context),
-  //         const Padding(
-  //           padding: EdgeInsets.symmetric(horizontal: 24),
-  //           child: Divider(),
-  //         ),
-  //         buildPlugin(context),
-  //       ],
-  //     ),
-  //   );
-  // }
-
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
-    return Banner(
-      message: 'EcosedApp',
-      location: widget.bannerLocation,
-      color: Colors.pinkAccent,
-      child: widget.materialHome(
-        Scrollbar(
-          child: ListView(
+    return Scrollbar(
+      child: ListView(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                    child: Card(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Row(
-                          children: [
-                            const FlutterLogo(),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.appName,
-                                    textAlign: TextAlign.left,
-                                    style: textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Powered by Flutter Ecosed',
-                                    textAlign: TextAlign.left,
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+                child: Card(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Row(
+                      children: [
+                        const FlutterLogo(),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Flutter Ecosed',
+                                textAlign: TextAlign.left,
+                                style: textTheme.titleMedium,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: true,
-                    child: MaterialBanner(
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                        child: Icon(
-                          Icons.error_outline,
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                      ),
-                      backgroundColor: Colors.transparent,
-                      content: const Text('哦豁,环境异常:('),
-                      actions: [
-                        Visibility(
-                          visible: true,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('安装Shizuku'),
-                          ),
-                        ),
-                        Visibility(
-                          visible: true,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('安装microG'),
-                          ),
-                        ),
-                        Visibility(
-                          visible: true,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text('申请所需权限'),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Powered by Flutter Ecosed',
+                                textAlign: TextAlign.left,
+                                style: textTheme.bodyMedium,
+                              ),
+                            ],
                           ),
                         ),
                       ],
-                      dividerColor: Colors.transparent,
-                      forceActionsBelow: true,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 12,
-                    ),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                  horizontal: 12,
+                ),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '应用版本',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  '1.0',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyMedium,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  '内核版本',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  '1.0',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyMedium,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  '设备架构',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  '1.0',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyMedium,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Shizuku版本',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  '1.0',
-                                  textAlign: TextAlign.start,
-                                  style: textTheme.bodyMedium,
-                                ),
-                              ],
+                            Text(
+                              '应用版本',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyLarge,
+                            ),
+                            Text(
+                              '1.0',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '内核版本',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyLarge,
+                            ),
+                            Text(
+                              '1.0',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '设备架构',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyLarge,
+                            ),
+                            Text(
+                              '1.0',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Shizuku版本',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyLarge,
+                            ),
+                            Text(
+                              '1.0',
+                              textAlign: TextAlign.start,
+                              style: textTheme.bodyMedium,
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Divider(),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                child: Column(
-                  children: _pluginDetailsList
-                      .map(
-                        (element) => Padding(
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: Column(
+              children: _pluginDetailsList
+                  .map(
+                    (element) => Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Card(
                         color: Theme.of(context).colorScheme.surface,
@@ -729,16 +558,19 @@ class _EcosedAppState extends State<EcosedApp> {
                               Row(
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         element.title,
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: textTheme.titleMedium?.fontSize,
+                                          fontSize:
+                                              textTheme.titleMedium?.fontSize,
                                           fontFamily:
-                                          textTheme.titleMedium?.fontFamily,
+                                              textTheme.titleMedium?.fontFamily,
                                           height: textTheme.bodySmall?.height,
                                           fontWeight: FontWeight.bold,
                                           overflow: TextOverflow.ellipsis,
@@ -748,8 +580,10 @@ class _EcosedAppState extends State<EcosedApp> {
                                         '通道: ${element.channel}',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: textTheme.bodySmall?.fontSize,
-                                          fontFamily: textTheme.bodySmall?.fontFamily,
+                                          fontSize:
+                                              textTheme.bodySmall?.fontSize,
+                                          fontFamily:
+                                              textTheme.bodySmall?.fontFamily,
                                           height: textTheme.bodySmall?.height,
                                         ),
                                       ),
@@ -757,8 +591,10 @@ class _EcosedAppState extends State<EcosedApp> {
                                         '作者: ${element.author}',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: textTheme.bodySmall?.fontSize,
-                                          fontFamily: textTheme.bodySmall?.fontFamily,
+                                          fontSize:
+                                              textTheme.bodySmall?.fontSize,
+                                          fontFamily:
+                                              textTheme.bodySmall?.fontFamily,
                                           height: textTheme.bodySmall?.height,
                                         ),
                                       ),
@@ -768,14 +604,14 @@ class _EcosedAppState extends State<EcosedApp> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      element.type == PluginType.native
+                                      element.type == _PluginType.native
                                           ? Icon(
-                                        Icons.keyboard_command_key,
-                                        size: IconTheme.of(context).size,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      )
+                                              Icons.android,
+                                              size: IconTheme.of(context).size,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            )
                                           : const FlutterLogo(),
                                     ],
                                   ),
@@ -811,8 +647,9 @@ class _EcosedAppState extends State<EcosedApp> {
                                         if (_isAllowPush(element)) {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (context) => _plugin(element)!
-                                                  .pluginWidget(context),
+                                              builder: (context) =>
+                                                  _plugin(element)!
+                                                      .pluginWidget(context),
                                             ),
                                           );
                                         }
@@ -821,11 +658,16 @@ class _EcosedAppState extends State<EcosedApp> {
                                         _isAllowPush(element) ? '打开' : '无界面',
                                         style: TextStyle(
                                           fontFamily:
-                                          textTheme.labelMedium?.fontFamily,
-                                          fontStyle: textTheme.labelMedium?.fontStyle,
+                                              textTheme.labelMedium?.fontFamily,
+                                          fontStyle:
+                                              textTheme.labelMedium?.fontStyle,
                                           color: _isAllowPush(element)
-                                              ? Theme.of(context).colorScheme.primary
-                                              : Theme.of(context).colorScheme.outline,
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .outline,
                                         ),
                                       ),
                                     ),
@@ -838,25 +680,11 @@ class _EcosedAppState extends State<EcosedApp> {
                       ),
                     ),
                   )
-                      .toList(),
-                ),
-              ),
-            ],
+                  .toList(),
+            ),
           ),
-        ),
-            (channel, method) => _exec(channel, method),
+        ],
       ),
     );
-    // return MaterialApp(
-    //   home: Banner(
-    //     message: 'EcosedApp',
-    //     location: widget.bannerLocation,
-    //     color: Colors.pinkAccent,
-    //     child: widget.materialHome(
-    //       buildManager(context),
-    //           (channel, method) => _exec(channel, method),
-    //     ),
-    //   ),
-    // );
   }
 }
