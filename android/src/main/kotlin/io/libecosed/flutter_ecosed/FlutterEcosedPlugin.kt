@@ -35,6 +35,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -46,13 +47,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.VibrateUtils
@@ -71,6 +70,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
+import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.system.exitProcess
@@ -108,12 +108,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** Delegate基本上下文 */
     private lateinit var mDelegateBaseContext: Context
 
+    /** 供引擎使用的基本调试布尔值 */
     private val mBaseDebug: Boolean = AppUtils.isAppDebug()
 
+    /** 全局调试布尔值 */
     private var mFullDebug: Boolean = false
 
+    /** Flutter执行返回值 */
     private var mExecResult: Any? = null
 
+    /** 此服务意图 */
     private lateinit var mEcosedServicesIntent: Intent
 
     /** 服务AIDL接口 */
@@ -126,10 +130,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private lateinit var poem: ArrayList<String>
 
+    /** AppCompatDelegate */
     private lateinit var mDelegate: AppCompatDelegate
 
+    /** 传感器管理器 */
     private lateinit var mSensorManager: SensorManager
+
+    /** 调试对话框 */
     private lateinit var mDebugDialog: AlertDialog
+
+    /** 工具栏 */
     private lateinit var mToolbar: Toolbar
 
     private val hideHandler = Handler(Looper.myLooper()!!)
@@ -138,6 +148,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         mDelegate.supportActionBar?.show()
     }
 
+    /** 工具栏显示状态 */
     private var isVisible: Boolean = false
 
     private val hideRunnable = Runnable {
@@ -168,7 +179,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             AppUtils.getAppPackageName(),
             UserService().javaClass.name,
         )
-    ).daemon(false).processNameSuffix("service").debuggable(mFullDebug)
+    )
+        .daemon(false)
+        .processNameSuffix("service")
+        .debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
     /**
@@ -553,8 +567,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun onEcosedUnbind()
     }
 
+    /**
+     * 生命周期包装器
+     */
     private interface LifecycleWrapper : LifecycleOwner, DefaultLifecycleObserver
+
+    /**
+     * 传感器包装器
+     */
     private interface SensorWrapper : SensorEventListener
+
+    /**
+     * 服务链接包装器
+     */
     private interface ConnectWrapper : ServiceConnection
 
     /**
@@ -928,6 +953,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 (mPluginList == null) or (mBinding == null) -> pluginUnit(
                     context = context, debug = mBaseDebug
                 ) { plugin, binding ->
+                    // 打印横幅
+                    if (mBaseDebug) Log.i(
+                        pluginTag, String(
+                            bytes = Base64.decode(EcosedResources.banner, Base64.DEFAULT),
+                            charset = StandardCharsets.UTF_8
+                        )
+                    )
                     // 初始化插件列表.
                     mPluginList = arrayListOf()
                     // 添加所有插件.
@@ -1620,6 +1652,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: Activity.() -> R,
     ): R = content.invoke(mActivity)
 
+    /**
+     * 委托函数调用单元
+     * 调用委托
+     * @param content 委托
+     * @return content 返回值
+     */
     private inline fun <R> delegateUnit(
         content: AppCompatDelegate.() -> R
     ): R = content.invoke(mDelegate)
@@ -1652,6 +1690,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      ***********************************************************************************************
      */
 
+    /**
+     * 初始化委托
+     */
     private fun initDelegate(): Unit = activityUnit {
         // 初始化Delegate
         mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
@@ -1668,6 +1709,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /**
+     * 初始化主题
+     */
     private fun initTheme(): Unit = activityUnit {
         val attributes: TypedArray = obtainStyledAttributes(
             androidx.appcompat.R.styleable.AppCompatTheme
@@ -1678,6 +1722,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /**
+     * 初始化用户界面
+     */
     private fun initUi(): Unit = activityUnit {
         // 初始化工具栏
         Toolbar(this@activityUnit).apply {
@@ -1706,7 +1753,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     this@activityUnit, which.toString(), Toast.LENGTH_SHORT
                 ).show()
             }
-            setView(createContent(this@activityUnit))
+            setView(mToolbar)
             setNegativeButton("NO") { dialog, which -> }
             setPositiveButton("OK") { dialog, which -> }
             mDebugDialog = create()
@@ -1723,10 +1770,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
+    /**
+     * 初始化传感器
+     */
     private fun initSensor(): Unit = activityUnit {
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
     }
 
+    /**
+     * 注册传感器
+     */
     private fun registerSensor(): Unit = sensorUnit {
         mSensorManager.registerListener(
             this@sensorUnit,
@@ -1737,6 +1790,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
+    /**
+     * 注销传感器
+     */
     private fun unregisterSensor(): Unit = sensorUnit {
         mSensorManager.unregisterListener(
             this@sensorUnit
@@ -1873,27 +1929,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    private fun createContent(context: Context): View {
-        return LinearLayoutCompat(context).apply {
-            addView(
-                mToolbar,
-                LinearLayoutCompat.LayoutParams(
-                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-                )
-            )
-            addView(
-                RecyclerView(context).apply {
-
-                },
-                LinearLayoutCompat.LayoutParams(
-                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-                )
-            )
-        }
-    }
-
     /**
      * 切换工具栏显示状态
      */
@@ -2020,7 +2055,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-
     private fun getShizukuVersion(): String? {
         return try {
             if (mIsBind) {
@@ -2047,7 +2081,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private object EcosedResources {
+        /** 项目名称 */
         const val projectName: String = "flutter_ecosed"
+
+        /** 项目ASCII艺术字Base64编码 */
+        const val banner: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
+                "CAgICAgICAgICAgICAgICAgXyAKIHwgIF9fX3wgfF8gICBffCB8X3wgfF8gX19fIF8gX18gIHwgX19fX" +
+                "3xfX18gX19fICBfX18gIF9fXyAgX198IHwKIHwgfF8gIHwgfCB8IHwgfCBfX3wgX18vIF8gXCAnX198I" +
+                "HwgIF98IC8gX18vIF8gXC8gX198LyBfIFwvIF9gIHwKIHwgIF98IHwgfCB8X3wgfCB8X3wgfHwgIF9fL" +
+                "yB8ICAgIHwgfF9ffCAoX3wgKF8pIFxfXyBcICBfXy8gKF98IHwKIHxffCAgIHxffFxfXyxffFxfX3xcX" +
+                "19cX19ffF98ICAgIHxfX19fX1xfX19cX19fL3xfX18vXF9fX3xcX18sX3wKICAgICAgICAgICAgICAgI" +
+                "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA="
     }
 
     private object EcosedManifest {
