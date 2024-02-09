@@ -46,11 +46,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.VibrateUtils
@@ -81,8 +83,7 @@ import kotlin.system.exitProcess
  * 文档: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
  */
 class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
-    ActivityAware, LifecycleOwner, ServiceConnection, DefaultLifecycleObserver,
-    SensorEventListener {
+    ActivityAware {
 
 
     /** Flutter插件方法通道 */
@@ -94,13 +95,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 插件列表. */
     private var mPluginList: ArrayList<EcosedPlugin>? = null
 
+    /** JSON插件列表 */
     private var mJSONList = arrayListOf<String>()
 
 
     /** Activity */
     private lateinit var mActivity: Activity
+    /** 生命周期 */
     private lateinit var mLifecycle: Lifecycle
 
+    /** Delegate基本上下文 */
+    private lateinit var mDelegateBaseContext: Context
 
     private val mBaseDebug: Boolean = AppUtils.isAppDebug()
 
@@ -124,6 +129,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private lateinit var mSensorManager: SensorManager
     private lateinit var mDebugDialog: AlertDialog
+    private lateinit var mToolbar: Toolbar
 
     private val hideHandler = Handler(Looper.myLooper()!!)
 
@@ -168,10 +174,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         .version(AppUtils.getAppVersionCode())
 
     /**
+     ***********************************************************************************************
+     * 分类: Service生命周期
+     ***********************************************************************************************
+     */
+
+    /**
      * 服务创建时执行
      */
     override fun onCreate() {
-        super<Service>.onCreate()
+        super.onCreate()
 
         shizukuUnit {
             // 添加Shizuku监听
@@ -268,7 +280,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 服务销毁时执行
      */
     override fun onDestroy() {
-        super<Service>.onDestroy()
+        super.onDestroy()
 
         shizukuUnit {
             // 移除Shizuku监听
@@ -279,8 +291,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
         // 解绑Shizuku服务
-        Shizuku.unbindUserService(mUserServiceArgs, this@FlutterEcosedPlugin, true)
+        connectUnit {
+            Shizuku.unbindUserService(mUserServiceArgs, this@connectUnit, true)
+        }
     }
+
+    /**
+     ***********************************************************************************************
+     * 分类: Flutter插件方法
+     ***********************************************************************************************
+     */
 
     /**
      * 将插件添加到引擎
@@ -380,345 +400,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         this@frameworkUnit.onDestroyActivity()
         this@frameworkUnit.onDestroyLifecycle()
     }
-
-    override fun getLifecycle(): Lifecycle {
-        return mLifecycle
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        when (name?.className) {
-            UserService().javaClass.name -> {
-                if ((service != null) and (service?.pingBinder() == true)) {
-                    mIUserService = IUserService.Stub.asInterface(service)
-                }
-                when {
-                    mIUserService != null -> {
-                        Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT).show()
-                    }
-
-                    else -> if (mFullDebug) Log.e(
-                        pluginTag, "UserService接口获取失败 - onServiceConnected"
-                    )
-                }
-                when {
-                    mFullDebug -> Log.i(
-                        pluginTag, "服务已连接 - onServiceConnected"
-                    )
-                }
-            }
-
-            this@FlutterEcosedPlugin.javaClass.name -> {
-                if ((service != null) and (service?.pingBinder() == true)) {
-                    mAIDL = FlutterEcosed.Stub.asInterface(service)
-                }
-                when {
-                    mAIDL != null -> {
-                        mIsBind = true
-                        clientUnit {
-                            onEcosedConnected()
-                        }
-                    }
-
-                    else -> if (mFullDebug) Log.e(
-                        pluginTag, "AIDL接口获取失败 - onServiceConnected"
-                    )
-                }
-                when {
-                    mFullDebug -> Log.i(
-                        pluginTag, "服务已连接 - onServiceConnected"
-                    )
-                }
-            }
-
-            else -> {
-
-            }
-        }
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        when (name?.className) {
-            UserService().javaClass.name -> {
-
-            }
-
-            this@FlutterEcosedPlugin.javaClass.name -> {
-                mIsBind = false
-                mAIDL = null
-                unbindService(this)
-                clientUnit {
-                    onEcosedDisconnected()
-                }
-                if (mFullDebug) {
-                    Log.i(pluginTag, "服务意外断开连接 - onServiceDisconnected")
-                }
-            }
-
-            else -> {
-
-            }
-        }
-
-    }
-
-    override fun onBindingDied(name: ComponentName?) {
-        super.onBindingDied(name)
-        when (name?.className) {
-            UserService().javaClass.name -> {
-
-            }
-
-            this@FlutterEcosedPlugin.javaClass.name -> {
-
-            }
-
-            else -> {
-
-            }
-        }
-    }
-
-    override fun onNullBinding(name: ComponentName?) {
-        super.onNullBinding(name)
-        when (name?.className) {
-            UserService().javaClass.name -> {
-
-            }
-
-            this@FlutterEcosedPlugin.javaClass.name -> {
-                if (mFullDebug) {
-                    Log.e(pluginTag, "Binder为空 - onNullBinding")
-                }
-            }
-
-            else -> {
-
-            }
-        }
-    }
-
-    /**
-     ***********************************************************************************************
-     * Activity生命周期函数，需要使用Activity上下文
-     ***********************************************************************************************
-     */
-
-    /**
-     * 活动创建时执行
-     */
-    override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onCreate(owner)
-        // 初始化Delegate
-        mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
-            appCompatUnit {
-                return@appCompatUnit AppCompatDelegate.create(
-                    this@activityUnit,
-                    this@appCompatUnit
-                )
-            }
-        }
-        // 附加Delegate基本上下文
-        serviceUnit {
-            if (this@activityUnit !is AppCompatActivity) {
-                attachDelegateBaseContext()
-            }
-        }
-        // 初始化工具栏状态
-        isVisible = true
-        // 判断Activity是否为AppCompatActivity
-        // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
-        if (this@activityUnit !is AppCompatActivity) {
-            val attributes: TypedArray = obtainStyledAttributes(
-                androidx.appcompat.R.styleable.AppCompatTheme
-            )
-            if (!attributes.hasValue(androidx.appcompat.R.styleable.AppCompatTheme_windowActionBar)) {
-                attributes.recycle()
-                setTheme(androidx.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar)
-            }
-        }
-
-        // 调用Delegate onCreate函数
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onCreate(Bundle())
-        }
-
-        // 初始化工具栏
-        val toolbar = Toolbar(this@activityUnit).apply {
-            navigationIcon = ContextCompat.getDrawable(
-                this@activityUnit,
-                R.drawable.baseline_keyboard_command_key_24,
-            )
-
-            setNavigationOnClickListener { view ->
-
-            }
-            setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-
-                }
-                true
-            }
-        }
-
-        // 从系统服务中获取传感管理器对象
-        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-
-        // 创建调试对话框
-        // 如果Activity是AppCompatActivity则不设置主题
-        val builder = if (this@activityUnit !is AppCompatActivity) AlertDialog.Builder(
-            this@activityUnit,
-            androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog_Alert
-        ) else AlertDialog.Builder(this@activityUnit)
-
-        // 设置对话框
-        builder.apply {
-            setTitle("Debug Menu (Native)")
-            setItems(arrayOf("item1", "item2", "item3")) { dialog, which ->
-                Toast.makeText(
-                    this@activityUnit,
-                    which.toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            setView(toolbar)
-            setNegativeButton("NO") { dialog, which -> }
-            setPositiveButton("OK") { dialog, which -> }
-            mDebugDialog = create()
-        }
-
-        // 设置操作栏
-        mDelegate.setSupportActionBar(toolbar)
-
-
-
-
-
-        findRootView(this@activityUnit)?.setOnTouchListener(delayHideTouchListener)
-
-
-        findFlutterView(window.decorView).apply {
-
-        }
-
-        //toggle()
-
-        // 执行Delegate函数
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onPostCreate(Bundle())
-        }
-    }
-
-    /**
-     * 活动启动时执行
-     */
-    override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onStart(owner)
-        // 执行Delegate onStart函数
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onStart()
-        }
-    }
-
-    /**
-     * 活动恢复时执行
-     */
-    override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
-        super.onResume(owner)
-
-        // 注册监听
-        mSensorManager.registerListener(
-            this@FlutterEcosedPlugin,
-            mSensorManager.getDefaultSensor(
-                Sensor.TYPE_ACCELEROMETER
-            ),
-            SensorManager.SENSOR_DELAY_UI,
-        )
-
-        // 执行Delegate onPostResume函数
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onPostResume()
-        }
-    }
-
-    /**
-     * 活动暂停时执行
-     */
-    override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
-        super.onPause(owner)
-        // 注销监听
-        mSensorManager.unregisterListener(this@FlutterEcosedPlugin)
-    }
-
-    /**
-     * 活动停止时执行
-     */
-    override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
-        super.onStop(owner)
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onStop()
-        }
-    }
-
-    /**
-     * 活动销毁时执行
-     */
-    override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
-        super<DefaultLifecycleObserver>.onDestroy(owner)
-        if (this@activityUnit !is AppCompatActivity) {
-            mDelegate.onDestroy()
-        }
-    }
-
-    /**
-     * 当有新的传感器事件时调用.
-     */
-    override fun onSensorChanged(event: SensorEvent?) {
-        event?.let { sensorEvent ->
-            when (sensorEvent.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> {
-
-                    // 加速度阈值
-                    val mSpeed = 3000
-
-                    //时间间隔
-                    val mInterval = 150
-
-                    //获取x,y,z
-                    val nowX: Float = sensorEvent.values[0]
-                    val nowY: Float = sensorEvent.values[1]
-                    val nowZ: Float = sensorEvent.values[2]
-                    //计算x,y,z变化量
-                    val deltaX: Float = nowX - lastX
-                    val deltaY: Float = nowY - lastY
-                    val deltaZ: Float = nowZ - lastZ
-                    //赋值
-                    lastX = nowX
-                    lastY = nowY
-                    lastZ = nowZ
-
-
-                    //计算
-                    val nowSpeed: Double = sqrt(
-                        x = (deltaX.pow(n = 2) + deltaY.pow(n = 2) + deltaZ.pow(n = 2)).toDouble()
-                    ) / mInterval * 10000
-
-
-                    //判断
-                    if ((nowSpeed >= mSpeed) and mFullDebug and !mDebugDialog.isShowing) {
-                        VibrateUtils.vibrate(100)
-                        mDebugDialog.show()
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 当注册的传感器的精度发生变化时调用.
-     */
-    override fun onAccuracyChanged(
-        sensor: Sensor?, accuracy: Int
-    ) = Unit
 
     /**
      ***********************************************************************************************
@@ -876,6 +557,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun onEcosedUnbind()
     }
 
+    private interface LifecycleWrapper : LifecycleOwner, DefaultLifecycleObserver
+    private interface SensorWrapper : SensorEventListener
+    private interface ConnectWrapper : ServiceConnection
+
     /**
      * Shizuku包装器
      * 具有Shizuku监听器方法
@@ -894,7 +579,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 服务插件包装器
      */
-    private interface ServiceWrapper : ShizukuWrapper, AppCompatWrapper {
+    private interface ServiceWrapper : ConnectWrapper, ShizukuWrapper, AppCompatWrapper,
+        LifecycleWrapper,
+        SensorWrapper {
 
         /**
          * 获取Binder
@@ -912,6 +599,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 调用原生代码 */
         fun main()
     }
+
+    /**
+     ***********************************************************************************************
+     * 分类: 插件基类实现
+     ***********************************************************************************************
+     */
 
     /**
      * 基本插件
@@ -1128,7 +821,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     /**
      ***********************************************************************************************
-     * 分类: 关键内部类实现
+     * 分类: 核心内部类实现
      ***********************************************************************************************
      */
 
@@ -1209,11 +902,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         override fun onCreateLifecycle(lifecycle: Lifecycle) {
             mLifecycle = lifecycle
-            lifecycle.addObserver(this@FlutterEcosedPlugin)
+
+            lifecycleUnit {
+                this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
+            }
         }
 
         override fun onDestroyLifecycle() {
-            lifecycle.removeObserver(this@FlutterEcosedPlugin)
+            lifecycleUnit {
+                lifecycle.removeObserver(
+                    this@lifecycleUnit
+                )
+            }
         }
 
         /**
@@ -1444,8 +1144,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
-    private lateinit var mDelegateBaseContext: Context
-
     /** 服务相当于整个服务类部分无法在大类中实现的方法在此实现并调用 */
     private val mService = object : EcosedPlugin(), ServiceWrapper {
 
@@ -1508,6 +1206,118 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mDelegate.attachBaseContext2(mDelegateBaseContext)
         }
 
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            when (name?.className) {
+                UserService().javaClass.name -> {
+                    if ((service != null) and (service?.pingBinder() == true)) {
+                        mIUserService = IUserService.Stub.asInterface(service)
+                    }
+                    when {
+                        mIUserService != null -> {
+                            Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT).show()
+                        }
+
+                        else -> if (mFullDebug) Log.e(
+                            pluginTag, "UserService接口获取失败 - onServiceConnected"
+                        )
+                    }
+                    when {
+                        mFullDebug -> Log.i(
+                            pluginTag, "服务已连接 - onServiceConnected"
+                        )
+                    }
+                }
+
+                this@FlutterEcosedPlugin.javaClass.name -> {
+                    if ((service != null) and (service?.pingBinder() == true)) {
+                        mAIDL = FlutterEcosed.Stub.asInterface(service)
+                    }
+                    when {
+                        mAIDL != null -> {
+                            mIsBind = true
+                            clientUnit {
+                                onEcosedConnected()
+                            }
+                        }
+
+                        else -> if (mFullDebug) Log.e(
+                            pluginTag, "AIDL接口获取失败 - onServiceConnected"
+                        )
+                    }
+                    when {
+                        mFullDebug -> Log.i(
+                            pluginTag, "服务已连接 - onServiceConnected"
+                        )
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            when (name?.className) {
+                UserService().javaClass.name -> {
+
+                }
+
+                this@FlutterEcosedPlugin.javaClass.name -> {
+                    mIsBind = false
+                    mAIDL = null
+                    unbindService(this)
+                    clientUnit {
+                        onEcosedDisconnected()
+                    }
+                    if (mFullDebug) {
+                        Log.i(pluginTag, "服务意外断开连接 - onServiceDisconnected")
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+
+        }
+
+        override fun onBindingDied(name: ComponentName?) {
+            super.onBindingDied(name)
+            when (name?.className) {
+                UserService().javaClass.name -> {
+
+                }
+
+                this@FlutterEcosedPlugin.javaClass.name -> {
+
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
+        override fun onNullBinding(name: ComponentName?) {
+            super.onNullBinding(name)
+            when (name?.className) {
+                UserService().javaClass.name -> {
+
+                }
+
+                this@FlutterEcosedPlugin.javaClass.name -> {
+                    if (mFullDebug) {
+                        Log.e(pluginTag, "Binder为空 - onNullBinding")
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
         override fun onBinderReceived() {
             Toast.makeText(this, "onBinderReceived", Toast.LENGTH_SHORT).show()
         }
@@ -1535,6 +1345,205 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun getDrawerToggleDelegate(): ActionBarDrawerToggle.Delegate? {
             return mDelegate.drawerToggleDelegate
         }
+
+        override fun getLifecycle(): Lifecycle {
+            return mLifecycle
+        }
+
+        /**
+         * 活动创建时执行
+         */
+        override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
+            super.onCreate(owner)
+            // 初始化Delegate
+            mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
+                appCompatUnit {
+                    return@appCompatUnit AppCompatDelegate.create(
+                        this@activityUnit,
+                        this@appCompatUnit
+                    )
+                }
+            }
+            // 附加Delegate基本上下文
+            serviceUnit {
+                if (this@activityUnit !is AppCompatActivity) {
+                    attachDelegateBaseContext()
+                }
+            }
+            // 初始化工具栏状态
+            isVisible = true
+            // 判断Activity是否为AppCompatActivity
+            // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
+            if (this@activityUnit !is AppCompatActivity) {
+                val attributes: TypedArray = obtainStyledAttributes(
+                    androidx.appcompat.R.styleable.AppCompatTheme
+                )
+                if (!attributes.hasValue(androidx.appcompat.R.styleable.AppCompatTheme_windowActionBar)) {
+                    attributes.recycle()
+                    setTheme(androidx.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar)
+                }
+            }
+
+            // 调用Delegate onCreate函数
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onCreate(Bundle())
+            }
+
+            // 初始化工具栏
+            mToolbar = Toolbar(this@activityUnit).apply {
+                navigationIcon = ContextCompat.getDrawable(
+                    this@activityUnit,
+                    R.drawable.baseline_menu_24,
+                )
+
+                logo = ContextCompat.getDrawable(
+                    this@activityUnit,
+                    R.drawable.baseline_keyboard_command_key_24,
+                )
+
+                subtitle = "flutter_ecosed"
+
+                setNavigationOnClickListener { view ->
+
+                }
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+
+                    }
+                    true
+                }
+            }
+
+            // 从系统服务中获取传感管理器对象
+            mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+
+            // 创建调试对话框
+            // 如果Activity是AppCompatActivity则不设置主题
+//            val builder = if (this@activityUnit !is AppCompatActivity) AlertDialog.Builder(
+//                this@activityUnit,
+//                androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog_Alert
+//            ) else AlertDialog.Builder(this@activityUnit)
+
+            val builder = AlertDialog.Builder(this@activityUnit)
+
+            // 设置对话框
+            builder.apply {
+//                setTitle("Debug Menu (Native)")
+//                setItems(arrayOf("item1", "item2", "item3")) { dialog, which ->
+//                    Toast.makeText(
+//                        this@activityUnit,
+//                        which.toString(),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+                setView(createContent(this@activityUnit))
+                setNegativeButton("NO") { dialog, which -> }
+                setPositiveButton("OK") { dialog, which -> }
+                mDebugDialog = create()
+            }
+
+            // 设置操作栏
+            mDelegate.setSupportActionBar(mToolbar)
+
+
+
+
+
+            findRootView(this@activityUnit)?.setOnTouchListener(delayHideTouchListener)
+
+            //toggle()
+
+            // 执行Delegate函数
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onPostCreate(Bundle())
+            }
+        }
+
+        /**
+         * 活动启动时执行
+         */
+        override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
+            super.onStart(owner)
+            // 执行Delegate onStart函数
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onStart()
+            }
+        }
+
+        /**
+         * 活动恢复时执行
+         */
+        override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
+            super.onResume(owner)
+
+
+            // 注册监听
+            sensorUnit {
+                mSensorManager.registerListener(
+                    this@sensorUnit,
+                    mSensorManager.getDefaultSensor(
+                        Sensor.TYPE_ACCELEROMETER
+                    ),
+                    SensorManager.SENSOR_DELAY_UI,
+                )
+            }
+
+
+            // 执行Delegate onPostResume函数
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onPostResume()
+            }
+        }
+
+        /**
+         * 活动暂停时执行
+         */
+        override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
+            super.onPause(owner)
+            // 注销监听
+            sensorUnit {
+                mSensorManager.unregisterListener(
+                    this@sensorUnit
+                )
+            }
+        }
+
+        /**
+         * 活动停止时执行
+         */
+        override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
+            super.onStop(owner)
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onStop()
+            }
+        }
+
+        /**
+         * 活动销毁时执行
+         */
+        override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
+            super.onDestroy(owner)
+            if (this@activityUnit !is AppCompatActivity) {
+                mDelegate.onDestroy()
+            }
+        }
+
+        /**
+         * 当有新的传感器事件时调用.
+         */
+        override fun onSensorChanged(
+            event: SensorEvent?
+        ) = sensorChanged(
+            event = event
+        )
+
+        /**
+         * 当注册的传感器的精度发生变化时调用.
+         */
+        override fun onAccuracyChanged(
+            sensor: Sensor?,
+            accuracy: Int
+        ) = Unit
     }
 
     /** 原生方法调用 */
@@ -1570,6 +1579,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         }
     }
+
+    /**
+     ***********************************************************************************************
+     * 分类: 底层代码调用
+     ***********************************************************************************************
+     */
 
     /**
      * Shizuku调用类
@@ -1658,6 +1673,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(mService)
 
     /**
+     * 服务连接器调用单元
+     * 调用服务连接包装器
+     * @param content 服务链接包装器
+     * @return content 返回值
+     */
+    private inline fun <R> connectUnit(
+        content: ConnectWrapper.() -> R,
+    ): R = content.invoke(mService)
+
+    /**
      * Shizuku方法调用单元
      * 添加与移除Shizuku监听
      * @param content Shizuku
@@ -1678,6 +1703,26 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(mService)
 
     /**
+     * 生命周期调用单元
+     * 调用生命周期所有者和生命周期观察者
+     * @param content 生命周期包装器
+     * @return content 返回值
+     */
+    private inline fun <R> lifecycleUnit(
+        content: LifecycleWrapper.() -> R
+    ): R = content.invoke(mService)
+
+    /**
+     * 传感器调用单元
+     * 调用传感器事件回调
+     * @param content 传感器包装器
+     * @return content 返回值
+     */
+    private inline fun <R> sensorUnit(
+        content: SensorWrapper.() -> R
+    ): R = content.invoke(mService)
+
+    /**
      * Activity上下文调用单元
      * Activity生命周期观察者通过此调用单元执行基于Activity上下文的代码
      * @param content 内容
@@ -1685,7 +1730,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> activityUnit(
         content: Activity.() -> R,
-    ): R = content.invoke(mActivity ?: error(""))
+    ): R = content.invoke(mActivity)
 
     /**
      * 原生代码调用单元
@@ -1699,12 +1744,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     /**
      ***********************************************************************************************
-     * 分类: 原生调用
+     * 分类: 原生调用 - C++
      ***********************************************************************************************
      */
 
     /**
      * 原生代码执行入口
+     * @param args 要传入的附加参数
      */
     private external fun main(args: Array<String>)
 
@@ -1800,11 +1846,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 绑定服务
      * @param context 上下文
      */
-    private fun bindEcosed(context: Context) {
+    private fun bindEcosed(context: Context) = connectUnit {
         try {
             if (!mIsBind) {
                 context.bindService(
-                    mEcosedServicesIntent, this@FlutterEcosedPlugin, Context.BIND_AUTO_CREATE
+                    mEcosedServicesIntent, this@connectUnit, Context.BIND_AUTO_CREATE
                 ).let { bind ->
                     clientUnit {
                         if (!bind) onEcosedDead()
@@ -1822,11 +1868,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 解绑服务
      * @param context 上下文
      */
-    private fun unbindEcosed(context: Context) {
+    private fun unbindEcosed(context: Context) = connectUnit {
         try {
             if (mIsBind) {
                 context.unbindService(
-                    this@FlutterEcosedPlugin
+                    this@connectUnit
                 ).run {
                     mIsBind = false
                     mAIDL = null
@@ -1842,6 +1888,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             if (mFullDebug) {
                 Log.e(pluginTag, "unbindEcosed", e)
             }
+        }
+    }
+
+    private fun createContent(context: Context): View {
+        return LinearLayoutCompat(context).apply {
+            addView(
+                mToolbar,
+                LinearLayoutCompat.LayoutParams(
+                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                RecyclerView(context).apply {
+
+                },
+                LinearLayoutCompat.LayoutParams(
+                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+                )
+            )
         }
     }
 
@@ -1879,6 +1946,50 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun delayedHide() {
         hideHandler.removeCallbacks(hideRunnable)
         hideHandler.postDelayed(hideRunnable, autoHideDelayMillis.toLong())
+    }
+
+    /**
+     * 当有新的传感器事件时调用.
+     */
+    private fun sensorChanged(event: SensorEvent?) {
+        event?.let { sensorEvent ->
+            when (sensorEvent.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+
+                    // 加速度阈值
+                    val mSpeed = 3000
+
+                    //时间间隔
+                    val mInterval = 150
+
+                    //获取x,y,z
+                    val nowX: Float = sensorEvent.values[0]
+                    val nowY: Float = sensorEvent.values[1]
+                    val nowZ: Float = sensorEvent.values[2]
+                    //计算x,y,z变化量
+                    val deltaX: Float = nowX - lastX
+                    val deltaY: Float = nowY - lastY
+                    val deltaZ: Float = nowZ - lastZ
+                    //赋值
+                    lastX = nowX
+                    lastY = nowY
+                    lastZ = nowZ
+
+
+                    //计算
+                    val nowSpeed: Double = sqrt(
+                        x = (deltaX.pow(n = 2) + deltaY.pow(n = 2) + deltaZ.pow(n = 2)).toDouble()
+                    ) / mInterval * 10000
+
+
+                    //判断
+                    if ((nowSpeed >= mSpeed) and mFullDebug and !mDebugDialog.isShowing) {
+                        VibrateUtils.vibrate(100)
+                        mDebugDialog.show()
+                    }
+                }
+            }
+        }
     }
 
     private fun frameworkVersion(): String {
@@ -1954,8 +2065,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private object EcosedManifest {
-        /** 服务Action */
-        const val action: String = "io.ecosed.kit.action"
+        /** 服务动作 */
+        const val action: String = "io.libecosed.flutter_ecosed.action"
 
         /** Shizuku包名 */
         const val ShizukuPackage: String = "moe.shizuku.privileged.api"

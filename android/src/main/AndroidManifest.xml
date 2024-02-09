@@ -14,7 +14,7 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="io.ecosed.kit.action" />
+                <action android:name="io.libecosed.flutter_ecosed.action" />
             </intent-filter>
         </service>
 

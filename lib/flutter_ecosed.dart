@@ -32,7 +32,7 @@ typedef MaterialEcosedApp = MaterialApp Function(
 enum _PluginType { native, flutter, unknown }
 
 const String _defaultAuthor = 'wyq0918dev';
-const String _appChannel = 'ecosed_app';
+const String _managerChannel = 'ecosed_manager';
 
 const String _engineChannel = 'ecosed_engine';
 const String _serviceChannel = 'ecosed_service';
@@ -151,7 +151,7 @@ class EcosedManager extends _EcosedPlugin
   String pluginAuthor() => _defaultAuthor;
 
   @override
-  String pluginChannel() => _appChannel;
+  String pluginChannel() => _managerChannel;
 
   @override
   String pluginDescription() => 'Manager';
@@ -322,12 +322,14 @@ class _EcosedAppState extends State<EcosedManager> {
   /// 加载状态
   @override
   void initState() {
-    _initState();
+    if (Platform.isAndroid) {
+      _initPlatformState();
+    }
     super.initState();
   }
 
   /// 加载插件
-  Future<void> _initState() async {
+  Future<void> _initPlatformState() async {
     // 内置插件列表
     List<_EcosedPlugin> initialPluginList = [];
 
