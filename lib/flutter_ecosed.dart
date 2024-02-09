@@ -24,12 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-typedef EcosedExec = Object? Function(String channel, String method);
-typedef MaterialEcosedHome = Widget Function(Widget body, EcosedExec exec);
-typedef MaterialEcosedApp = MaterialApp Function(
-    Widget home, TransitionBuilder build, String title);
-
-enum _PluginType { native, flutter, unknown }
+enum PluginType { native, flutter, unknown }
 
 const String _defaultAuthor = 'wyq0918dev';
 const String _managerChannel = 'ecosed_manager';
@@ -124,11 +119,11 @@ class _PluginDetails {
   final String title;
   final String description;
   final String author;
-  final _PluginType type;
+  final PluginType type;
   final bool initial;
 
   factory _PluginDetails.formJSON(
-      Map<String, dynamic> json, _PluginType type, bool initial) {
+      Map<String, dynamic> json, PluginType type, bool initial) {
     return _PluginDetails(
       channel: json['channel'],
       title: json['title'],
@@ -316,7 +311,7 @@ class _EcosedAppState extends State<EcosedManager> {
 
   List<_PluginDetails> _pluginDetailsList = [
     _PluginDetails.formJSON(
-        jsonDecode(_unknownPlugin), _PluginType.unknown, true)
+        jsonDecode(_unknownPlugin), PluginType.unknown, true)
   ];
 
   /// 加载状态
@@ -349,7 +344,7 @@ class _EcosedAppState extends State<EcosedManager> {
             title: element.pluginName(),
             description: element.pluginDescription(),
             author: element.pluginAuthor(),
-            type: _PluginType.flutter,
+            type: PluginType.flutter,
             initial: true,
           ),
         );
@@ -372,7 +367,7 @@ class _EcosedAppState extends State<EcosedManager> {
           pluginDetailsList.add(
             _PluginDetails.formJSON(
               jsonDecode(element),
-              _PluginType.native,
+              PluginType.native,
               true,
             ),
           );
@@ -416,9 +411,9 @@ class _EcosedAppState extends State<EcosedManager> {
 
   String _getType(_PluginDetails details) {
     switch (details.type) {
-      case _PluginType.native:
+      case PluginType.native:
         return '内置插件 - Platform';
-      case _PluginType.flutter:
+      case PluginType.flutter:
         return details.initial ? '内置插件 - Flutter' : '普通插件';
       default:
         return 'Unknown';
@@ -426,7 +421,7 @@ class _EcosedAppState extends State<EcosedManager> {
   }
 
   bool _isAllowPush(_PluginDetails details) {
-    return details.type == _PluginType.flutter && _plugin(details) != null;
+    return details.type == PluginType.flutter && _plugin(details) != null;
   }
 
   @override
@@ -606,7 +601,7 @@ class _EcosedAppState extends State<EcosedManager> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      element.type == _PluginType.native
+                                      element.type == PluginType.native
                                           ? Icon(
                                               Icons.android,
                                               size: IconTheme.of(context).size,

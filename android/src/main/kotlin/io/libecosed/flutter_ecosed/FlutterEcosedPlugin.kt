@@ -1796,7 +1796,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         } catch (e: IllegalStateException) {
 
         }
-
     }
 
     /**
