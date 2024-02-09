@@ -101,6 +101,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     /** Activity */
     private lateinit var mActivity: Activity
+
     /** 生命周期 */
     private lateinit var mLifecycle: Lifecycle
 
@@ -167,10 +168,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             AppUtils.getAppPackageName(),
             UserService().javaClass.name,
         )
-    )
-        .daemon(false)
-        .processNameSuffix("service")
-        .debuggable(mFullDebug)
+    ).daemon(false).processNameSuffix("service").debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
     /**
@@ -464,9 +462,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @param errorDetailsProxy 详细信息,注意可能为空.
          */
         fun error(
-            errorCodeProxy: String,
-            errorMessageProxy: String?,
-            errorDetailsProxy: Any?
+            errorCodeProxy: String, errorMessageProxy: String?, errorDetailsProxy: Any?
         )
 
         /**
@@ -566,22 +562,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 具有Shizuku监听器方法
      */
     private interface ShizukuWrapper : Shizuku.OnBinderReceivedListener,
-        Shizuku.OnBinderDeadListener,
-        Shizuku.OnRequestPermissionResultListener
+        Shizuku.OnBinderDeadListener, Shizuku.OnRequestPermissionResultListener
 
     /**
      * AppCompat包装器
      * 方法回调和操作栏抽屉状态切换
      */
-    private interface AppCompatWrapper : AppCompatCallback,
-        ActionBarDrawerToggle.DelegateProvider
+    private interface AppCompatWrapper : AppCompatCallback, ActionBarDrawerToggle.DelegateProvider
 
     /**
      * 服务插件包装器
      */
     private interface ServiceWrapper : ConnectWrapper, ShizukuWrapper, AppCompatWrapper,
-        LifecycleWrapper,
-        SensorWrapper {
+        LifecycleWrapper, SensorWrapper {
 
         /**
          * 获取Binder
@@ -900,20 +893,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             // mActivity = null
         }
 
-        override fun onCreateLifecycle(lifecycle: Lifecycle) {
+        override fun onCreateLifecycle(lifecycle: Lifecycle) = lifecycleUnit {
             mLifecycle = lifecycle
-
-            lifecycleUnit {
-                this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
-            }
+            this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
         }
 
-        override fun onDestroyLifecycle() {
-            lifecycleUnit {
-                lifecycle.removeObserver(
-                    this@lifecycleUnit
-                )
-            }
+        override fun onDestroyLifecycle() = lifecycleUnit {
+            this@lifecycleUnit.lifecycle.removeObserver(this@lifecycleUnit)
         }
 
         /**
@@ -940,8 +926,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onCreateEngine(context: Context) {
             when {
                 (mPluginList == null) or (mBinding == null) -> pluginUnit(
-                    context = context,
-                    debug = mBaseDebug
+                    context = context, debug = mBaseDebug
                 ) { plugin, binding ->
                     // 初始化插件列表.
                     mPluginList = arrayListOf()
@@ -1356,106 +1341,28 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
             super.onCreate(owner)
             // 初始化Delegate
-            mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
-                appCompatUnit {
-                    return@appCompatUnit AppCompatDelegate.create(
-                        this@activityUnit,
-                        this@appCompatUnit
-                    )
-                }
-            }
-            // 附加Delegate基本上下文
-            serviceUnit {
-                if (this@activityUnit !is AppCompatActivity) {
-                    attachDelegateBaseContext()
-                }
-            }
+            initDelegate()
             // 初始化工具栏状态
             isVisible = true
             // 判断Activity是否为AppCompatActivity
-            // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
-            if (this@activityUnit !is AppCompatActivity) {
-                val attributes: TypedArray = obtainStyledAttributes(
-                    androidx.appcompat.R.styleable.AppCompatTheme
-                )
-                if (!attributes.hasValue(androidx.appcompat.R.styleable.AppCompatTheme_windowActionBar)) {
-                    attributes.recycle()
-                    setTheme(androidx.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar)
-                }
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
+                initTheme()
+                // 调用Delegate onCreate函数
+                onCreate(Bundle())
             }
-
-            // 调用Delegate onCreate函数
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onCreate(Bundle())
-            }
-
-            // 初始化工具栏
-            mToolbar = Toolbar(this@activityUnit).apply {
-                navigationIcon = ContextCompat.getDrawable(
-                    this@activityUnit,
-                    R.drawable.baseline_menu_24,
-                )
-
-                logo = ContextCompat.getDrawable(
-                    this@activityUnit,
-                    R.drawable.baseline_keyboard_command_key_24,
-                )
-
-                subtitle = "flutter_ecosed"
-
-                setNavigationOnClickListener { view ->
-
-                }
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-
-                    }
-                    true
-                }
-            }
-
+            // 初始化用户界面
+            initUi()
             // 从系统服务中获取传感管理器对象
-            mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-
-            // 创建调试对话框
-            // 如果Activity是AppCompatActivity则不设置主题
-//            val builder = if (this@activityUnit !is AppCompatActivity) AlertDialog.Builder(
-//                this@activityUnit,
-//                androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog_Alert
-//            ) else AlertDialog.Builder(this@activityUnit)
-
-            val builder = AlertDialog.Builder(this@activityUnit)
-
-            // 设置对话框
-            builder.apply {
-//                setTitle("Debug Menu (Native)")
-//                setItems(arrayOf("item1", "item2", "item3")) { dialog, which ->
-//                    Toast.makeText(
-//                        this@activityUnit,
-//                        which.toString(),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-                setView(createContent(this@activityUnit))
-                setNegativeButton("NO") { dialog, which -> }
-                setPositiveButton("OK") { dialog, which -> }
-                mDebugDialog = create()
-            }
-
-            // 设置操作栏
-            mDelegate.setSupportActionBar(mToolbar)
+            initSensor()
 
 
-
-
-
-            findRootView(this@activityUnit)?.setOnTouchListener(delayHideTouchListener)
-
+            // 切换工具栏状态
             //toggle()
 
             // 执行Delegate函数
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onPostCreate(Bundle())
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                onPostCreate(Bundle())
             }
         }
 
@@ -1465,8 +1372,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
             super.onStart(owner)
             // 执行Delegate onStart函数
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onStart()
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                onStart()
             }
         }
 
@@ -1475,23 +1382,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
             super.onResume(owner)
-
-
             // 注册监听
-            sensorUnit {
-                mSensorManager.registerListener(
-                    this@sensorUnit,
-                    mSensorManager.getDefaultSensor(
-                        Sensor.TYPE_ACCELEROMETER
-                    ),
-                    SensorManager.SENSOR_DELAY_UI,
-                )
-            }
-
-
+            registerSensor()
             // 执行Delegate onPostResume函数
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onPostResume()
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                onPostResume()
             }
         }
 
@@ -1501,11 +1396,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
             super.onPause(owner)
             // 注销监听
-            sensorUnit {
-                mSensorManager.unregisterListener(
-                    this@sensorUnit
-                )
-            }
+            unregisterSensor()
         }
 
         /**
@@ -1513,8 +1404,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
             super.onStop(owner)
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onStop()
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                onStop()
             }
         }
 
@@ -1523,8 +1414,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
             super.onDestroy(owner)
-            if (this@activityUnit !is AppCompatActivity) {
-                mDelegate.onDestroy()
+            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+                onDestroy()
             }
         }
 
@@ -1541,8 +1432,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 当注册的传感器的精度发生变化时调用.
          */
         override fun onAccuracyChanged(
-            sensor: Sensor?,
-            accuracy: Int
+            sensor: Sensor?, accuracy: Int
         ) = Unit
     }
 
@@ -1644,9 +1534,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @return content 返回值
      */
     private inline fun <R> pluginUnit(
-        context: Context,
-        debug: Boolean,
-        content: (ArrayList<EcosedPlugin>, PluginBinding) -> R
+        context: Context, debug: Boolean, content: (ArrayList<EcosedPlugin>, PluginBinding) -> R
     ): R = content.invoke(
         arrayListOf(mFramework, mEngine, mClient, mService, mNative),
         PluginBinding(context = context, debug = debug)
@@ -1732,6 +1620,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: Activity.() -> R,
     ): R = content.invoke(mActivity)
 
+    private inline fun <R> delegateUnit(
+        content: AppCompatDelegate.() -> R
+    ): R = content.invoke(mDelegate)
+
     /**
      * 原生代码调用单元
      * 调用底层原生代码
@@ -1759,6 +1651,97 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 分类: 私有函数
      ***********************************************************************************************
      */
+
+    private fun initDelegate(): Unit = activityUnit {
+        // 初始化Delegate
+        mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
+            appCompatUnit {
+                return@appCompatUnit AppCompatDelegate.create(
+                    this@activityUnit,
+                    this@appCompatUnit
+                )
+            }
+        }
+        // 附加Delegate基本上下文
+        if (this@activityUnit !is AppCompatActivity) serviceUnit {
+            attachDelegateBaseContext()
+        }
+    }
+
+    private fun initTheme(): Unit = activityUnit {
+        val attributes: TypedArray = obtainStyledAttributes(
+            androidx.appcompat.R.styleable.AppCompatTheme
+        )
+        if (!attributes.hasValue(androidx.appcompat.R.styleable.AppCompatTheme_windowActionBar)) {
+            attributes.recycle()
+            setTheme(androidx.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar)
+        }
+    }
+
+    private fun initUi(): Unit = activityUnit {
+        // 初始化工具栏
+        Toolbar(this@activityUnit).apply {
+            navigationIcon = ContextCompat.getDrawable(
+                this@activityUnit,
+                R.drawable.baseline_keyboard_command_key_24,
+            )
+            subtitle = EcosedResources.projectName
+            //inflateMenu()
+            setNavigationOnClickListener { view ->
+
+            }
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+
+                }
+                true
+            }
+            mToolbar = this@apply
+        }
+        // 初始化对话框
+        AlertDialog.Builder(this@activityUnit).apply {
+            setTitle("Debug Menu (Native)")
+            setItems(arrayOf("item1", "item2", "item3")) { dialog, which ->
+                Toast.makeText(
+                    this@activityUnit, which.toString(), Toast.LENGTH_SHORT
+                ).show()
+            }
+            setView(createContent(this@activityUnit))
+            setNegativeButton("NO") { dialog, which -> }
+            setPositiveButton("OK") { dialog, which -> }
+            mDebugDialog = create()
+        }
+        // 设置操作栏
+        delegateUnit {
+            setSupportActionBar(mToolbar)
+        }
+        // 设置根视图触摸事件
+        findRootView(
+            activity = this@activityUnit
+        )?.setOnTouchListener(
+            delayHideTouchListener
+        )
+    }
+
+    private fun initSensor(): Unit = activityUnit {
+        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+    }
+
+    private fun registerSensor(): Unit = sensorUnit {
+        mSensorManager.registerListener(
+            this@sensorUnit,
+            mSensorManager.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER
+            ),
+            SensorManager.SENSOR_DELAY_UI,
+        )
+    }
+
+    private fun unregisterSensor(): Unit = sensorUnit {
+        mSensorManager.unregisterListener(
+            this@sensorUnit
+        )
+    }
 
     /**
      * 检查Shizuku权限
@@ -2062,6 +2045,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
             null
         }
+    }
+
+    private object EcosedResources {
+        const val projectName: String = "flutter_ecosed"
     }
 
     private object EcosedManifest {

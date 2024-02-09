@@ -9,7 +9,6 @@ import io.flutter.embedding.android.FlutterActivityLaunchConfigs
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-
 class MainApp : FlutterApplication(), FlutterBoostDelegate, FlutterBoost.Callback {
 
     override fun onCreate() {
