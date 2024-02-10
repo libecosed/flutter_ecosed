@@ -65,6 +65,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -84,7 +85,6 @@ import kotlin.system.exitProcess
  */
 class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHandler,
     ActivityAware {
-
 
     /** Flutter插件方法通道 */
     private lateinit var mMethodChannel: MethodChannel
@@ -179,7 +179,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             AppUtils.getAppPackageName(),
             UserService().javaClass.name,
         )
-    ).daemon(false).processNameSuffix("service").debuggable(mFullDebug)
+    )
+        .daemon(false)
+        .processNameSuffix("service")
+        .debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
     /**
@@ -394,6 +397,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         this@frameworkUnit.onCreateLifecycle(
             lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
         )
+        // activity回调
+        binding.addActivityResultListener { requestCode, resultCode, data ->
+            return@addActivityResultListener this@frameworkUnit.onActivityResult(
+                requestCode, resultCode, data
+            )
+        }
+        // 请求权限回调
+        binding.addRequestPermissionsResultListener { requestCode, permissions, grantResults ->
+            return@addRequestPermissionsResultListener this@frameworkUnit.onRequestPermissionsResult(
+                requestCode, permissions, grantResults
+            )
+        }
     }
 
     /**
@@ -440,6 +455,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 注销生命周期监听器释放资源避免内存泄露 */
         fun onDestroyLifecycle()
+
+        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean
+        fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ): Boolean
 
         /** 引擎初始化 */
         fun onCreateEngine(context: Context)
@@ -886,6 +908,30 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             return@engineUnit this@engineUnit.onDestroyLifecycle()
         }
 
+        override fun onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ): Boolean = engineUnit {
+            return@engineUnit this@engineUnit.onActivityResult(
+                requestCode = requestCode,
+                resultCode = resultCode,
+                data = data
+            )
+        }
+
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ): Boolean = engineUnit {
+            return@engineUnit this@engineUnit.onRequestPermissionsResult(
+                requestCode = requestCode,
+                permissions = permissions,
+                grantResults = grantResults
+            )
+        }
+
         override fun onCreateEngine(context: Context) = engineUnit {
             return@engineUnit this@engineUnit.onCreateEngine(context = context)
         }
@@ -931,9 +977,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
         }
 
-        override fun onDestroyLifecycle():Unit = lifecycleUnit {
+        override fun onDestroyLifecycle(): Unit = lifecycleUnit {
             this@lifecycleUnit.lifecycle.removeObserver(this@lifecycleUnit)
             mLifecycle = null
+        }
+
+        override fun onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ): Boolean {
+
+            return true
+        }
+
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ): Boolean {
+
+            return true
         }
 
         /**
@@ -1655,7 +1719,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(mService)
 
 
-
     /**
      * 传感器调用单元
      * 调用传感器事件回调
@@ -1999,13 +2062,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         event?.let { sensorEvent ->
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
-
                     // 加速度阈值
                     val mSpeed = 3000
-
                     //时间间隔
                     val mInterval = 150
-
                     //获取x,y,z
                     val nowX: Float = sensorEvent.values[0]
                     val nowY: Float = sensorEvent.values[1]
@@ -2018,14 +2078,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     lastX = nowX
                     lastY = nowY
                     lastZ = nowZ
-
-
                     //计算
                     val nowSpeed: Double = sqrt(
                         x = (deltaX.pow(n = 2) + deltaY.pow(n = 2) + deltaZ.pow(n = 2)).toDouble()
                     ) / mInterval * 10000
-
-
                     //判断
                     if ((nowSpeed >= mSpeed) and mFullDebug and !mDebugDialog.isShowing) {
                         VibrateUtils.vibrate(100)
@@ -2053,7 +2109,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private fun onePoem(): String {
-        return poem[(poem.indices).random()]
+        return poem[poem.indices.random()]
     }
 
     private fun watch(): Boolean {
