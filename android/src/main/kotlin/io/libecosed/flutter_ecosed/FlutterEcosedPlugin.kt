@@ -96,14 +96,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private var mPluginList: ArrayList<EcosedPlugin>? = null
 
     /** JSON插件列表 */
-    private var mJSONList = arrayListOf<String>()
+    private var mJSONList: ArrayList<String>? = null
 
 
     /** Activity */
-    private lateinit var mActivity: Activity
+    private var mActivity: Activity? = null
 
     /** 生命周期 */
-    private lateinit var mLifecycle: Lifecycle
+    private var mLifecycle: Lifecycle? = null
 
     /** Delegate基本上下文 */
     private lateinit var mDelegateBaseContext: Context
@@ -179,10 +179,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             AppUtils.getAppPackageName(),
             UserService().javaClass.name,
         )
-    )
-        .daemon(false)
-        .processNameSuffix("service")
-        .debuggable(mFullDebug)
+    ).daemon(false).processNameSuffix("service").debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
     /**
@@ -317,19 +314,25 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 将插件添加到引擎
      */
-    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) = frameworkUnit {
+    override fun onAttachedToEngine(
+        binding: FlutterPlugin.FlutterPluginBinding
+    ): Unit = frameworkUnit {
         // 初始化方法通道
         mMethodChannel = MethodChannel(binding.binaryMessenger, flutterChannelName)
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
-        return@frameworkUnit this@frameworkUnit.onCreateEngine(context = binding.applicationContext)
+        return@frameworkUnit this@frameworkUnit.onCreateEngine(
+            context = binding.applicationContext
+        )
     }
 
     /**
      * 将插件从引擎移除
      */
-    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) = frameworkUnit {
+    override fun onDetachedFromEngine(
+        binding: FlutterPlugin.FlutterPluginBinding
+    ): Unit = frameworkUnit {
         // 清空回调程序释放内存
         mMethodChannel.setMethodCallHandler(null)
         // 销毁引擎释放资源
@@ -339,7 +342,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 调用方法
      */
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) = frameworkUnit {
+    override fun onMethodCall(
+        call: MethodCall, result: MethodChannel.Result
+    ): Unit = frameworkUnit {
         return@frameworkUnit this@frameworkUnit.onMethodCall(
             call = object : MethodCallProxy {
 
@@ -380,7 +385,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
-    ) = frameworkUnit {
+    ): Unit = frameworkUnit {
         // 获取活动
         this@frameworkUnit.onCreateActivity(
             activity = binding.activity
@@ -408,7 +413,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 从Activity分离
      */
-    override fun onDetachedFromActivity() = frameworkUnit {
+    override fun onDetachedFromActivity(): Unit = frameworkUnit {
         this@frameworkUnit.onDestroyActivity()
         this@frameworkUnit.onDestroyLifecycle()
     }
@@ -685,7 +690,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 插件调用方法
          */
-        open fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) = Unit
+        open fun onEcosedMethodCall(
+            call: EcosedMethodCall,
+            result: EcosedResult,
+        ) = Unit
     }
 
     /**
@@ -856,7 +864,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件作者 */
         override val author: String
-            get() = getString(R.string.default_author)
+            get() = EcosedResources.defaultAuthor
 
         /** 插件描述 */
         override val description: String
@@ -904,7 +912,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件作者 */
         override val author: String
-            get() = getString(R.string.default_author)
+            get() = EcosedResources.defaultAuthor
 
         /** 插件描述 */
         override val description: String
@@ -915,7 +923,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun onDestroyActivity() {
-            // mActivity = null
+            mActivity = null
         }
 
         override fun onCreateLifecycle(lifecycle: Lifecycle) = lifecycleUnit {
@@ -923,8 +931,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
         }
 
-        override fun onDestroyLifecycle() = lifecycleUnit {
+        override fun onDestroyLifecycle():Unit = lifecycleUnit {
             this@lifecycleUnit.lifecycle.removeObserver(this@lifecycleUnit)
+            mLifecycle = null
         }
 
         /**
@@ -950,7 +959,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreateEngine(context: Context) {
             when {
-                (mPluginList == null) or (mBinding == null) -> pluginUnit(
+                (mPluginList == null) or (mJSONList == null) or (mBinding == null) -> pluginUnit(
                     context = context, debug = mBaseDebug
                 ) { plugin, binding ->
                     // 打印横幅
@@ -962,22 +971,25 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     )
                     // 初始化插件列表.
                     mPluginList = arrayListOf()
+                    mJSONList = arrayListOf()
                     // 添加所有插件.
                     plugin.forEach { item ->
                         item.apply {
                             try {
                                 onEcosedAdded(binding = binding)
-                                if (mBaseDebug) {
-                                    Log.d(pluginTag, "插件${item.javaClass.name}已加载")
-                                }
+                                if (mBaseDebug) Log.d(
+                                    pluginTag, "插件${item.javaClass.name}已加载"
+                                )
                             } catch (e: Exception) {
-                                if (mBaseDebug) {
-                                    Log.e(pluginTag, "插件添加失败!", e)
-                                }
+                                if (mBaseDebug) Log.e(
+                                    pluginTag, "插件添加失败!", e
+                                )
                             }
                         }.run {
-                            mPluginList?.add(element = item)
-                            mJSONList.add(
+                            mPluginList?.add(
+                                element = item
+                            )
+                            mJSONList?.add(
                                 element = JSONObject().run {
                                     put("channel", channel)
                                     put("title", title)
@@ -985,16 +997,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     put("author", author)
                                 }.toString()
                             )
-                            if (mBaseDebug) {
-                                Log.d(pluginTag, "插件${item.javaClass.name}已添加到插件列表")
-                            }
+                            if (mBaseDebug) Log.d(
+                                pluginTag, "插件${item.javaClass.name}已添加到插件列表"
+                            )
                         }
                     }
                 }
 
-                else -> if (mBaseDebug) {
-                    Log.e(pluginTag, "请勿重复执行attach!")
-                }
+                else -> if (mBaseDebug) Log.e(
+                    pluginTag, "请勿重复执行onCreateEngine!"
+                )
             }
         }
 
@@ -1002,7 +1014,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 销毁引擎释放资源.
          */
         override fun onDestroyEngine() {
+            when {
+                (mPluginList != null) or (mJSONList == null) or (mBinding != null) -> {
+                    // 清空插件列表
+                    mPluginList = null
+                    mJSONList = null
+                }
 
+                else -> if (mBaseDebug) Log.e(
+                    pluginTag, "请勿重复执行onDestroyEngine!"
+                )
+            }
         }
 
         /**
@@ -1015,9 +1037,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             try {
                 // 执行代码并获取执行后的返回值
                 mExecResult = execMethodCall<Any>(
-                    channel = call.bundleProxy.getString("channel", engineChannelName),
-                    method = call.methodProxy,
-                    bundle = call.bundleProxy
+                    channel = call.bundleProxy.getString(
+                        "channel", engineChannelName
+                    ), method = call.methodProxy, bundle = call.bundleProxy
                 )
                 // 判断是否为空并提交数据
                 if (mExecResult != null) {
@@ -1090,7 +1112,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件作者 */
         override val author: String
-            get() = getString(R.string.default_author)
+            get() = EcosedResources.defaultAuthor
 
         /** 插件描述 */
         override val description: String
@@ -1174,7 +1196,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件作者 */
         override val author: String
-            get() = getString(R.string.default_author)
+            get() = EcosedResources.defaultAuthor
 
         /** 插件描述 */
         override val description: String
@@ -1364,7 +1386,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun getLifecycle(): Lifecycle {
-            return mLifecycle
+            return mLifecycle ?: error(message = "lifecycle is null!")
         }
 
         /**
@@ -1481,7 +1503,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件作者 */
         override val author: String
-            get() = getString(R.string.default_author)
+            get() = EcosedResources.defaultAuthor
 
         /** 插件描述 */
         override val description: String
@@ -1559,6 +1581,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(mEngine)
 
     /**
+     * 生命周期调用单元
+     * 调用生命周期所有者和生命周期观察者
+     * @param content 生命周期包装器
+     * @return content 返回值
+     */
+    private inline fun <R> lifecycleUnit(
+        content: LifecycleWrapper.() -> R
+    ): R = content.invoke(mService)
+
+    /**
      * 插件调用单元
      * 插件初始化
      * @param context 上下文
@@ -1622,15 +1654,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: AppCompatWrapper.() -> R,
     ): R = content.invoke(mService)
 
-    /**
-     * 生命周期调用单元
-     * 调用生命周期所有者和生命周期观察者
-     * @param content 生命周期包装器
-     * @return content 返回值
-     */
-    private inline fun <R> lifecycleUnit(
-        content: LifecycleWrapper.() -> R
-    ): R = content.invoke(mService)
+
 
     /**
      * 传感器调用单元
@@ -1650,7 +1674,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> activityUnit(
         content: Activity.() -> R,
-    ): R = content.invoke(mActivity)
+    ): R = content.invoke(
+        mActivity ?: error(
+            message = "activity is null"
+        )
+    )
 
     /**
      * 委托函数调用单元
@@ -1698,8 +1726,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
             appCompatUnit {
                 return@appCompatUnit AppCompatDelegate.create(
-                    this@activityUnit,
-                    this@appCompatUnit
+                    this@activityUnit, this@appCompatUnit
                 )
             }
         }
@@ -2084,6 +2111,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 项目名称 */
         const val projectName: String = "flutter_ecosed"
 
+        const val defaultAuthor: String = "wyq09118dev"
+
         /** 项目ASCII艺术字Base64编码 */
         const val banner: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
                 "CAgICAgICAgICAgICAgICAgXyAKIHwgIF9fX3wgfF8gICBffCB8X3wgfF8gX19fIF8gX18gIHwgX19fX" +
@@ -2147,6 +2176,4 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
     }
-
-
 }
