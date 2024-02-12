@@ -47,6 +47,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -54,6 +56,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.Utils
 import com.blankj.utilcode.util.VibrateUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -74,6 +77,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.system.exitProcess
+
 
 /**
  * 作者: wyq0918dev
@@ -1818,7 +1822,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 R.drawable.baseline_keyboard_command_key_24,
             )
             subtitle = EcosedResources.projectName
-            //inflateMenu()
+            inflateMenu(R.menu.action_menu)
+
             setNavigationOnClickListener { view ->
 
             }
@@ -1833,14 +1838,32 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 初始化对话框
         AlertDialog.Builder(this@activityUnit).apply {
             setTitle("Debug Menu (Native)")
-            setItems(arrayOf("item1", "item2", "item3")) { dialog, which ->
-                Toast.makeText(
-                    this@activityUnit, which.toString(), Toast.LENGTH_SHORT
-                ).show()
+            setItems(arrayOf("Launch Shizuku", "Launch microG", "3")) { dialog, which ->
+                when (which) {
+                    0 -> if (AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage)){
+                        AppUtils.launchApp(EcosedManifest.ShizukuPackage)
+                    } else {
+
+                    }
+                    1 -> {
+                        //gms(this@activityUnit)
+                        AppUtils.launchApp(EcosedManifest.GmsPackage)
+                    }
+                    2 -> {}
+                    else -> {}
+                }
             }
-            setView(mToolbar)
+            setView(createView())
+
             setNegativeButton("NO") { dialog, which -> }
             setPositiveButton("OK") { dialog, which -> }
+            setNeutralButton("菜单") { _, _ ->
+                if (mToolbar.isOverflowMenuShowing) {
+                    mToolbar.hideOverflowMenu()
+                } else {
+                    mToolbar.showOverflowMenu()
+                }
+            }
             mDebugDialog = create()
         }
         // 设置操作栏
@@ -1853,6 +1876,28 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )?.setOnTouchListener(
             delayHideTouchListener
         )
+    }
+
+    private fun createView(): View = activityUnit {
+        return@activityUnit LinearLayoutCompat(this@activityUnit).apply {
+            orientation = LinearLayoutCompat.VERTICAL
+            addView(
+                mToolbar,
+                LinearLayoutCompat.LayoutParams(
+                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                AppCompatEditText(this@activityUnit).apply {
+                    setText("run shell...")
+                },
+                LinearLayoutCompat.LayoutParams(
+                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
     }
 
     /**
@@ -2085,6 +2130,28 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
             }
         }
+    }
+
+    private fun gms(context: Context) {
+        try {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.setPackage(EcosedManifest.GmsPackage)
+            try {
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Log.w(pluginTag, "MAIN activity is not DEFAULT. Trying to resolve instead.")
+                intent.setClassName(
+                    EcosedManifest.GmsPackage,
+                    packageManager.resolveActivity(intent, 0)!!.activityInfo.name
+                )
+                context.startActivity(intent)
+            }
+            Toast.makeText(context, "toast_installed", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.w(pluginTag, "Failed launching microG Settings", e)
+            Toast.makeText(context, "toast_not_installed", Toast.LENGTH_LONG).show()
+        }
+
     }
 
     private fun frameworkVersion(): String {
