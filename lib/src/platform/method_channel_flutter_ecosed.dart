@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../values/default.dart';
-import 'ecosed_platform.dart';
+import 'flutter_ecosed_platform.dart';
 
-class MethodChannelFlutterEcosed extends EcosedPlatform {
+class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
 

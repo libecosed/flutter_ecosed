@@ -1,3 +1,4 @@
 library flutter_ecosed;
 
-export 'src/manager/manager.dart';
+export 'src/dashboard/dashboard.dart';
+export 'src/plugin/plugin.dart';

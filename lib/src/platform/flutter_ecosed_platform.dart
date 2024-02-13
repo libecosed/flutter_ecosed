@@ -2,14 +2,14 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_flutter_ecosed.dart';
 
-abstract class EcosedPlatform extends PlatformInterface {
-  EcosedPlatform() : super(token: _token);
+abstract class FlutterEcosedPlatform extends PlatformInterface {
+  FlutterEcosedPlatform() : super(token: _token);
 
   static final Object _token = Object();
 
-  static final EcosedPlatform _instance = MethodChannelFlutterEcosed();
+  static final FlutterEcosedPlatform _instance = MethodChannelFlutterEcosed();
 
-  static EcosedPlatform get instance => _instance;
+  static FlutterEcosedPlatform get instance => _instance;
 
   Future<bool?> isShizukuInstalled() {
     throw UnimplementedError('isShizukuInstalled()方法未实现');

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../platform/ecosed_platform.dart';
+import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
 import '../values/default.dart';
-import 'manager_state.dart';
-import 'manager_wrapper.dart';
+import 'dashboard_state.dart';
+import 'dashboard_wrapper.dart';
 
-class EcosedManager extends EcosedPlugin implements EcosedManagerWrapper, EcosedPlatform {
-  const EcosedManager({super.key});
+class EcosedDashboardView extends EcosedPlugin
+    implements EcosedManagerWrapper, FlutterEcosedPlatform {
+  const EcosedDashboardView({super.key, required this.plugins});
+
+  final List<EcosedPlugin> plugins;
 
   @override
   String pluginName() => 'Manager';
@@ -32,7 +35,7 @@ class EcosedManager extends EcosedPlugin implements EcosedManagerWrapper, Ecosed
   }
 
   @override
-  Future<Object?> onEcosedMethodCall(String name) async {
+  Future<Object?> onPlatformCall(String name) async {
     switch (name) {
       case getPluginMethod:
         return getPluginList();
@@ -42,53 +45,50 @@ class EcosedManager extends EcosedPlugin implements EcosedManagerWrapper, Ecosed
   }
 
   @override
-  State<EcosedManager> createState() => EcosedManagerState();
-
-  @override
-  List<EcosedPlugin> initialPlugin() => [this];
+  State<EcosedDashboardView> createState() => EcosedDashboardViewState();
 
   @override
   Future<bool?> isShizukuInstalled() {
-    return EcosedPlatform.instance.isShizukuInstalled();
+    return FlutterEcosedPlatform.instance.isShizukuInstalled();
   }
 
   @override
   void installShizuku() {
-    EcosedPlatform.instance.installShizuku();
+    FlutterEcosedPlatform.instance.installShizuku();
   }
 
   @override
   Future<bool?> isMicroGInstalled() {
-    return EcosedPlatform.instance.isMicroGInstalled();
+    return FlutterEcosedPlatform.instance.isMicroGInstalled();
   }
 
   @override
   void installMicroG() {
-    EcosedPlatform.instance.installMicroG();
+    FlutterEcosedPlatform.instance.installMicroG();
   }
 
   @override
   Future<bool?> isShizukuGranted() {
-    return EcosedPlatform.instance.isShizukuGranted();
+    return FlutterEcosedPlatform.instance.isShizukuGranted();
   }
 
   @override
   void requestPermissions() {
-    EcosedPlatform.instance.requestPermissions();
+    FlutterEcosedPlatform.instance.requestPermissions();
   }
 
   @override
   Future<String?> getPoem() {
-    return EcosedPlatform.instance.getPoem();
+    return FlutterEcosedPlatform.instance.getPoem();
   }
 
   @override
   Future<String?> getShizukuVersion() {
-    return EcosedPlatform.instance.getShizukuVersion();
+    return FlutterEcosedPlatform.instance.getShizukuVersion();
   }
 
   @override
   Future<List?> getPluginList() {
-    return EcosedPlatform.instance.getPluginList();
+    return FlutterEcosedPlatform.instance.getPluginList();
   }
 }
