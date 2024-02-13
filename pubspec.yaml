@@ -2,6 +2,7 @@ name: flutter_ecosed
 description: "A relatively abstract Flutter Plugin."
 version: 0.0.1
 homepage: https://github.com/libecosed/flutter_ecosed
+repository: https://github.com/libecosed/flutter_ecosed
 environment:
   sdk: '>=3.2.4 <4.0.0'
   flutter: '>=3.3.0'
