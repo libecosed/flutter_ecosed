@@ -1,6 +1,6 @@
 # flutter_ecosed
 
-A relatively abstract Flutter Plugin.
+FlutterEcosed is a Flutter plugin and an advanced Flutter development framework that provides Android platform debugging, plugin development and dashboard functions.
 
 ## Getting Started
 
