@@ -321,13 +321,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onAttachedToEngine(
         binding: FlutterPlugin.FlutterPluginBinding
-    ): Unit = frameworkUnit {
+    ): Unit = bridgeUnit {
         // 初始化方法通道
         mMethodChannel = MethodChannel(binding.binaryMessenger, flutterChannelName)
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
-        return@frameworkUnit this@frameworkUnit.onCreateEngine(
+        return@bridgeUnit this@bridgeUnit.onCreateEngine(
             context = binding.applicationContext
         )
     }
@@ -337,11 +337,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onDetachedFromEngine(
         binding: FlutterPlugin.FlutterPluginBinding
-    ): Unit = frameworkUnit {
+    ): Unit = bridgeUnit {
         // 清空回调程序释放内存
         mMethodChannel.setMethodCallHandler(null)
         // 销毁引擎释放资源
-        return@frameworkUnit this@frameworkUnit.onDestroyEngine()
+        return@bridgeUnit this@bridgeUnit.onDestroyEngine()
     }
 
     /**
@@ -349,8 +349,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onMethodCall(
         call: MethodCall, result: MethodChannel.Result
-    ): Unit = frameworkUnit {
-        return@frameworkUnit this@frameworkUnit.onMethodCall(
+    ): Unit = bridgeUnit {
+        return@bridgeUnit this@bridgeUnit.onMethodCall(
             call = object : MethodCallProxy {
 
                 override val methodProxy: String
@@ -390,24 +390,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
-    ): Unit = frameworkUnit {
+    ): Unit = bridgeUnit {
         // 获取活动
-        this@frameworkUnit.onCreateActivity(
+        this@bridgeUnit.onCreateActivity(
             activity = binding.activity
         )
         // 获取生命周期
-        this@frameworkUnit.onCreateLifecycle(
+        this@bridgeUnit.onCreateLifecycle(
             lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
         )
         // activity回调
         binding.addActivityResultListener { requestCode, resultCode, data ->
-            return@addActivityResultListener this@frameworkUnit.onActivityResult(
+            return@addActivityResultListener this@bridgeUnit.onActivityResult(
                 requestCode, resultCode, data
             )
         }
         // 请求权限回调
         binding.addRequestPermissionsResultListener { requestCode, permissions, grantResults ->
-            return@addRequestPermissionsResultListener this@frameworkUnit.onRequestPermissionsResult(
+            return@addRequestPermissionsResultListener this@bridgeUnit.onRequestPermissionsResult(
                 requestCode, permissions, grantResults
             )
         }
@@ -430,9 +430,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 从Activity分离
      */
-    override fun onDetachedFromActivity(): Unit = frameworkUnit {
-        this@frameworkUnit.onDestroyActivity()
-        this@frameworkUnit.onDestroyLifecycle()
+    override fun onDetachedFromActivity(): Unit = bridgeUnit {
+        this@bridgeUnit.onDestroyActivity()
+        this@bridgeUnit.onDestroyLifecycle()
     }
 
     /**
@@ -912,11 +912,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
 
     /** 负责引擎和Flutter通信的框架 */
-    private val mFramework = object : EcosedPlugin(), FlutterPluginProxy {
+    private val mEngineBridge = object : EcosedPlugin(), FlutterPluginProxy {
 
         /** 插件标题 */
         override val title: String
-            get() = "Framework"
+            get() = "EngineBridge"
 
         /** 插件通道 */
         override val channel: String
@@ -1586,9 +1586,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Flutter插件代理单元
      * @return content 返回值
      */
-    private inline fun <R> frameworkUnit(
+    private inline fun <R> bridgeUnit(
         content: FlutterPluginProxy.() -> R,
-    ): R = content.invoke(mFramework)
+    ): R = content.invoke(mEngineBridge)
 
     /**
      * 引擎调用单元
@@ -1620,7 +1620,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private inline fun <R> pluginUnit(
         context: Context, debug: Boolean, content: (ArrayList<EcosedPlugin>, PluginBinding) -> R
     ): R = content.invoke(
-        arrayListOf(mFramework, mEcosedEngine, mServiceInvoke, mServiceDelegate),
+        arrayListOf(mEngineBridge, mEcosedEngine, mServiceInvoke, mServiceDelegate),
         PluginBinding(context = context, debug = debug)
     )
 
