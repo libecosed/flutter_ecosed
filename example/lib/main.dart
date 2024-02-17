@@ -21,6 +21,11 @@ class ExampleApp extends EcosedPlugin {
 
   @override
   State<ExampleApp> createState() => _ExampleAppState();
+
+  @override
+  Future<Object?> onPlatformCall(String name) async {
+    return null;
+  }
 }
 
 class _ExampleAppState extends State<ExampleApp> {
@@ -31,11 +36,21 @@ class _ExampleAppState extends State<ExampleApp> {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         return MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(
-              title: const Text(appName),
-            ),
-            body: EcosedDashboardView(plugins: [widget]),
+          home: EcosedApp(
+            home: (body, exec) {
+              return body;
+            },
+            plugins: [widget],
+            title: appName,
+            location: BannerLocation.topStart,
+            scaffold: (body) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text(appName),
+                ),
+                body: body,
+              );
+            },
           ),
           title: appName,
           theme: ThemeData(

@@ -1,83 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../values/default.dart';
 import 'flutter_ecosed_platform.dart';
 
 class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
 
-  @override
-  Future<bool?> isShizukuInstalled() async {
-    return await methodChannel.invokeMethod<bool>(
-      'isShizukuInstalled',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  void installShizuku() {
-    methodChannel.invokeMethod<void>(
-      'installShizuku',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  Future<bool?> isMicroGInstalled() async {
-    return await methodChannel.invokeMethod<bool>(
-      'isMicroGInstalled',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  void installMicroG() {
-    methodChannel.invokeMethod<void>(
-      'installMicroG',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  Future<bool?> isShizukuGranted() async {
-    return await methodChannel.invokeMethod<bool>(
-      'isShizukuGranted',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  void requestPermissions() {
-    methodChannel.invokeMethod<void>(
-      'requestPermissions',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  Future<String?> getPoem() async {
-    return await methodChannel.invokeMethod<String>(
-      'getPoem',
-      {'channel': serviceChannel},
-    );
-  }
-
-  @override
-  Future<String?> getShizukuVersion() async {
-    return await methodChannel.invokeMethod<String>(
-      'getShizukuVersion',
-      {'channel': serviceChannel},
-    );
-  }
-
-  /// 通过引擎实现
+  /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPluginList() async {
-    return await methodChannel.invokeMethod<List>(
+    return await methodChannel.invokeListMethod(
       'getPlugins',
-      {'channel': engineChannel},
+      {'channel': 'ecosed_engine'},
+    );
+  }
+
+  /// 从客户端启动对话框
+  @override
+  void openDialog() {
+    methodChannel.invokeMethod(
+      'openDialog',
+      {'channel': 'ecosed_client'},
     );
   }
 }

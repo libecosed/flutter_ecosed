@@ -56,7 +56,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
-import com.blankj.utilcode.util.Utils
 import com.blankj.utilcode.util.VibrateUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -109,7 +108,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private var mLifecycle: Lifecycle? = null
 
     /** Delegate基本上下文 */
-    private lateinit var mDelegateBaseContext: Context
+    private lateinit var mAppCompatDelegateBaseContext: Context
 
     /** 供引擎使用的基本调试布尔值 */
     private val mBaseDebug: Boolean = AppUtils.isAppDebug()
@@ -134,7 +133,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private lateinit var poem: ArrayList<String>
 
     /** AppCompatDelegate */
-    private lateinit var mDelegate: AppCompatDelegate
+    private lateinit var mAppCompatDelegate: AppCompatDelegate
 
     /** 传感器管理器 */
     private lateinit var mSensorManager: SensorManager
@@ -148,7 +147,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private val hideHandler = Handler(Looper.myLooper()!!)
 
     private val showPart2Runnable = Runnable {
-        mDelegate.supportActionBar?.show()
+        mAppCompatDelegate.supportActionBar?.show()
     }
 
     /** 工具栏显示状态 */
@@ -655,6 +654,42 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
 
     /**
+     *
+     */
+    class UserService : IUserService.Stub() {
+
+        /**
+         * ShizukuAPI内置方法
+         */
+        override fun destroy() = exitProcess(
+            status = 0
+        )
+
+        /**
+         * ShizukuAPI内置方法
+         */
+        override fun exit() = exitProcess(
+            status = 0
+        )
+
+        override fun poem() {
+            Log.d("", "Shizuku - poem")
+        }
+
+        /**
+         * 原生代码执行入口
+         * @param args 要传入的附加参数
+         */
+        private external fun main(args: Array<String>)
+    }
+
+    /**
+     ***********************************************************************************************
+     * 分类: 插件基类实现
+     ***********************************************************************************************
+     */
+
+    /**
      * 基本插件
      */
     private abstract class EcosedPlugin : ContextWrapper(null) {
@@ -881,7 +916,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件标题 */
         override val title: String
-            get() = getString(R.string.framework_title)
+            get() = "Framework"
 
         /** 插件通道 */
         override val channel: String
@@ -893,7 +928,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件描述 */
         override val description: String
-            get() = getString(R.string.framework_description)
+            get() = "FlutterEngine与EcosedEngine通信的的桥梁"
 
         override fun onCreateActivity(activity: Activity) = engineUnit {
             return@engineUnit this@engineUnit.onCreateActivity(activity = activity)
@@ -949,11 +984,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /** 引擎 */
-    private val mEngine = object : EcosedPlugin(), EngineWrapper {
+    private val mEcosedEngine = object : EcosedPlugin(), EngineWrapper {
 
         /** 插件标题 */
         override val title: String
-            get() = getString(R.string.engine_title)
+            get() = "EcosedEngine"
 
         /** 插件通道 */
         override val channel: String
@@ -965,24 +1000,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件描述 */
         override val description: String
-            get() = getString(R.string.engine_description)
+            get() = "Ecosed Engine"
 
         override fun onCreateActivity(activity: Activity) {
-            mActivity = activity
+            this@FlutterEcosedPlugin.mActivity = activity
         }
 
         override fun onDestroyActivity() {
-            mActivity = null
+            this@FlutterEcosedPlugin.mActivity = null
         }
 
         override fun onCreateLifecycle(lifecycle: Lifecycle) = lifecycleUnit {
-            mLifecycle = lifecycle
+            this@FlutterEcosedPlugin.mLifecycle = lifecycle
             this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
         }
 
         override fun onDestroyLifecycle(): Unit = lifecycleUnit {
             this@lifecycleUnit.lifecycle.removeObserver(this@lifecycleUnit)
-            mLifecycle = null
+            this@FlutterEcosedPlugin.mLifecycle = null
         }
 
         override fun onActivityResult(
@@ -1009,7 +1044,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedAdded(binding: PluginBinding) {
             super.onEcosedAdded(binding)
             // 设置来自插件的全局调试布尔值
-            mFullDebug = isDebug
+            this@FlutterEcosedPlugin.mFullDebug = isDebug
         }
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
@@ -1167,11 +1202,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /** 负责与服务通信的客户端 */
-    private val mClient = object : EcosedPlugin(), ClientWrapper {
+    private val mServiceInvoke = object : EcosedPlugin(), ClientWrapper {
 
         /** 插件标题 */
         override val title: String
-            get() = getString(R.string.client_title)
+            get() = "ServiceInvoke"
 
         /** 插件通道 */
         override val channel: String
@@ -1183,7 +1218,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件描述 */
         override val description: String
-            get() = getString(R.string.client_description)
+            get() = "负责与服务通信的服务调用"
 
         /**
          * 插件添加时执行
@@ -1206,17 +1241,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                mMethodDebug -> result.success(isDebug)
-                mMethodIsBinding -> result.success(mIsBind)
-                mMethodStartService -> startService(mEcosedServicesIntent)
-                mMethodBindService -> bindEcosed(this)
-                mMethodUnbindService -> unbindEcosed(this)
+
 
                 "getPlatformVersion" -> result.success("Android API ${Build.VERSION.SDK_INT}")
 
-                "shizuku" -> mIUserService?.poem()
+                "openDialog" -> result.success(openDialog())
 
-                mMethodShizukuVersion -> result.success(getShizukuVersion())
+
                 else -> result.notImplemented()
             }
         }
@@ -1251,11 +1282,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /** 服务相当于整个服务类部分无法在大类中实现的方法在此实现并调用 */
-    private val mService = object : EcosedPlugin(), ServiceWrapper {
+    private val mServiceDelegate = object : EcosedPlugin(), ServiceWrapper {
 
         /** 插件标题 */
         override val title: String
-            get() = getString(R.string.service_title)
+            get() = "ServiceDelegate"
 
         /** 插件通道 */
         override val channel: String
@@ -1267,26 +1298,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件描述 */
         override val description: String
-            get() = getString(R.string.service_description)
+            get() = "服务功能代理, 无实际插件方法实现."
 
         override fun attachBaseContext(base: Context?) {
             super.attachBaseContext(base)
             base?.let { context ->
-                mDelegateBaseContext = context
-            }
-        }
-
-        override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
-            super.onEcosedMethodCall(call, result)
-            when (call.method) {
-                "isShizukuInstalled" -> result.success(isShizukuInstalled())
-                "installShizuku" -> {}
-                "isMicroGInstalled" -> result.success(isSupportGMS())
-                "installMicroG" -> {}
-                "isShizukuGranted" -> result.success(checkShizukuPermission())
-                "requestPermissions" -> requestPermissions()
-
-
+                mAppCompatDelegateBaseContext = context
             }
         }
 
@@ -1309,7 +1326,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun attachDelegateBaseContext() {
-            mDelegate.attachBaseContext2(mDelegateBaseContext)
+            mAppCompatDelegate.attachBaseContext2(mAppCompatDelegateBaseContext)
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -1341,7 +1358,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     when {
                         mAIDL != null -> {
                             mIsBind = true
-                            clientUnit {
+                            invokeUnit {
                                 onEcosedConnected()
                             }
                         }
@@ -1373,7 +1390,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     mIsBind = false
                     mAIDL = null
                     unbindService(this)
-                    clientUnit {
+                    invokeUnit {
                         onEcosedDisconnected()
                     }
                     if (mFullDebug) {
@@ -1449,7 +1466,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun getDrawerToggleDelegate(): ActionBarDrawerToggle.Delegate? {
-            return mDelegate.drawerToggleDelegate
+            return mAppCompatDelegate.drawerToggleDelegate
         }
 
         override fun getLifecycle(): Lifecycle {
@@ -1557,66 +1574,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         ) = Unit
     }
 
-    /** 原生方法调用 */
-    private val mNative = object : EcosedPlugin(), NativeWrapper {
-
-        /** 插件标题 */
-        override val title: String
-            get() = getString(R.string.native_title)
-
-        /** 插件通道 */
-        override val channel: String
-            get() = nativeChannelName
-
-        /** 插件作者 */
-        override val author: String
-            get() = EcosedResources.defaultAuthor
-
-        /** 插件描述 */
-        override val description: String
-            get() = getString(R.string.native_description)
-
-        override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
-            super.onEcosedMethodCall(call, result)
-            when (call.method) {
-                "main" -> main()
-                else -> result.notImplemented()
-            }
-        }
-
-        override fun main() = main(arrayOf(""))
-    }
-
-    /**
-     ***********************************************************************************************
-     * 分类: 底层代码调用
-     ***********************************************************************************************
-     */
-
-    /**
-     * Shizuku调用类
-     */
-    class UserService : IUserService.Stub() {
-
-        /**
-         * ShizukuAPI内置方法
-         */
-        override fun destroy() = exitProcess(
-            status = 0
-        )
-
-        /**
-         * ShizukuAPI内置方法
-         */
-        override fun exit() = exitProcess(
-            status = 0
-        )
-
-        override fun poem() {
-            Log.d("", "Shizuku - poem")
-        }
-    }
-
     /**
      ***********************************************************************************************
      * 分类: 调用单元
@@ -1641,7 +1598,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> engineUnit(
         content: EngineWrapper.() -> R,
-    ): R = content.invoke(mEngine)
+    ): R = content.invoke(mEcosedEngine)
 
     /**
      * 生命周期调用单元
@@ -1651,7 +1608,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> lifecycleUnit(
         content: LifecycleWrapper.() -> R
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
     /**
      * 插件调用单元
@@ -1663,7 +1620,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private inline fun <R> pluginUnit(
         context: Context, debug: Boolean, content: (ArrayList<EcosedPlugin>, PluginBinding) -> R
     ): R = content.invoke(
-        arrayListOf(mFramework, mEngine, mClient, mService, mNative),
+        arrayListOf(mFramework, mEcosedEngine, mServiceInvoke, mServiceDelegate),
         PluginBinding(context = context, debug = debug)
     )
 
@@ -1673,9 +1630,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 客户端回调单元
      * @return content 返回值
      */
-    private inline fun <R> clientUnit(
+    private inline fun <R> invokeUnit(
         content: ClientWrapper.() -> R,
-    ): R = content.invoke(mClient)
+    ): R = content.invoke(mServiceInvoke)
 
     /**
      * 服务调用单元
@@ -1685,7 +1642,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> serviceUnit(
         content: ServiceWrapper.() -> R,
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
     /**
      * 服务连接器调用单元
@@ -1695,7 +1652,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> connectUnit(
         content: ConnectWrapper.() -> R,
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
     /**
      * Shizuku方法调用单元
@@ -1705,7 +1662,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> shizukuUnit(
         content: ShizukuWrapper.() -> R,
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
     /**
      * AppCompat方法调用单元
@@ -1715,7 +1672,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> appCompatUnit(
         content: AppCompatWrapper.() -> R,
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
 
     /**
@@ -1726,7 +1683,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> sensorUnit(
         content: SensorWrapper.() -> R
-    ): R = content.invoke(mService)
+    ): R = content.invoke(mServiceDelegate)
 
     /**
      * Activity上下文调用单元
@@ -1750,30 +1707,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline fun <R> delegateUnit(
         content: AppCompatDelegate.() -> R
-    ): R = content.invoke(mDelegate)
-
-    /**
-     * 原生代码调用单元
-     * 调用底层原生代码
-     * @param content C++
-     * @return content 返回值
-     */
-    private inline fun <R> nativeUnit(
-        content: NativeWrapper.() -> R,
-    ): R = content.invoke(mNative)
-
-    /**
-     ***********************************************************************************************
-     * 分类: 原生调用 - C++
-     ***********************************************************************************************
-     */
-
-    /**
-     * 原生代码执行入口
-     * @param args 要传入的附加参数
-     */
-    private external fun main(args: Array<String>)
-
+    ): R = content.invoke(mAppCompatDelegate)
+    
     /**
      ***********************************************************************************************
      * 分类: 私有函数
@@ -1785,7 +1720,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun initDelegate(): Unit = activityUnit {
         // 初始化Delegate
-        mDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
+        mAppCompatDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
             appCompatUnit {
                 return@appCompatUnit AppCompatDelegate.create(
                     this@activityUnit, this@appCompatUnit
@@ -1822,16 +1757,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 R.drawable.baseline_keyboard_command_key_24,
             )
             subtitle = EcosedResources.projectName
-            inflateMenu(R.menu.action_menu)
-
             setNavigationOnClickListener { view ->
 
-            }
-            setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-
-                }
-                true
             }
             mToolbar = this@apply
         }
@@ -1929,6 +1856,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
+
+    private fun openDialog(): Boolean {
+        return if (!mDebugDialog.isShowing) {
+            VibrateUtils.vibrate(100)
+            mDebugDialog.show()
+            true
+        } else {
+            false
+        }
+    }
+
     /**
      * 检查Shizuku权限
      */
@@ -2020,7 +1958,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 context.bindService(
                     mEcosedServicesIntent, this@connectUnit, Context.BIND_AUTO_CREATE
                 ).let { bind ->
-                    clientUnit {
+                    invokeUnit {
                         if (!bind) onEcosedDead()
                     }
                 }
@@ -2044,7 +1982,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 ).run {
                     mIsBind = false
                     mAIDL = null
-                    clientUnit {
+                    invokeUnit {
                         onEcosedDisconnected()
                     }
                     if (mFullDebug) {
@@ -2074,7 +2012,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 隐藏工具栏
      */
     private fun hide() {
-        mDelegate.supportActionBar?.hide()
+        mAppCompatDelegate.supportActionBar?.hide()
         isVisible = false
         hideHandler.removeCallbacks(showPart2Runnable)
     }
@@ -2123,10 +2061,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         x = (deltaX.pow(n = 2) + deltaY.pow(n = 2) + deltaZ.pow(n = 2)).toDouble()
                     ) / mInterval * 10000
                     //判断
-                    if ((nowSpeed >= mSpeed) and mFullDebug and !mDebugDialog.isShowing) {
-                        VibrateUtils.vibrate(100)
-                        mDebugDialog.show()
-                    }
+                    if (nowSpeed >= mSpeed) openDialog()
                 }
             }
         }
@@ -2206,13 +2141,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 if (mAIDL != null) {
                     mAIDL!!.shizukuVersion
                 } else {
-                    clientUnit {
+                    invokeUnit {
                         onEcosedUnbind()
                     }
                     null
                 }
             } else {
-                clientUnit {
+                invokeUnit {
                     onEcosedUnbind()
                 }
                 null
@@ -2282,15 +2217,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         const val engineChannelName: String = "ecosed_engine"
         const val clientChannelName: String = "ecosed_client"
         const val serviceChannelName: String = "ecosed_service"
-        const val nativeChannelName: String = "ecosed_native"
-
-
-        const val mMethodDebug: String = "is_binding"
-        const val mMethodIsBinding: String = "is_debug"
-        const val mMethodStartService: String = "start_service"
-        const val mMethodBindService: String = "bind_service"
-        const val mMethodUnbindService: String = "unbind_service"
-        const val mMethodShizukuVersion: String = "shizuku_version"
+      
 
 
     }

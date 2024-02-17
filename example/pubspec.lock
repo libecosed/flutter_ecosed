@@ -78,15 +78,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_boost:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "5.0.1"
-      resolved-ref: fcda0545c490a086f8fe9665b23fa5bdc8adacfc
-      url: "https://github.com/alibaba/flutter_boost.git"
-    source: git
-    version: "5.0.1"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -289,4 +280,4 @@ packages:
     version: "3.0.2"
 sdks:
   dart: ">=3.2.4 <4.0.0"
-  flutter: ">=3.16.0"
+  flutter: ">=3.7.0"

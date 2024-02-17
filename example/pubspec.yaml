@@ -8,10 +8,6 @@ dependencies:
     sdk: flutter
   flutter_ecosed:
     path: ../
-  flutter_boost:
-    git:
-      url: 'https://github.com/alibaba/flutter_boost.git'
-      ref: '5.0.1'
   cupertino_icons: ^1.0.2
   dynamic_color: ^1.6.9
 dev_dependencies:
