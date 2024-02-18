@@ -57,23 +57,6 @@ class EcosedAppState extends State<EcosedApp> {
       // 设置插件列表
       _pluginList = initialPluginList;
     }
-
-    // initialPluginList.add(widget.app());
-    // pluginDetailsList.add(
-    //   PluginDetails(
-    //     channel: widget.app().pluginChannel(),
-    //     title: widget.app().pluginName(),
-    //     description: widget.app().pluginDescription(),
-    //     author: widget.app().pluginAuthor(),
-    //     type: PluginType.flutter,
-    //     initial: true,
-    //   ),
-    // );
-    // 设置插件列表
-    // _pluginList = initialPluginList;
-
-    // 加载详细信息
-
     // 添加native层内置插件
     if (Platform.isAndroid) {
       try {
@@ -157,6 +140,16 @@ class EcosedAppState extends State<EcosedApp> {
 
   bool _isAllowPush(PluginDetails details) {
     return details.type == PluginType.flutter && _plugin(details) != null;
+  }
+
+  int _pluginNumber() {
+    var i = 0;
+    for (var element in _pluginList) {
+      if (element.pluginChannel() != widget.pluginChannel()) {
+        i++;
+      }
+    }
+    return i;
   }
 
   @override
@@ -244,23 +237,34 @@ class EcosedAppState extends State<EcosedApp> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '应用版本',
+                                    '应用名称',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    '1.0',
+                                    widget.title,
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    '内核版本',
+                                    '插件数量',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    '1.0',
+                                    _pluginNumber().toString(),
+                                    textAlign: TextAlign.start,
+                                    style: textTheme.bodyMedium,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    '当前平台',
+                                    textAlign: TextAlign.start,
+                                    style: textTheme.bodyLarge,
+                                  ),
+                                  Text(
+                                    Platform.operatingSystem,
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
@@ -275,19 +279,44 @@ class EcosedAppState extends State<EcosedApp> {
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
-                                  const SizedBox(height: 16),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 12,
+                      ),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    'Shizuku版本',
+                                    'Learn more',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    '1.0',
+                                    'learn more',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
                                 ],
                               ),
+                              const Spacer(),
+                              IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.open_in_browser),
+                              )
                             ],
                           ),
                         ),

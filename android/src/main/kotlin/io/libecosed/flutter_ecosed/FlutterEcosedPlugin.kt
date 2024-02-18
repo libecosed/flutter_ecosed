@@ -30,6 +30,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -50,6 +51,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -1995,6 +1997,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 Log.e(pluginTag, "unbindEcosed", e)
             }
         }
+    }
+
+    private fun launchUrl(url: String) = activityUnit {
+        val intent = CustomTabsIntent.Builder().build()
+        intent.launchUrl(this@activityUnit, Uri.parse(url))
     }
 
     /**

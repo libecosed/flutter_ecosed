@@ -47,6 +47,7 @@ class _ExampleAppState extends State<ExampleApp> {
               return Scaffold(
                 appBar: AppBar(
                   title: const Text(appName),
+                  centerTitle: true,
                 ),
                 body: body,
               );

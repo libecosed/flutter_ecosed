@@ -4,11 +4,8 @@ import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
 import '../values/method.dart';
 import 'app_state.dart';
+import 'app_type.dart';
 import 'app_wrapper.dart';
-
-typedef EcosedExec = Object? Function(String channel, String method);
-typedef EcosedApps = Widget Function(Widget body, EcosedExec exec);
-typedef EcosedScaffold = Scaffold Function(Widget body);
 
 class EcosedApp extends EcosedPlugin
     implements AppWrapper, FlutterEcosedPlatform {
