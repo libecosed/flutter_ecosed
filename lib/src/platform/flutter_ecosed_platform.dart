@@ -18,4 +18,8 @@ abstract class FlutterEcosedPlatform extends PlatformInterface {
   void openDialog() {
     throw UnimplementedError('openDialog()方法未实现');
   }
+
+  void openPubDev() {
+    throw UnimplementedError('openPubDev()方法未实现');
+  }
 }

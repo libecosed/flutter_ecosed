@@ -11,15 +11,18 @@ import '../values/method.dart';
 
 class EcosedAppState extends State<EcosedApp> {
   /// 占位用空模块
-  static const String _unknownPlugin =
-      '{"channel":"unknown","title":"unknown","description":"unknown","author":"unknown"}';
+  static const String _unknownPlugin = '{'
+      '"channel":"unknown",'
+      '"title":"unknown",'
+      '"description":"unknown",'
+      '"author":"unknown"'
+      '}';
 
   /// Dart层插件列表
   List<EcosedPlugin> _pluginList = [];
 
-  List<PluginDetails> _pluginDetailsList = [
-    PluginDetails.formJSON(jsonDecode(_unknownPlugin), PluginType.unknown, true)
-  ];
+  /// 插件详细信息列表
+  List<PluginDetails> _pluginDetailsList = [];
 
   /// 加载状态
   @override
@@ -67,9 +70,9 @@ class EcosedAppState extends State<EcosedApp> {
           // 添加到插件详细信息列表
           pluginDetailsList.add(
             PluginDetails.formJSON(
-              jsonDecode(element),
-              PluginType.native,
-              true,
+              json: jsonDecode(element),
+              type: PluginType.native,
+              initial: true,
             ),
           );
         }
@@ -105,6 +108,7 @@ class EcosedAppState extends State<EcosedApp> {
     }
   }
 
+  /// 执行插件代码
   Future<Object?> _exec(String channel, String method) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
@@ -116,10 +120,11 @@ class EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
-  EcosedPlugin? _plugin(PluginDetails details) {
+  /// 获取插件
+  EcosedPlugin? _getPlugin(String channel) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (element.pluginChannel() == details.channel) {
+        if (element.pluginChannel() == channel) {
           return element;
         }
       }
@@ -127,6 +132,7 @@ class EcosedAppState extends State<EcosedApp> {
     return null;
   }
 
+  /// 获取插件类型
   String _getType(PluginDetails details) {
     switch (details.type) {
       case PluginType.native:
@@ -138,18 +144,21 @@ class EcosedAppState extends State<EcosedApp> {
     }
   }
 
+  /// 判断插件是否可以打开
   bool _isAllowPush(PluginDetails details) {
-    return details.type == PluginType.flutter && _plugin(details) != null;
+    return details.type == PluginType.flutter &&
+        _getPlugin(details.channel) != null;
   }
 
+  /// 统计普通插件数量
   int _pluginNumber() {
-    var i = 0;
+    var number = 0;
     for (var element in _pluginList) {
       if (element.pluginChannel() != widget.pluginChannel()) {
-        i++;
+        number++;
       }
     }
-    return i;
+    return number;
   }
 
   @override
@@ -157,6 +166,9 @@ class EcosedAppState extends State<EcosedApp> {
     final textTheme = Theme.of(context)
         .textTheme
         .apply(displayColor: Theme.of(context).colorScheme.onSurface);
+    final colorScheme = Theme.of(context).colorScheme;
+    final platform = Theme.of(context).platform;
+    final iconTheme = Theme.of(context).iconTheme;
     return Banner(
       message: 'EcosedApp',
       location: widget.location,
@@ -172,14 +184,18 @@ class EcosedAppState extends State<EcosedApp> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
                       child: Card(
-                        color: Platform.isAndroid
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : Theme.of(context).colorScheme.errorContainer,
+                        color: platform == TargetPlatform.android
+                            ? colorScheme.primaryContainer
+                            : colorScheme.errorContainer,
                         child: Padding(
                           padding: const EdgeInsets.all(24),
                           child: Row(
                             children: [
-                              const FlutterLogo(),
+                              Icon(
+                                platform == TargetPlatform.android
+                                    ? Icons.check_circle_outline
+                                    : Icons.error_outline,
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 24),
                                 child: Column(
@@ -192,9 +208,9 @@ class EcosedAppState extends State<EcosedApp> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      Platform.isAndroid
-                                          ? '由 flutter_ecosed 大力支持'
-                                          : '不支持的操作系统: ${Platform.operatingSystem}',
+                                      platform == TargetPlatform.android
+                                          ? '一切正常～'
+                                          : '不支持的操作系统: ${platform.name}',
                                       textAlign: TextAlign.left,
                                       style: textTheme.bodyMedium,
                                     ),
@@ -211,10 +227,8 @@ class EcosedAppState extends State<EcosedApp> {
                                 },
                                 icon: Icon(
                                   Icons.developer_mode,
-                                  size: IconTheme.of(context).size,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                  size: iconTheme.size,
+                                  color: colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ],
@@ -264,7 +278,7 @@ class EcosedAppState extends State<EcosedApp> {
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    Platform.operatingSystem,
+                                    platform.name,
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
@@ -301,12 +315,12 @@ class EcosedAppState extends State<EcosedApp> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Learn more',
+                                    '了解 flutter_ecosed',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    'learn more',
+                                    '了解如何使用 flutter_ecosed 进行开发。',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
@@ -314,7 +328,12 @@ class EcosedAppState extends State<EcosedApp> {
                               ),
                               const Spacer(),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  _exec(
+                                    widget.pluginChannel(),
+                                    openPubDevMethod,
+                                  );
+                                },
                                 icon: const Icon(Icons.open_in_browser),
                               )
                             ],
@@ -336,7 +355,7 @@ class EcosedAppState extends State<EcosedApp> {
                           (element) => Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: Card(
-                              color: Theme.of(context).colorScheme.surface,
+                              color: colorScheme.surface,
                               child: Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(24, 16, 24, 8),
@@ -399,11 +418,8 @@ class EcosedAppState extends State<EcosedApp> {
                                             element.type == PluginType.native
                                                 ? Icon(
                                                     Icons.android,
-                                                    size: IconTheme.of(context)
-                                                        .size,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
+                                                    size: iconTheme.size,
+                                                    color: colorScheme.primary,
                                                   )
                                                 : const FlutterLogo(),
                                           ],
@@ -441,7 +457,8 @@ class EcosedAppState extends State<EcosedApp> {
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            _plugin(element)!
+                                                            _getPlugin(element
+                                                                    .channel)!
                                                                 .pluginWidget(
                                                                     context)),
                                                   );

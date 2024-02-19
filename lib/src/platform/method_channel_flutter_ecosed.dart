@@ -24,4 +24,12 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
       {'channel': 'ecosed_client'},
     );
   }
+
+  @override
+  void openPubDev() {
+    methodChannel.invokeMethod(
+      'openPubDev',
+      {'channel': 'ecosed_client'},
+    );
+  }
 }

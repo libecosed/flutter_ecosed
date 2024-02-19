@@ -9,13 +9,14 @@ import 'app_wrapper.dart';
 
 class EcosedApp extends EcosedPlugin
     implements AppWrapper, FlutterEcosedPlatform {
-  const EcosedApp(
-      {super.key,
-      required this.title,
-      required this.home,
-      required this.scaffold,
-      required this.location,
-      required this.plugins});
+  const EcosedApp({
+    super.key,
+    required this.title,
+    required this.home,
+    required this.scaffold,
+    required this.location,
+    required this.plugins,
+  });
 
   final String title;
   final EcosedApps home;
@@ -53,6 +54,9 @@ class EcosedApp extends EcosedPlugin
       case openDialogMethod:
         openDialog();
         return null;
+      case openPubDevMethod:
+        openPubDev();
+        return null;
       default:
         return null;
     }
@@ -72,5 +76,10 @@ class EcosedApp extends EcosedPlugin
   @override
   void openDialog() {
     FlutterEcosedPlatform.instance.openDialog();
+  }
+
+  @override
+  void openPubDev() {
+    FlutterEcosedPlatform.instance.openPubDev();
   }
 }

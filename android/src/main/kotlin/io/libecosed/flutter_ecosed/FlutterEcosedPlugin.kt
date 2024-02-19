@@ -1248,6 +1248,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 "getPlatformVersion" -> result.success("Android API ${Build.VERSION.SDK_INT}")
 
                 "openDialog" -> result.success(openDialog())
+                "openPubDev" -> result.success(launchUrl(url = "https://pub.dev/packages/flutter_ecosed"))
 
 
                 else -> result.notImplemented()
