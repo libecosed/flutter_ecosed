@@ -1,5 +1,4 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
 
@@ -38,7 +37,7 @@ class _ExampleAppState extends State<ExampleApp> {
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         return MaterialApp(
           home: EcosedApp(
-            home: (body, exec) {
+            home: (exec, body) {
               return body;
             },
             plugins: [widget],

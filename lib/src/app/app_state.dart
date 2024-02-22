@@ -24,11 +24,21 @@ class EcosedAppState extends State<EcosedApp> {
   /// 插件详细信息列表
   List<PluginDetails> _pluginDetailsList = [];
 
+  /// 滚动控制器
+  late ScrollController _controller;
+
   /// 加载状态
   @override
   void initState() {
-    _initPlatformState();
+    _controller = ScrollController();
     super.initState();
+    _initPlatformState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   /// 加载插件
@@ -161,6 +171,40 @@ class EcosedAppState extends State<EcosedApp> {
     return number;
   }
 
+  /// 打开对话框
+  void _openDialog(BuildContext context) {
+    if (Platform.isAndroid) {
+      _exec(widget.pluginChannel(), openDialogMethod);
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('不支持的操作系统')),
+      );
+    }
+  }
+
+  /// 打开pub.dev
+  void _openPubDev(BuildContext context) {
+    if (Platform.isAndroid) {
+      _exec(widget.pluginChannel(), openPubDevMethod);
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('不支持的操作系统')),
+      );
+    }
+  }
+
+  /// 打开插件页面
+  void _launchPlugin(BuildContext context, PluginDetails details) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            _getPlugin(details.channel)!.pluginWidget(context),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
@@ -175,8 +219,11 @@ class EcosedAppState extends State<EcosedApp> {
       color: Colors.pinkAccent,
       child: widget.scaffold(
         widget.home(
+          _exec,
           Scrollbar(
+            controller: _controller,
             child: ListView(
+              controller: _controller,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +257,7 @@ class EcosedAppState extends State<EcosedApp> {
                                     Text(
                                       platform == TargetPlatform.android
                                           ? '一切正常～'
-                                          : '不支持的操作系统: ${platform.name}',
+                                          : '不支持的操作系统',
                                       textAlign: TextAlign.left,
                                       style: textTheme.bodyMedium,
                                     ),
@@ -220,10 +267,7 @@ class EcosedAppState extends State<EcosedApp> {
                               const Spacer(),
                               IconButton(
                                 onPressed: () {
-                                  _exec(
-                                    widget.pluginChannel(),
-                                    openDialogMethod,
-                                  );
+                                  _openDialog(context);
                                 },
                                 icon: Icon(
                                   Icons.developer_mode,
@@ -329,10 +373,7 @@ class EcosedAppState extends State<EcosedApp> {
                               const Spacer(),
                               IconButton(
                                 onPressed: () {
-                                  _exec(
-                                    widget.pluginChannel(),
-                                    openPubDevMethod,
-                                  );
+                                  _openPubDev(context);
                                 },
                                 icon: const Icon(Icons.open_in_browser),
                               )
@@ -430,13 +471,7 @@ class EcosedAppState extends State<EcosedApp> {
                                     Text(
                                       element.description,
                                       textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: textTheme.bodySmall?.fontSize,
-                                        fontFamily:
-                                            textTheme.bodySmall?.fontFamily,
-                                        height: textTheme.bodySmall?.height,
-                                        fontWeight:
-                                            textTheme.bodySmall?.fontWeight,
+                                      style: textTheme.bodySmall?.apply(
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       maxLines: 4,
@@ -454,13 +489,9 @@ class EcosedAppState extends State<EcosedApp> {
                                         TextButton(
                                           onPressed: _isAllowPush(element)
                                               ? () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            _getPlugin(element
-                                                                    .channel)!
-                                                                .pluginWidget(
-                                                                    context)),
+                                                  _launchPlugin(
+                                                    context,
+                                                    element,
                                                   );
                                                 }
                                               : null,
@@ -484,7 +515,6 @@ class EcosedAppState extends State<EcosedApp> {
               ],
             ),
           ),
-          _exec,
         ),
       ),
     );
