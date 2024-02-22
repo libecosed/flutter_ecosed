@@ -178,13 +178,13 @@ class EcosedAppState extends State<EcosedApp> {
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           behavior: SnackBarBehavior.floating,
-          content: const Text('不支持的操作系统'),
-          action: SnackBarAction(
-            label: 'Close',
-            onPressed: () {}
-          ),
+          content: Text('不支持的操作系统'),
+          // action: SnackBarAction(
+          //   label: 'Close',
+          //   onPressed: () {}
+          // ),
         ),
       );
     }
