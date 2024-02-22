@@ -178,7 +178,14 @@ class EcosedAppState extends State<EcosedApp> {
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('不支持的操作系统')),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: const Text('不支持的操作系统'),
+          action: SnackBarAction(
+            label: 'Close',
+            onPressed: () {}
+          ),
+        ),
       );
     }
   }
@@ -190,7 +197,14 @@ class EcosedAppState extends State<EcosedApp> {
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('不支持的操作系统')),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: const Text('不支持的操作系统'),
+          action: SnackBarAction(
+            label: 'Close',
+            onPressed: () {},
+          ),
+        ),
       );
     }
   }
