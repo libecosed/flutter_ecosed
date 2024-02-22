@@ -1,3 +1,4 @@
 ## 0.0.1
-
-* publish test
+* Publish test.
+## 0.0.2
+* Improve the function.
