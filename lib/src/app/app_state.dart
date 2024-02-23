@@ -176,17 +176,7 @@ class EcosedAppState extends State<EcosedApp> {
     if (Platform.isAndroid) {
       _exec(widget.pluginChannel(), openDialogMethod);
     } else {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text('不支持的操作系统'),
-          // action: SnackBarAction(
-          //   label: 'Close',
-          //   onPressed: () {}
-          // ),
-        ),
-      );
+      showTopic(context);
     }
   }
 
@@ -195,17 +185,7 @@ class EcosedAppState extends State<EcosedApp> {
     if (Platform.isAndroid) {
       _exec(widget.pluginChannel(), openPubDevMethod);
     } else {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: const Text('不支持的操作系统'),
-          action: SnackBarAction(
-            label: 'Close',
-            onPressed: () {},
-          ),
-        ),
-      );
+      showTopic(context);
     }
   }
 
@@ -215,6 +195,16 @@ class EcosedAppState extends State<EcosedApp> {
       MaterialPageRoute(
         builder: (context) =>
             _getPlugin(details.channel)!.pluginWidget(context),
+      ),
+    );
+  }
+
+  void showTopic(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text('不支持的操作系统'),
       ),
     );
   }
