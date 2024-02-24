@@ -260,7 +260,7 @@ class EcosedAppState extends State<EcosedApp> {
                                     const SizedBox(height: 4),
                                     Text(
                                       platform == TargetPlatform.android
-                                          ? '一切正常～'
+                                          ? '一切正常'
                                           : '不支持的操作系统',
                                       textAlign: TextAlign.left,
                                       style: textTheme.bodyMedium,
@@ -310,12 +310,14 @@ class EcosedAppState extends State<EcosedApp> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    '插件数量',
+                                    '当前状态',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    _pluginNumber().toString(),
+                                    platform == TargetPlatform.android
+                                        ? '一切正常'
+                                        : '不支持的操作系统',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
@@ -332,12 +334,12 @@ class EcosedAppState extends State<EcosedApp> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    '设备架构',
+                                    '插件数量',
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyLarge,
                                   ),
                                   Text(
-                                    '1.0',
+                                    _pluginNumber().toString(),
                                     textAlign: TextAlign.start,
                                     style: textTheme.bodyMedium,
                                   ),
