@@ -43,9 +43,11 @@ class EcosedApp extends EcosedPlugin
       title: const Text('关于'),
       applicationName: title,
       applicationVersion: 'Powered by Flutter Ecosed',
-      applicationDescription: const Text('FlutterEcosed 是一个 Flutter 插件，也是一个高级的 Flutter 开发框架，提供 Android 平台调试、插件开发和仪表盘功能。'),
+      applicationDescription: const Text(
+          'FlutterEcosed 是一个 Flutter 插件，也是一个高级的 Flutter 开发框架，提供 Android 平台调试、插件开发和仪表盘功能。'),
       applicationIcon: const FlutterLogo(style: FlutterLogoStyle.horizontal),
-      applicationLegalese: 'Copyright © ${pluginAuthor()}, ${DateTime.now().year.toString()}',
+      applicationLegalese:
+          'Copyright © ${pluginAuthor()}, ${DateTime.now().year.toString()}',
     );
   }
 
