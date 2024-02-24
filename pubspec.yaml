@@ -3,7 +3,7 @@ description: "FlutterEcosed is a Flutter plugin and an advanced Flutter developm
 version: 0.0.1
 repository: https://github.com/libecosed/flutter_ecosed
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
   flutter: '>=3.3.0'
 dependencies:
   flutter:
