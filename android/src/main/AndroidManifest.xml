@@ -2,7 +2,6 @@
     package="io.libecosed.flutter_ecosed">
 
     <uses-permission android:name="android.permission.FAKE_PACKAGE_SIGNATURE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application>
         <meta-data

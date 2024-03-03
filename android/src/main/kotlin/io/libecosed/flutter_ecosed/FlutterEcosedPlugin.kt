@@ -1783,7 +1783,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     else -> {}
                 }
             }
-            setView(createView())
+            setView(mToolbar)
 
             setNegativeButton("NO") { dialog, which -> }
             setPositiveButton("OK") { dialog, which -> }
@@ -1806,28 +1806,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )?.setOnTouchListener(
             delayHideTouchListener
         )
-    }
-
-    private fun createView(): View = activityUnit {
-        return@activityUnit LinearLayoutCompat(this@activityUnit).apply {
-            orientation = LinearLayoutCompat.VERTICAL
-            addView(
-                mToolbar,
-                LinearLayoutCompat.LayoutParams(
-                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-                )
-            )
-            addView(
-                AppCompatEditText(this@activityUnit).apply {
-                    setText("run shell...")
-                },
-                LinearLayoutCompat.LayoutParams(
-                    LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-                    LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-                )
-            )
-        }
     }
 
     /**
@@ -1862,12 +1840,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private fun openDialog(): Boolean {
         return if (!mDebugDialog.isShowing) {
-            VibrateUtils.vibrate(100)
             mDebugDialog.show()
             true
-        } else {
-            false
-        }
+        } else false
     }
 
     /**
