@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -71,7 +72,7 @@ class EcosedAppState extends State<EcosedApp> {
       _pluginList = initialPluginList;
     }
     // 添加native层内置插件
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       try {
         // 遍历原生插件
         for (var element
@@ -173,7 +174,7 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开对话框
   void _openDialog(BuildContext context) {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openDialogMethod);
     } else {
       showTopic(context);
@@ -182,7 +183,7 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开pub.dev
   void _openPubDev(BuildContext context) {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openPubDevMethod);
     } else {
       showTopic(context);
@@ -221,253 +222,272 @@ class EcosedAppState extends State<EcosedApp> {
       message: 'EcosedApp',
       location: widget.location,
       color: Colors.pinkAccent,
-      child: widget.scaffold(
-        widget.home(
-          _exec,
-          Scrollbar(
-            controller: _controller,
-            child: ListView(
-              controller: _controller,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        child: widget.scaffold(
+          Container(
+            child: widget.home(
+              (channel, method){
+                return _exec(channel, method);
+              },
+              Scrollbar(
+                controller: _controller,
+                child: ListView(
+                  controller: _controller,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                      child: Card(
-                        color: platform == TargetPlatform.android
-                            ? colorScheme.primaryContainer
-                            : colorScheme.errorContainer,
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Row(
-                            children: [
-                              Icon(
-                                platform == TargetPlatform.android
-                                    ? Icons.check_circle_outline
-                                    : Icons.error_outline,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 24),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.title,
-                                      textAlign: TextAlign.left,
-                                      style: textTheme.titleMedium,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      platform == TargetPlatform.android
-                                          ? '一切正常'
-                                          : '不支持的操作系统',
-                                      textAlign: TextAlign.left,
-                                      style: textTheme.bodyMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  _openDialog(context);
-                                },
-                                icon: Icon(
-                                  Icons.developer_mode,
-                                  size: iconTheme.size,
-                                  color: colorScheme.onPrimaryContainer,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 12,
-                      ),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+                          child: Card(
+                            color: platform == TargetPlatform.android
+                                ? colorScheme.primaryContainer
+                                : colorScheme.errorContainer,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    '应用名称',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyLarge,
-                                  ),
-                                  Text(
-                                    widget.title,
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    '当前状态',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyLarge,
-                                  ),
-                                  Text(
+                                  Icon(
                                     platform == TargetPlatform.android
-                                        ? '一切正常'
-                                        : '不支持的操作系统',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyMedium,
+                                        ? Icons.check_circle_outline
+                                        : Icons.error_outline,
+                                    size: iconTheme.size,
+                                    color: colorScheme.onPrimaryContainer,
                                   ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    '当前平台',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyLarge,
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 24),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.title,
+                                            textAlign: TextAlign.left,
+                                            style: textTheme.titleMedium,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            platform == TargetPlatform.android
+                                                ? '一切正常'
+                                                : '不支持的操作系统',
+                                            textAlign: TextAlign.left,
+                                            style: textTheme.bodyMedium,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  Text(
-                                    platform.name,
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    '插件数量',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyLarge,
-                                  ),
-                                  Text(
-                                    _pluginNumber().toString(),
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyMedium,
+                                  IconButton(
+                                    onPressed: () {
+                                      _openDialog(context);
+                                    },
+                                    icon: Icon(
+                                      Icons.developer_mode,
+                                      size: iconTheme.size,
+                                      color: colorScheme.onPrimaryContainer,
+                                    ),
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '应用名称',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          widget.title,
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          '当前状态',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          platform == TargetPlatform.android
+                                              ? '一切正常'
+                                              : '不支持的操作系统',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          '当前平台',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          platform.name,
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          '插件数量',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          _pluginNumber().toString(),
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyMedium,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '了解 flutter_ecosed',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          '了解如何使用 flutter_ecosed 进行开发。',
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodyMedium,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      _openPubDev(context);
+                                    },
+                                    icon: const Icon(Icons.open_in_browser),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 12,
-                      ),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '了解 flutter_ecosed',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyLarge,
-                                  ),
-                                  Text(
-                                    '了解如何使用 flutter_ecosed 进行开发。',
-                                    textAlign: TextAlign.start,
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  _openPubDev(context);
-                                },
-                                icon: const Icon(Icons.open_in_browser),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                  child: Column(
-                    children: _pluginDetailsList
-                        .map(
-                          (element) => Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+                      child: Column(
+                        children: _pluginDetailsList
+                            .map(
+                              (element) => Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: Card(
                               color: colorScheme.surface,
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                                const EdgeInsets.fromLTRB(24, 16, 24, 8),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              element.title,
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                fontSize: textTheme
-                                                    .titleMedium?.fontSize,
-                                                fontFamily: textTheme
-                                                    .titleMedium?.fontFamily,
-                                                height:
-                                                    textTheme.bodySmall?.height,
-                                                fontWeight: FontWeight.bold,
-                                                overflow: TextOverflow.ellipsis,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Text(
+                                                element.title,
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontSize: textTheme
+                                                      .titleMedium?.fontSize,
+                                                  fontFamily: textTheme
+                                                      .titleMedium
+                                                      ?.fontFamily,
+                                                  height: textTheme
+                                                      .bodySmall?.height,
+                                                  fontWeight: FontWeight.bold,
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              '通道: ${element.channel}',
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                fontSize: textTheme
-                                                    .bodySmall?.fontSize,
-                                                fontFamily: textTheme
-                                                    .bodySmall?.fontFamily,
-                                                height:
-                                                    textTheme.bodySmall?.height,
+                                              Text(
+                                                '通道: ${element.channel}',
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontSize: textTheme
+                                                      .bodySmall?.fontSize,
+                                                  fontFamily: textTheme
+                                                      .bodySmall?.fontFamily,
+                                                  height: textTheme
+                                                      .bodySmall?.height,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              '作者: ${element.author}',
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                fontSize: textTheme
-                                                    .bodySmall?.fontSize,
-                                                fontFamily: textTheme
-                                                    .bodySmall?.fontFamily,
-                                                height:
-                                                    textTheme.bodySmall?.height,
+                                              Text(
+                                                '作者: ${element.author}',
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontSize: textTheme
+                                                      .bodySmall?.fontSize,
+                                                  fontFamily: textTheme
+                                                      .bodySmall?.fontFamily,
+                                                  height: textTheme
+                                                      .bodySmall?.height,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                        const Spacer(flex: 1),
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                          CrossAxisAlignment.end,
                                           children: [
                                             element.type == PluginType.native
                                                 ? Icon(
-                                                    Icons.android,
-                                                    size: iconTheme.size,
-                                                    color: colorScheme.primary,
-                                                  )
+                                              Icons.android,
+                                              size: iconTheme.size,
+                                              color:
+                                              colorScheme.primary,
+                                            )
                                                 : const FlutterLogo(),
                                           ],
                                         ),
@@ -486,20 +506,21 @@ class EcosedAppState extends State<EcosedApp> {
                                     const Divider(),
                                     Row(
                                       children: [
-                                        Text(
-                                          _getType(element),
-                                          textAlign: TextAlign.start,
-                                          style: textTheme.bodySmall,
+                                        Expanded(
+                                          child: Text(
+                                            _getType(element),
+                                            textAlign: TextAlign.start,
+                                            style: textTheme.bodySmall,
+                                          ),
                                         ),
-                                        const Spacer(flex: 1),
                                         TextButton(
                                           onPressed: _isAllowPush(element)
                                               ? () {
-                                                  _launchPlugin(
-                                                    context,
-                                                    element,
-                                                  );
-                                                }
+                                            _launchPlugin(
+                                              context,
+                                              element,
+                                            );
+                                          }
                                               : null,
                                           child: Text(
                                             _isAllowPush(element)
@@ -515,10 +536,12 @@ class EcosedAppState extends State<EcosedApp> {
                             ),
                           ),
                         )
-                        .toList(),
-                  ),
+                            .toList(),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

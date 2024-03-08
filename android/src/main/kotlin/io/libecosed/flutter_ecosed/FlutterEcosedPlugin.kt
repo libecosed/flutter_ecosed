@@ -42,6 +42,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -145,7 +146,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private val hideHandler = Handler(Looper.myLooper()!!)
 
     private val showPart2Runnable = Runnable {
-        mAppCompatDelegate.supportActionBar?.show()
+        getActionBar()?.show()
     }
 
     /** 工具栏显示状态 */
@@ -456,7 +457,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 注销生命周期监听器释放资源避免内存泄露 */
         fun onDestroyLifecycle()
 
-        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean
+        fun onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ): Boolean
+
         fun onRequestPermissionsResult(
             requestCode: Int,
             permissions: Array<out String>,
@@ -470,7 +476,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun onDestroyEngine()
 
         /** 方法调用 */
-        fun onMethodCall(call: MethodCallProxy, result: ResultProxy)
+        fun onMethodCall(
+            call: MethodCallProxy,
+            result: ResultProxy
+        )
     }
 
     /**
@@ -503,7 +512,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @param errorDetailsProxy 详细信息,注意可能为空.
          */
         fun error(
-            errorCodeProxy: String, errorMessageProxy: String?, errorDetailsProxy: Any?
+            errorCodeProxy: String,
+            errorMessageProxy: String?,
+            errorDetailsProxy: Any?
         )
 
         /**
@@ -637,15 +648,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     /**
-     * 原生插件包装器
-     */
-    private interface NativeWrapper {
-
-        /** 调用原生代码 */
-        fun main()
-    }
-
-    /**
      ***********************************************************************************************
      * 分类: 插件基类实现
      ***********************************************************************************************
@@ -679,6 +681,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @param args 要传入的附加参数
          */
         private external fun main(args: Array<String>)
+
+        companion object {
+            init {
+                // 加载C++代码
+                System.loadLibrary("flutter_ecosed")
+            }
+        }
     }
 
     /**
@@ -711,7 +720,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         open fun onEcosedAdded(binding: PluginBinding) {
             // 初始化插件通道
             mPluginChannel = PluginChannel(
-                binding = binding, channel = channel
+                binding = binding,
+                channel = channel
             )
             // 插件附加基本上下文
             attachBaseContext(
@@ -820,25 +830,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 获取上下文.
          * @return Context.
          */
-        fun getContext(): Context {
-            return mBinding.getContext()
-        }
+        fun getContext(): Context = mBinding.getContext()
 
         /**
          * 是否调试模式.
          * @return Boolean.
          */
-        fun isDebug(): Boolean {
-            return mBinding.isDebug()
-        }
+        fun isDebug(): Boolean = mBinding.isDebug()
 
         /**
          * 获取通道.
          * @return 通道名称.
          */
-        fun getChannel(): String {
-            return mChannel
-        }
+        fun getChannel(): String = mChannel
 
         /**
          * 执行方法回调.
@@ -888,7 +892,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
              * 处理错误结果.
              */
             override fun error(
-                errorCode: String, errorMessage: String?, errorDetails: Any?
+                errorCode: String,
+                errorMessage: String?,
+                errorDetails: Any?
             ): Nothing = error(
                 message = "错误代码:$errorCode\n错误消息:$errorMessage\n详细信息:$errorDetails"
             )
@@ -1243,8 +1249,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 "getPlatformVersion" -> result.success("Android API ${Build.VERSION.SDK_INT}")
 
-                "openDialog" -> result.success(openDialog())
-                "openPubDev" -> result.success(launchUrl(url = "https://pub.dev/packages/flutter_ecosed"))
+                "openDialog" -> {
+                    openDialog()
+                    result.success(0)
+                }
+                "openPubDev" -> {
+                    launchUrl(url = "https://pub.dev/packages/flutter_ecosed")
+                    result.success(0)
+                }
 
 
                 else -> result.notImplemented()
@@ -1836,11 +1848,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
 
-    private fun openDialog(): Boolean {
-        return if (!mDebugDialog.isShowing) {
+    private fun openDialog() {
+        if (!mDebugDialog.isShowing) {
             mDebugDialog.show()
-            true
-        } else false
+        }
+    }
+
+    /**
+     * 获取操作栏
+     */
+    private fun getActionBar(): ActionBar? = delegateUnit {
+        return@delegateUnit supportActionBar
     }
 
     /**
@@ -1993,7 +2011,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 隐藏工具栏
      */
     private fun hide() {
-        mAppCompatDelegate.supportActionBar?.hide()
+        getActionBar()?.hide()
         isVisible = false
         hideHandler.removeCallbacks(showPart2Runnable)
     }
@@ -2173,11 +2191,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private companion object {
-
-        init {
-            // 加载C++代码
-            System.loadLibrary("flutter_ecosed")
-        }
 
         /** 操作栏是否应该在[AUTO_HIDE_DELAY_MILLIS]毫秒后自动隐藏。*/
         const val AUTO_HIDE = false
