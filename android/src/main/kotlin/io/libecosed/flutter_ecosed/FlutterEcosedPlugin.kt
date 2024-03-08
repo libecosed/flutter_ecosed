@@ -48,8 +48,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
@@ -58,7 +56,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
-import com.blankj.utilcode.util.VibrateUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterActivity
@@ -78,7 +75,6 @@ import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.system.exitProcess
-
 
 /**
  * 作者: wyq0918dev
@@ -161,7 +157,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private val delayHideTouchListener = View.OnTouchListener { view, motionEvent ->
         when (motionEvent.action) {
-            MotionEvent.ACTION_DOWN -> if (autoHide) delayedHide()
+            MotionEvent.ACTION_DOWN -> if (AUTO_HIDE) delayedHide()
             MotionEvent.ACTION_UP -> view.performClick()
             else -> {}
         }
@@ -233,7 +229,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
 
         // 申请签名欺骗权限
-        val fake = PermissionUtils.permission(EcosedManifest.fakePackageSignature)
+        val fake = PermissionUtils.permission(EcosedManifest.FAKE_PACKAGE_SIGNATURE)
         fake.callback { isAllGranted, granted, deniedForever, denied -> }
         fake.request()
 
@@ -325,7 +321,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         binding: FlutterPlugin.FlutterPluginBinding
     ): Unit = bridgeUnit {
         // 初始化方法通道
-        mMethodChannel = MethodChannel(binding.binaryMessenger, flutterChannelName)
+        mMethodChannel = MethodChannel(binding.binaryMessenger, FLUTTER_CHANNEL_NAME)
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
@@ -922,11 +918,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = frameworkChannelName
+            get() = BRIDGE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
-            get() = EcosedResources.defaultAuthor
+            get() = EcosedResources.DEFAULT_AUTHOR
 
         /** 插件描述 */
         override val description: String
@@ -994,11 +990,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = engineChannelName
+            get() = ENGINE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
-            get() = EcosedResources.defaultAuthor
+            get() = EcosedResources.DEFAULT_AUTHOR
 
         /** 插件描述 */
         override val description: String
@@ -1068,8 +1064,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 ) { plugin, binding ->
                     // 打印横幅
                     if (mBaseDebug) Log.i(
-                        pluginTag, String(
-                            bytes = Base64.decode(EcosedResources.banner, Base64.DEFAULT),
+                        PLUGIN_TAG, String(
+                            bytes = Base64.decode(EcosedResources.BANNER, Base64.DEFAULT),
                             charset = StandardCharsets.UTF_8
                         )
                     )
@@ -1082,11 +1078,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                             try {
                                 onEcosedAdded(binding = binding)
                                 if (mBaseDebug) Log.d(
-                                    pluginTag, "插件${item.javaClass.name}已加载"
+                                    PLUGIN_TAG, "插件${item.javaClass.name}已加载"
                                 )
                             } catch (e: Exception) {
                                 if (mBaseDebug) Log.e(
-                                    pluginTag, "插件添加失败!", e
+                                    PLUGIN_TAG, "插件添加失败!", e
                                 )
                             }
                         }.run {
@@ -1102,14 +1098,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                 }.toString()
                             )
                             if (mBaseDebug) Log.d(
-                                pluginTag, "插件${item.javaClass.name}已添加到插件列表"
+                                PLUGIN_TAG, "插件${item.javaClass.name}已添加到插件列表"
                             )
                         }
                     }
                 }
 
                 else -> if (mBaseDebug) Log.e(
-                    pluginTag, "请勿重复执行onCreateEngine!"
+                    PLUGIN_TAG, "请勿重复执行onCreateEngine!"
                 )
             }
         }
@@ -1126,7 +1122,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 else -> if (mBaseDebug) Log.e(
-                    pluginTag, "请勿重复执行onDestroyEngine!"
+                    PLUGIN_TAG, "请勿重复执行onDestroyEngine!"
                 )
             }
         }
@@ -1142,7 +1138,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 // 执行代码并获取执行后的返回值
                 mExecResult = execMethodCall<Any>(
                     channel = call.bundleProxy.getString(
-                        "channel", engineChannelName
+                        "channel", ENGINE_CHANNEL_NAME
                     ), method = call.methodProxy, bundle = call.bundleProxy
                 )
                 // 判断是否为空并提交数据
@@ -1156,7 +1152,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             } catch (e: Exception) {
                 // 抛出异常
                 result.error(
-                    errorCodeProxy = pluginTag,
+                    errorCodeProxy = PLUGIN_TAG,
                     errorMessageProxy = "engine: onMethodCall",
                     errorDetailsProxy = Log.getStackTraceString(e)
                 )
@@ -1186,7 +1182,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                 )
                                 if (mBaseDebug) {
                                     Log.d(
-                                        pluginTag,
+                                        PLUGIN_TAG,
                                         "插件代码调用成功!\n通道名称:${channel}.\n方法名称:${method}.\n返回结果:${result}."
                                     )
                                 }
@@ -1196,7 +1192,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
             } catch (e: Exception) {
                 if (mBaseDebug) {
-                    Log.e(pluginTag, "插件代码调用失败!", e)
+                    Log.e(PLUGIN_TAG, "插件代码调用失败!", e)
                 }
             }
             return result
@@ -1212,11 +1208,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = clientChannelName
+            get() = INVOKE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
-            get() = EcosedResources.defaultAuthor
+            get() = EcosedResources.DEFAULT_AUTHOR
 
         /** 插件描述 */
         override val description: String
@@ -1228,7 +1224,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedAdded(binding: PluginBinding) = run {
             super.onEcosedAdded(binding)
             mEcosedServicesIntent = Intent(this@run, this@FlutterEcosedPlugin.javaClass)
-            mEcosedServicesIntent.action = EcosedManifest.action
+            mEcosedServicesIntent.action = EcosedManifest.ACTION
 
 
             startService(mEcosedServicesIntent)
@@ -1293,11 +1289,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = serviceChannelName
+            get() = DELEGATE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
-            get() = EcosedResources.defaultAuthor
+            get() = EcosedResources.DEFAULT_AUTHOR
 
         /** 插件描述 */
         override val description: String
@@ -1344,12 +1340,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         }
 
                         else -> if (mFullDebug) Log.e(
-                            pluginTag, "UserService接口获取失败 - onServiceConnected"
+                            PLUGIN_TAG, "UserService接口获取失败 - onServiceConnected"
                         )
                     }
                     when {
                         mFullDebug -> Log.i(
-                            pluginTag, "服务已连接 - onServiceConnected"
+                            PLUGIN_TAG, "服务已连接 - onServiceConnected"
                         )
                     }
                 }
@@ -1367,12 +1363,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         }
 
                         else -> if (mFullDebug) Log.e(
-                            pluginTag, "AIDL接口获取失败 - onServiceConnected"
+                            PLUGIN_TAG, "AIDL接口获取失败 - onServiceConnected"
                         )
                     }
                     when {
                         mFullDebug -> Log.i(
-                            pluginTag, "服务已连接 - onServiceConnected"
+                            PLUGIN_TAG, "服务已连接 - onServiceConnected"
                         )
                     }
                 }
@@ -1397,7 +1393,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         onEcosedDisconnected()
                     }
                     if (mFullDebug) {
-                        Log.i(pluginTag, "服务意外断开连接 - onServiceDisconnected")
+                        Log.i(PLUGIN_TAG, "服务意外断开连接 - onServiceDisconnected")
                     }
                 }
 
@@ -1434,7 +1430,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
                     if (mFullDebug) {
-                        Log.e(pluginTag, "Binder为空 - onNullBinding")
+                        Log.e(PLUGIN_TAG, "Binder为空 - onNullBinding")
                     }
                 }
 
@@ -1711,7 +1707,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private inline fun <R> delegateUnit(
         content: AppCompatDelegate.() -> R
     ): R = content.invoke(mAppCompatDelegate)
-    
+
     /**
      ***********************************************************************************************
      * 分类: 私有函数
@@ -1759,7 +1755,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 this@activityUnit,
                 R.drawable.baseline_keyboard_command_key_24,
             )
-            subtitle = EcosedResources.projectName
+            subtitle = EcosedResources.PROJECT_NAME
             setNavigationOnClickListener { view ->
 
             }
@@ -1770,15 +1766,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             setTitle("Debug Menu (Native)")
             setItems(arrayOf("Launch Shizuku", "Launch microG", "3")) { dialog, which ->
                 when (which) {
-                    0 -> if (AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage)){
-                        AppUtils.launchApp(EcosedManifest.ShizukuPackage)
+                    0 -> if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
+                        AppUtils.launchApp(EcosedManifest.SHIZUKU_PACKAGE)
                     } else {
 
                     }
+
                     1 -> {
                         //gms(this@activityUnit)
-                        AppUtils.launchApp(EcosedManifest.GmsPackage)
+                        AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
                     }
+
                     2 -> {}
                     else -> {}
                 }
@@ -1873,7 +1871,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断Shizuku是否已安装
      */
     private fun isShizukuInstalled(): Boolean {
-        return if (AppUtils.isAppInstalled(EcosedManifest.ShizukuPackage)) {
+        return if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
             !Shizuku.isPreV11()
         } else false
     }
@@ -1884,7 +1882,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun isSupportGMS(): Boolean {
         val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity!!)
         return if (code == ConnectionResult.SUCCESS) true else {
-            AppUtils.isAppInstalled(EcosedManifest.GmsPackage)
+            AppUtils.isAppInstalled(EcosedManifest.GMS_PACKAGE)
         }
     }
 
@@ -1894,7 +1892,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun requestPermissions() {
         try {
             Shizuku.requestPermission(0)
-            PermissionUtils.permission(EcosedManifest.fakePackageSignature).request()
+            PermissionUtils.permission(EcosedManifest.FAKE_PACKAGE_SIGNATURE).request()
         } catch (e: IllegalStateException) {
 
         }
@@ -1943,7 +1941,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
         } catch (e: Exception) {
             if (mFullDebug) {
-                Log.e(pluginTag, "bindEcosed", e)
+                Log.e(PLUGIN_TAG, "bindEcosed", e)
             }
         }
     }
@@ -1964,13 +1962,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         onEcosedDisconnected()
                     }
                     if (mFullDebug) {
-                        Log.i(pluginTag, "服务已断开连接 - onServiceDisconnected")
+                        Log.i(PLUGIN_TAG, "服务已断开连接 - onServiceDisconnected")
                     }
                 }
             }
         } catch (e: Exception) {
             if (mFullDebug) {
-                Log.e(pluginTag, "unbindEcosed", e)
+                Log.e(PLUGIN_TAG, "unbindEcosed", e)
             }
         }
     }
@@ -2005,7 +2003,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun show() {
         isVisible = true
-        hideHandler.postDelayed(showPart2Runnable, uiAnimatorDelay.toLong())
+        hideHandler.postDelayed(showPart2Runnable, UI_ANIMATOR_DELAY.toLong())
     }
 
     /**
@@ -2013,7 +2011,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun delayedHide() {
         hideHandler.removeCallbacks(hideRunnable)
-        hideHandler.postDelayed(hideRunnable, autoHideDelayMillis.toLong())
+        hideHandler.postDelayed(hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong())
     }
 
     /**
@@ -2053,20 +2051,20 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun gms(context: Context) {
         try {
             val intent = Intent(Intent.ACTION_MAIN)
-            intent.setPackage(EcosedManifest.GmsPackage)
+            intent.setPackage(EcosedManifest.GMS_PACKAGE)
             try {
                 context.startActivity(intent)
             } catch (e: Exception) {
-                Log.w(pluginTag, "MAIN activity is not DEFAULT. Trying to resolve instead.")
+                Log.w(PLUGIN_TAG, "MAIN activity is not DEFAULT. Trying to resolve instead.")
                 intent.setClassName(
-                    EcosedManifest.GmsPackage,
+                    EcosedManifest.GMS_PACKAGE,
                     packageManager.resolveActivity(intent, 0)!!.activityInfo.name
                 )
                 context.startActivity(intent)
             }
             Toast.makeText(context, "toast_installed", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            Log.w(pluginTag, "Failed launching microG Settings", e)
+            Log.w(PLUGIN_TAG, "Failed launching microG Settings", e)
             Toast.makeText(context, "toast_not_installed", Toast.LENGTH_LONG).show()
         }
 
@@ -2137,7 +2135,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             }
         } catch (e: Exception) {
             if (mFullDebug) {
-                Log.e(pluginTag, "getShizukuVersion", e)
+                Log.e(PLUGIN_TAG, "getShizukuVersion", e)
             }
             null
         }
@@ -2145,12 +2143,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private object EcosedResources {
         /** 项目名称 */
-        const val projectName: String = "flutter_ecosed"
+        const val PROJECT_NAME: String = "flutter_ecosed"
 
-        const val defaultAuthor: String = "wyq09118dev"
+        /** 默认开发者 */
+        const val DEFAULT_AUTHOR: String = "wyq09118dev"
 
         /** 项目ASCII艺术字Base64编码 */
-        const val banner: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
+        const val BANNER: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
                 "CAgICAgICAgICAgICAgICAgXyAKIHwgIF9fX3wgfF8gICBffCB8X3wgfF8gX19fIF8gX18gIHwgX19fX" +
                 "3xfX18gX19fICBfX18gIF9fXyAgX198IHwKIHwgfF8gIHwgfCB8IHwgfCBfX3wgX18vIF8gXCAnX198I" +
                 "HwgIF98IC8gX18vIF8gXC8gX198LyBfIFwvIF9gIHwKIHwgIF98IHwgfCB8X3wgfCB8X3wgfHwgIF9fL" +
@@ -2161,16 +2160,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private object EcosedManifest {
         /** 服务动作 */
-        const val action: String = "io.libecosed.flutter_ecosed.action"
+        const val ACTION: String = "io.libecosed.flutter_ecosed.action"
 
         /** Shizuku包名 */
-        const val ShizukuPackage: String = "moe.shizuku.privileged.api"
+        const val SHIZUKU_PACKAGE: String = "moe.shizuku.privileged.api"
 
         /** 谷歌基础服务包名 */
-        const val GmsPackage: String = "com.google.android.gms"
+        const val GMS_PACKAGE: String = "com.google.android.gms"
 
         /** 签名伪装权限 */
-        const val fakePackageSignature: String = "android.permission.FAKE_PACKAGE_SIGNATURE"
+        const val FAKE_PACKAGE_SIGNATURE: String = "android.permission.FAKE_PACKAGE_SIGNATURE"
     }
 
     private companion object {
@@ -2180,28 +2179,32 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             System.loadLibrary("flutter_ecosed")
         }
 
-        /** 操作栏是否应该在[autoHideDelayMillis]毫秒后自动隐藏。*/
-        const val autoHide = false
+        /** 操作栏是否应该在[AUTO_HIDE_DELAY_MILLIS]毫秒后自动隐藏。*/
+        const val AUTO_HIDE = false
 
-        /** 如果设置了[autoHide]，则在用户交互后隐藏操作栏之前等待的毫秒数。*/
-        const val autoHideDelayMillis = 3000
+        /** 如果设置了[AUTO_HIDE]，则在用户交互后隐藏操作栏之前等待的毫秒数。*/
+        const val AUTO_HIDE_DELAY_MILLIS = 3000
 
         /** 一些较老的设备需要在小部件更新和状态和导航栏更改之间有一个小的延迟。*/
-        const val uiAnimatorDelay = 300
+        const val UI_ANIMATOR_DELAY = 300
 
-        // 打印日志的标签
-        const val pluginTag: String = "FlutterEcosedPlugin"
+        /** 用于打印日志的标签 */
+        const val PLUGIN_TAG: String = "FlutterEcosedPlugin"
 
-        // Flutter插件通道名称
-        const val flutterChannelName = "flutter_ecosed"
+        /** Flutter插件通道名称 */
+        const val FLUTTER_CHANNEL_NAME: String = "flutter_ecosed"
 
-        // Ecosed插件通道名称
-        const val frameworkChannelName: String = "ecosed_framework"
-        const val engineChannelName: String = "ecosed_engine"
-        const val clientChannelName: String = "ecosed_client"
-        const val serviceChannelName: String = "ecosed_service"
-      
+        /** 引擎桥梁插件 */
+        const val BRIDGE_CHANNEL_NAME: String = "ecosed_bridge"
 
+        /** 引擎 */
+        const val ENGINE_CHANNEL_NAME: String = "ecosed_engine"
+
+        /** 服务调用插件 */
+        const val INVOKE_CHANNEL_NAME: String = "ecosed_invoke"
+
+        /** 服务代理插件 */
+        const val DELEGATE_CHANNEL_NAME: String = "ecosed_delegate"
 
     }
 }
