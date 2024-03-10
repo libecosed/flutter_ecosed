@@ -177,7 +177,7 @@ class EcosedAppState extends State<EcosedApp> {
     if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openDialogMethod);
     } else {
-      showTopic(context);
+      _showTopic(context);
     }
   }
 
@@ -186,7 +186,7 @@ class EcosedAppState extends State<EcosedApp> {
     if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openPubDevMethod);
     } else {
-      showTopic(context);
+      _showTopic(context);
     }
   }
 
@@ -200,13 +200,33 @@ class EcosedAppState extends State<EcosedApp> {
     );
   }
 
-  void showTopic(BuildContext context) {
+  void _showTopic(BuildContext context) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         behavior: SnackBarBehavior.floating,
         content: Text('不支持的操作系统'),
       ),
+    );
+  }
+
+  void _showAbout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('关于'),
+          content: const Text('flutter_about'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('确认'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -521,10 +541,16 @@ class EcosedAppState extends State<EcosedApp> {
                                             TextButton(
                                               onPressed: _isAllowPush(element)
                                                   ? () {
-                                                      _launchPlugin(
-                                                        context,
-                                                        element,
-                                                      );
+                                                      if (element.channel !=
+                                                          widget
+                                                              .pluginChannel()) {
+                                                        _launchPlugin(
+                                                          context,
+                                                          element,
+                                                        );
+                                                      } else {
+                                                        _showAbout(context);
+                                                      }
                                                     }
                                                   : null,
                                               child: Text(
