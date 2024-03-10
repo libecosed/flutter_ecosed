@@ -1,4 +1,3 @@
-import 'package:about/about.dart';
 import 'package:flutter/material.dart';
 
 import '../platform/flutter_ecosed_platform.dart';
@@ -36,20 +35,6 @@ class EcosedApp extends EcosedPlugin
 
   @override
   String pluginDescription() => title;
-
-  // @override
-  // Widget pluginWidget(BuildContext context) {
-  //   return AboutPage(
-  //     title: const Text('关于'),
-  //     applicationName: title,
-  //     applicationVersion: 'Powered by Flutter Ecosed',
-  //     applicationDescription: const Text(
-  //         'FlutterEcosed 是一个 Flutter 插件，也是一个高级的 Flutter 开发框架，提供 Android 平台调试、插件开发和仪表盘功能。'),
-  //     applicationIcon: const FlutterLogo(style: FlutterLogoStyle.horizontal),
-  //     applicationLegalese:
-  //         'Copyright © ${pluginAuthor()}, ${DateTime.now().year.toString()}',
-  //   );
-  // }
 
   @override
   Future<Object?> onPlatformCall(String name) async {

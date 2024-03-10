@@ -46,10 +46,8 @@ class EcosedAppState extends State<EcosedApp> {
   Future<void> _initPlatformState() async {
     // 内置插件列表
     List<EcosedPlugin> initialPluginList = [];
-
     // 插件详细信息列表
     List<PluginDetails> pluginDetailsList = [];
-
     //预加载Dart层关键内置插件
     if (widget.initialPlugin().isNotEmpty) {
       // 遍历内部插件
@@ -91,7 +89,6 @@ class EcosedAppState extends State<EcosedApp> {
         pluginDetailsList.add(_pluginDetailsList.first);
       }
     }
-
     // 加载普通插件
     if (widget.plugins.isNotEmpty) {
       for (var element in widget.plugins) {
@@ -108,7 +105,6 @@ class EcosedAppState extends State<EcosedApp> {
         );
       }
     }
-
     // 设置状态，更新界面
     if (mounted) {
       setState(() {
@@ -200,6 +196,7 @@ class EcosedAppState extends State<EcosedApp> {
     );
   }
 
+  /// 显示提示
   void _showTopic(BuildContext context) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -210,6 +207,7 @@ class EcosedAppState extends State<EcosedApp> {
     );
   }
 
+  /// 显示关于对话框
   void _showAbout(BuildContext context) {
     showDialog(
       context: context,
