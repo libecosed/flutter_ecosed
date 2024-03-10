@@ -21,7 +21,7 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   void openDialog() {
     methodChannel.invokeMethod(
       'openDialog',
-      {'channel': 'ecosed_client'},
+      {'channel': 'ecosed_invoke'},
     );
   }
 
@@ -29,7 +29,7 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   void openPubDev() {
     methodChannel.invokeMethod(
       'openPubDev',
-      {'channel': 'ecosed_client'},
+      {'channel': 'ecosed_invoke'},
     );
   }
 }

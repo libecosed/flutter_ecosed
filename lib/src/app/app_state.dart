@@ -226,7 +226,7 @@ class EcosedAppState extends State<EcosedApp> {
         child: widget.scaffold(
           Container(
             child: widget.home(
-              (channel, method){
+              (channel, method) {
                 return _exec(channel, method);
               },
               Scrollbar(
@@ -259,7 +259,7 @@ class EcosedAppState extends State<EcosedApp> {
                                       padding: const EdgeInsets.only(left: 24),
                                       child: Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             widget.title,
@@ -307,7 +307,7 @@ class EcosedAppState extends State<EcosedApp> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '应用名称',
@@ -376,7 +376,7 @@ class EcosedAppState extends State<EcosedApp> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '了解 flutter_ecosed',
@@ -414,128 +414,137 @@ class EcosedAppState extends State<EcosedApp> {
                         children: _pluginDetailsList
                             .map(
                               (element) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Card(
-                              color: colorScheme.surface,
-                              child: Padding(
-                                padding:
-                                const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Card(
+                                  color: colorScheme.surface,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        24, 16, 24, 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                            children: [
-                                              Text(
-                                                element.title,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontSize: textTheme
-                                                      .titleMedium?.fontSize,
-                                                  fontFamily: textTheme
-                                                      .titleMedium
-                                                      ?.fontFamily,
-                                                  height: textTheme
-                                                      .bodySmall?.height,
-                                                  fontWeight: FontWeight.bold,
-                                                  overflow:
-                                                  TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              Text(
-                                                '通道: ${element.channel}',
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontSize: textTheme
-                                                      .bodySmall?.fontSize,
-                                                  fontFamily: textTheme
-                                                      .bodySmall?.fontFamily,
-                                                  height: textTheme
-                                                      .bodySmall?.height,
-                                                ),
-                                              ),
-                                              Text(
-                                                '作者: ${element.author}',
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontSize: textTheme
-                                                      .bodySmall?.fontSize,
-                                                  fontFamily: textTheme
-                                                      .bodySmall?.fontFamily,
-                                                  height: textTheme
-                                                      .bodySmall?.height,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
                                         Row(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.end,
                                           children: [
-                                            element.type == PluginType.native
-                                                ? Icon(
-                                              Icons.android,
-                                              size: iconTheme.size,
-                                              color:
-                                              colorScheme.primary,
-                                            )
-                                                : const FlutterLogo(),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    element.title,
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize: textTheme
+                                                          .titleMedium
+                                                          ?.fontSize,
+                                                      fontFamily: textTheme
+                                                          .titleMedium
+                                                          ?.fontFamily,
+                                                      height: textTheme
+                                                          .bodySmall?.height,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '通道: ${element.channel}',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize: textTheme
+                                                          .bodySmall?.fontSize,
+                                                      fontFamily: textTheme
+                                                          .bodySmall
+                                                          ?.fontFamily,
+                                                      height: textTheme
+                                                          .bodySmall?.height,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '作者: ${element.author}',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize: textTheme
+                                                          .bodySmall?.fontSize,
+                                                      fontFamily: textTheme
+                                                          .bodySmall
+                                                          ?.fontFamily,
+                                                      height: textTheme
+                                                          .bodySmall?.height,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                element.type ==
+                                                        PluginType.native
+                                                    ? Icon(
+                                                        Icons.android,
+                                                        size: iconTheme.size,
+                                                        color:
+                                                            colorScheme.primary,
+                                                      )
+                                                    : const FlutterLogo(),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          element.description,
+                                          textAlign: TextAlign.start,
+                                          style: textTheme.bodySmall?.apply(
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          maxLines: 4,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Divider(),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                _getType(element),
+                                                textAlign: TextAlign.start,
+                                                style: textTheme.bodySmall,
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: _isAllowPush(element)
+                                                  ? () {
+                                                      _launchPlugin(
+                                                        context,
+                                                        element,
+                                                      );
+                                                    }
+                                                  : null,
+                                              child: Text(
+                                                _isAllowPush(element)
+                                                    ? element.channel !=
+                                                            widget
+                                                                .pluginChannel()
+                                                        ? '打开'
+                                                        : '关于'
+                                                    : '无界面',
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      element.description,
-                                      textAlign: TextAlign.start,
-                                      style: textTheme.bodySmall?.apply(
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      maxLines: 4,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Divider(),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            _getType(element),
-                                            textAlign: TextAlign.start,
-                                            style: textTheme.bodySmall,
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: _isAllowPush(element)
-                                              ? () {
-                                            _launchPlugin(
-                                              context,
-                                              element,
-                                            );
-                                          }
-                                              : null,
-                                          child: Text(
-                                            _isAllowPush(element)
-                                                ? '打开'
-                                                : '无界面',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        )
+                            )
                             .toList(),
                       ),
                     ),

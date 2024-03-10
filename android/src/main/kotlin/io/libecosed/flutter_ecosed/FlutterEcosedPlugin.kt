@@ -75,7 +75,6 @@ import rikka.shizuku.Shizuku
 import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.system.exitProcess
 
 /**
  * 作者: wyq0918dev
@@ -181,7 +180,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             UserService().javaClass.name,
         )
     )
-        .daemon(false)
+        .daemon(true)
         .processNameSuffix("service")
         .debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
@@ -645,49 +644,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun getBinder(intent: Intent): IBinder
 
         fun attachDelegateBaseContext()
-    }
-
-    /**
-     ***********************************************************************************************
-     * 分类: 插件基类实现
-     ***********************************************************************************************
-     */
-
-    /**
-     *
-     */
-    class UserService : IUserService.Stub() {
-
-        /**
-         * ShizukuAPI内置方法
-         */
-        override fun destroy() = exitProcess(
-            status = 0
-        )
-
-        /**
-         * ShizukuAPI内置方法
-         */
-        override fun exit() = exitProcess(
-            status = 0
-        )
-
-        override fun poem() {
-            Log.d("", "Shizuku - poem")
-        }
-
-        /**
-         * 原生代码执行入口
-         * @param args 要传入的附加参数
-         */
-        private external fun main(args: Array<String>)
-
-        companion object {
-            init {
-                // 加载C++代码
-                System.loadLibrary("flutter_ecosed")
-            }
-        }
     }
 
     /**
