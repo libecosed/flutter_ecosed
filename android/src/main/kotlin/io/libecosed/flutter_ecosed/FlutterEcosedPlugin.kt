@@ -114,9 +114,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 全局调试布尔值 */
     private var mFullDebug: Boolean = false
 
-    /** Flutter执行返回值 */
-    private var mExecResult: Any? = null
-
     /** 此服务意图 */
     private lateinit var mEcosedServicesIntent: Intent
 
@@ -1098,15 +1095,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) {
             try {
                 // 执行代码并获取执行后的返回值
-                mExecResult = execMethodCall<Any>(
+                val execResult = execMethodCall<Any>(
                     channel = call.bundleProxy.getString(
                         "channel", ENGINE_CHANNEL_NAME
-                    ), method = call.methodProxy, bundle = call.bundleProxy
+                    ),
+                    method = call.methodProxy,
+                    bundle = call.bundleProxy
                 )
                 // 判断是否为空并提交数据
-                if (mExecResult != null) {
+                if (execResult != null) {
                     result.success(
-                        resultProxy = mExecResult
+                        resultProxy = execResult
                     )
                 } else {
                     result.notImplemented()
