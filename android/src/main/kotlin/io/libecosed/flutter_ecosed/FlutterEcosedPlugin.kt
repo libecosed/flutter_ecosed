@@ -1445,28 +1445,20 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
             super.onCreate(owner)
-            // 初始化Delegate
-            initDelegate()
-            // 初始化工具栏状态
-            isVisible = true
-            // 判断Activity是否为AppCompatActivity
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
-                // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
-                initTheme()
-                // 调用Delegate onCreate函数
-                onCreate(Bundle())
+            // 初始化
+            init(isAppCompat = this@activityUnit !is AppCompatActivity) {
+                delegateUnit {
+                    // 调用Delegate onCreate函数
+                    onCreate(Bundle())
+                }
             }
-            // 初始化用户界面
-            initUi()
-            // 从系统服务中获取传感管理器对象
-            initSensor()
-
-
             // 切换工具栏状态
             //toggle()
 
             // 执行Delegate函数
             if (this@activityUnit !is AppCompatActivity) delegateUnit {
+
+
                 onPostCreate(Bundle())
             }
         }
@@ -1681,6 +1673,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 分类: 私有函数
      ***********************************************************************************************
      */
+
+    /**
+     * 初始化
+     */
+    private fun init(isAppCompat: Boolean, onCreate: () -> Unit) {
+        // 初始化Delegate
+        initDelegate()
+        // 初始化工具栏状态
+        isVisible = true
+        // 判断Activity是否为AppCompatActivity
+        if (isAppCompat) delegateUnit {
+            // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
+            initTheme()
+            // 调用Delegate onCreate函数
+            onCreate()
+        }
+        // 初始化用户界面
+        initUi()
+        // 从系统服务中获取传感管理器对象
+        initSensor()
+    }
 
     /**
      * 初始化委托
