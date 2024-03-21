@@ -1,35 +1,30 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_ecosed_method_channel.dart';
 
-class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
-  @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_ecosed');
+abstract class FlutterEcosedPlatform extends PlatformInterface {
+  FlutterEcosedPlatform() : super(token: _token);
 
-  /// 从引擎获取原生插件JSON
-  @override
-  Future<List?> getPluginList() async {
-    return await methodChannel.invokeListMethod(
-      'getPlugins',
-      {'channel': 'ecosed_engine'},
-    );
+  static final Object _token = Object();
+
+  static FlutterEcosedPlatform _instance = MethodChannelFlutterEcosed();
+
+  static FlutterEcosedPlatform get instance => _instance;
+
+  static set instance(FlutterEcosedPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    _instance = instance;
   }
 
-  /// 从客户端启动对话框
-  @override
+  Future<List?> getPluginList() {
+    throw UnimplementedError('getPluginList()方法未实现');
+  }
+
   void openDialog() {
-    methodChannel.invokeMethod(
-      'openDialog',
-      {'channel': 'ecosed_invoke'},
-    );
+    throw UnimplementedError('openDialog()方法未实现');
   }
 
-  @override
   void openPubDev() {
-    methodChannel.invokeMethod(
-      'openPubDev',
-      {'channel': 'ecosed_invoke'},
-    );
+    throw UnimplementedError('openPubDev()方法未实现');
   }
 }

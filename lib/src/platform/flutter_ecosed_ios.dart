@@ -1,4 +1,4 @@
-import 'flutter_ecosed_method_channel.dart';
+import 'flutter_ecosed_platform_interface.dart';
 
 class FlutterEcosedIOS extends FlutterEcosedPlatform {
   FlutterEcosedIOS();

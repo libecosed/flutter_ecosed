@@ -180,11 +180,11 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开pub.dev
   void _openPubDev(BuildContext context) {
-    if (!kIsWeb && Platform.isAndroid) {
+ //   if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openPubDevMethod);
-    } else {
-      _showTopic(context);
-    }
+    // } else {
+    //   _showTopic(context);
+    // }
   }
 
   /// 打开插件页面
