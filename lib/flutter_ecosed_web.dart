@@ -11,8 +11,15 @@ class FlutterEcosedWeb extends FlutterEcosedPlatform {
   }
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = html.window.navigator.userAgent;
-    return version;
+  Future<List?> getPluginList() async {
+    return null;
+  }
+
+  @override
+  void openDialog() {}
+
+  @override
+  void openPubDev() {
+    html.window.location.href = 'https://pub.dev/packages/flutter_ecosed';
   }
 }
