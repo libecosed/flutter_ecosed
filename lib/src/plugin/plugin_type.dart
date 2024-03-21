@@ -1,0 +1,1 @@
+enum PluginType { native, flutter }
