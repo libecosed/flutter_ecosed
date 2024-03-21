@@ -2109,7 +2109,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     lastZ = nowZ
                     //计算
                     val nowSpeed: Double = sqrt(
-                        x = (deltaX.pow(n = 2) + deltaY.pow(n = 2) + deltaZ.pow(n = 2)).toDouble()
+                        x = (deltaX.pow(
+                            n = 2
+                        ) + deltaY.pow(
+                            n = 2
+                        ) + deltaZ.pow(
+                            n = 2
+                        )).toDouble()
                     ) / mInterval * 10000
                     //判断
                     if (nowSpeed >= mSpeed) openDialog()
