@@ -169,11 +169,11 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开对话框
   void _openDialog(BuildContext context) {
-    if (!kIsWeb && Platform.isAndroid) {
+    //if (!kIsWeb && Platform.isAndroid) {
       _exec(widget.pluginChannel(), openDialogMethod);
-    } else {
-      _showTopic(context);
-    }
+    // } else {
+    //   _showTopic(context);
+    // }
   }
 
   /// 打开pub.dev

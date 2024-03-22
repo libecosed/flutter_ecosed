@@ -24,12 +24,15 @@ flutter:
       android:
         package: io.libecosed.flutter_ecosed
         pluginClass: FlutterEcosedPlugin
+        dartPluginClass: MethodChannelFlutterEcosed
       ios:
-        dartPluginClass: FlutterEcosedIOS
+        dartPluginClass: FlutterEcosedDarwin
+        sharedDarwinSource: true
       linux:
         dartPluginClass: FlutterEcosedLinux
       macos:
-        dartPluginClass: FlutterEcosedMacOS
+        dartPluginClass: FlutterEcosedDarwin
+        sharedDarwinSource: true
       windows:
         dartPluginClass: FlutterEcosedWindows
       web:

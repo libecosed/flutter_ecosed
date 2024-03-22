@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'flutter_ecosed_platform_interface.dart';
+import 'flutter_ecosed_platform.dart';
 
 class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
+  MethodChannelFlutterEcosed();
+
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
+
+  static void registerWith() {
+    FlutterEcosedPlatform.instance = MethodChannelFlutterEcosed();
+  }
 
   /// 从引擎获取原生插件JSON
   @override

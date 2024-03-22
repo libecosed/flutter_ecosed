@@ -1,4 +1,4 @@
-import 'flutter_ecosed_platform_interface.dart';
+import 'flutter_ecosed_platform.dart';
 
 class FlutterEcosedLinux extends FlutterEcosedPlatform {
   FlutterEcosedLinux();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../platform/flutter_ecosed_platform_interface.dart';
+import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
 import '../values/method.dart';
 import 'app_state.dart';

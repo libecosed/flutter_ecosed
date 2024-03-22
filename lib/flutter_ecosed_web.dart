@@ -2,7 +2,7 @@ import 'dart:html' as html show window;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'src/platform/flutter_ecosed_platform_interface.dart';
+import 'src/platform/flutter_ecosed_platform.dart';
 
 class FlutterEcosedWeb extends FlutterEcosedPlatform {
   FlutterEcosedWeb();
@@ -17,7 +17,9 @@ class FlutterEcosedWeb extends FlutterEcosedPlatform {
   }
 
   @override
-  void openDialog() {}
+  void openDialog() {
+    html.window.alert('此功能不支持Web');
+  }
 
   @override
   void openPubDev() {
