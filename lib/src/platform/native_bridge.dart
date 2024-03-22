@@ -1,3 +1,5 @@
+library flutter_ecosed;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

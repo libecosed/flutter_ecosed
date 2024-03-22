@@ -1,3 +1,5 @@
+library flutter_ecosed;
+
 import 'plugin_type.dart';
 
 class PluginDetails {

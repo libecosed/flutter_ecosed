@@ -1,3 +1,5 @@
+library flutter_ecosed;
+
 import 'dart:html' as html show window;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
