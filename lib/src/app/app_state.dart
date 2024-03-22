@@ -71,24 +71,22 @@ class EcosedAppState extends State<EcosedApp> {
       _pluginList = initialPluginList;
     }
     // 添加native层内置插件
-    if (!kIsWeb && Platform.isAndroid) {
-      try {
-        // 遍历原生插件
-        for (var element
-            in (await _exec(widget.pluginChannel(), getPluginMethod) as List? ??
-                [_unknownPlugin])) {
-          // 添加到插件详细信息列表
-          pluginDetailsList.add(
-            PluginDetails.formJSON(
-              json: jsonDecode(element),
-              type: PluginType.native,
-              initial: true,
-            ),
-          );
-        }
-      } on PlatformException {
-        pluginDetailsList.add(_pluginDetailsList.first);
+    try {
+      // 遍历原生插件
+      for (var element
+          in (await _exec(widget.pluginChannel(), getPluginMethod) as List? ??
+              [_unknownPlugin])) {
+        // 添加到插件详细信息列表
+        pluginDetailsList.add(
+          PluginDetails.formJSON(
+            json: jsonDecode(element),
+            type: PluginType.native,
+            initial: true,
+          ),
+        );
       }
+    } on PlatformException {
+      pluginDetailsList.add(_pluginDetailsList.first);
     }
     // 加载普通插件
     if (widget.plugins.isNotEmpty) {
@@ -180,8 +178,8 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开pub.dev
   void _openPubDev(BuildContext context) {
- //   if (!kIsWeb && Platform.isAndroid) {
-      _exec(widget.pluginChannel(), openPubDevMethod);
+    //   if (!kIsWeb && Platform.isAndroid) {
+    _exec(widget.pluginChannel(), openPubDevMethod);
     // } else {
     //   _showTopic(context);
     // }
@@ -205,27 +203,6 @@ class EcosedAppState extends State<EcosedApp> {
         behavior: SnackBarBehavior.floating,
         content: Text('不支持的操作系统'),
       ),
-    );
-  }
-
-  /// 显示关于对话框
-  void _showAbout(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('关于'),
-          content: const Text('flutter_about'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('确认'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -548,7 +525,30 @@ class EcosedAppState extends State<EcosedApp> {
                                                           element,
                                                         );
                                                       } else {
-                                                        _showAbout(context);
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return AlertDialog(
+                                                              title: const Text(
+                                                                  '关于'),
+                                                              content: const Text(
+                                                                  'flutter_about'),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  child:
+                                                                      const Text(
+                                                                          '确认'),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
                                                       }
                                                     }
                                                   : null,

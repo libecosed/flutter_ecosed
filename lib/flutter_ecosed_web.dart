@@ -13,7 +13,7 @@ class FlutterEcosedWeb extends FlutterEcosedPlatform {
 
   @override
   Future<List?> getPluginList() async {
-    return null;
+    return [];
   }
 
   @override

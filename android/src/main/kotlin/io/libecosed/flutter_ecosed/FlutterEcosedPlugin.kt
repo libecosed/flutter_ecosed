@@ -1545,7 +1545,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Flutter插件代理单元
      * @return content 返回值
      */
-    private inline fun <R> bridgeUnit(
+    private fun <R> bridgeUnit(
         content: FlutterPluginProxy.() -> R,
     ): R = content.invoke(
         mEngineBridge.run {
@@ -1564,7 +1564,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 引擎包装器单元
      * @return content 返回值
      */
-    private inline fun <R> engineUnit(
+    private fun <R> engineUnit(
         content: EngineWrapper.() -> R,
     ): R = content.invoke(
         mEcosedEngine.run {
@@ -1583,7 +1583,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 生命周期包装器
      * @return content 返回值
      */
-    private inline fun <R> lifecycleUnit(
+    private fun <R> lifecycleUnit(
         content: LifecycleWrapper.() -> R
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1603,7 +1603,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 插件列表单元, 插件绑定器
      * @return content 返回值
      */
-    private inline fun <R> pluginUnit(
+    private fun <R> pluginUnit(
         context: Context,
         debug: Boolean,
         content: (ArrayList<EcosedPlugin>, PluginBinding) -> R,
@@ -1618,7 +1618,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 客户端回调单元
      * @return content 返回值
      */
-    private inline fun <R> invokeUnit(
+    private fun <R> invokeUnit(
         content: InvokeWrapper.() -> R,
     ): R = content.invoke(
         mServiceInvoke.run {
@@ -1637,7 +1637,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 服务
      * @return content 返回值
      */
-    private inline fun <R> serviceUnit(
+    private fun <R> serviceUnit(
         content: DelegateWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1656,7 +1656,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 服务链接包装器
      * @return content 返回值
      */
-    private inline fun <R> connectUnit(
+    private fun <R> connectUnit(
         content: ConnectWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1675,7 +1675,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Shizuku
      * @return content 返回值
      */
-    private inline fun <R> shizukuUnit(
+    private fun <R> shizukuUnit(
         content: ShizukuWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1694,7 +1694,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content AppCompat
      * @return content 返回值
      */
-    private inline fun <R> appCompatUnit(
+    private fun <R> appCompatUnit(
         content: AppCompatWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1714,7 +1714,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 传感器包装器
      * @return content 返回值
      */
-    private inline fun <R> sensorUnit(
+    private fun <R> sensorUnit(
         content: SensorWrapper.() -> R
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1733,7 +1733,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 内容
      * @return content 返回值
      */
-    private inline fun <R> activityUnit(
+    private fun <R> activityUnit(
         content: Activity.() -> R,
     ): R = content.invoke(
         mActivity ?: error(
@@ -1747,7 +1747,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 委托
      * @return content 返回值
      */
-    private inline fun <R> delegateUnit(
+    private fun <R> delegateUnit(
         content: AppCompatDelegate.() -> R
     ): R = content.invoke(mAppCompatDelegate)
 

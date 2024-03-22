@@ -8,20 +8,13 @@ class FlutterEcosedLinux extends FlutterEcosedPlatform {
   }
 
   @override
-  Future<List?> getPluginList() {
-    // TODO: implement getPluginList
-    return super.getPluginList();
+  Future<List?> getPluginList() async {
+    return [];
   }
 
   @override
-  void openDialog() {
-    // TODO: implement openDialog
-    super.openDialog();
-  }
+  void openDialog() {}
 
   @override
-  void openPubDev() {
-    // TODO: implement openPubDev
-    super.openPubDev();
-  }
+  void openPubDev() {}
 }
