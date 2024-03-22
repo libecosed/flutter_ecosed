@@ -40,7 +40,6 @@ class _ExampleAppState extends State<ExampleApp> {
         return MaterialApp(
           home: EcosedApp(
             home: (exec, body) {
-              
               return body;
             },
             plugins: [widget],
