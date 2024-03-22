@@ -3,6 +3,13 @@ description: "FlutterEcosed is a Flutter plugin and an advanced Flutter developm
 version: 0.0.6
 homepage: https://github.com/libecosed/flutter_ecosed
 issue_tracker: https://github.com/libecosed/flutter_ecosed/issues
+topics:
+  - flutter
+  - widgets
+  - shizuku
+# screenshots:
+#   - description: 'Screenshots 0'
+#     path: screenshots/screenshots.png
 environment:
   sdk: '>=3.3.0 <4.0.0'
   flutter: '>=3.3.0'
@@ -13,6 +20,7 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   flutter_plugin_android_lifecycle: ^2.0.17
+  url_launcher: ^6.2.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

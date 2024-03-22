@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
@@ -170,7 +169,7 @@ class EcosedAppState extends State<EcosedApp> {
   /// 打开对话框
   void _openDialog(BuildContext context) {
     //if (!kIsWeb && Platform.isAndroid) {
-      _exec(widget.pluginChannel(), openDialogMethod);
+    _exec(widget.pluginChannel(), openDialogMethod);
     // } else {
     //   _showTopic(context);
     // }
@@ -178,8 +177,9 @@ class EcosedAppState extends State<EcosedApp> {
 
   /// 打开pub.dev
   void _openPubDev(BuildContext context) {
+    launchUrl(Uri.parse('https://pub.dev/packages/flutter_ecosed'));
     //   if (!kIsWeb && Platform.isAndroid) {
-    _exec(widget.pluginChannel(), openPubDevMethod);
+//    _exec(widget.pluginChannel(), openPubDevMethod);
     // } else {
     //   _showTopic(context);
     // }
@@ -196,15 +196,15 @@ class EcosedAppState extends State<EcosedApp> {
   }
 
   /// 显示提示
-  void _showTopic(BuildContext context) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text('不支持的操作系统'),
-      ),
-    );
-  }
+  // void _showTopic(BuildContext context) {
+  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(
+  //       behavior: SnackBarBehavior.floating,
+  //       content: Text('不支持的操作系统'),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

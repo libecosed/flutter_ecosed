@@ -3,7 +3,6 @@ library flutter_ecosed;
 import 'src/platform/flutter_ecosed_method_channel.dart';
 import 'src/platform/flutter_ecosed_platform.dart';
 
-/// 暴露接口
 export 'src/app/app.dart';
 export 'src/plugin/plugin.dart';
 
