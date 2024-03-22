@@ -1,16 +1,16 @@
 library flutter_ecosed;
 
+import 'src/platform/flutter_ecosed_method_channel.dart';
+import 'src/platform/flutter_ecosed_platform.dart';
+
 /// 暴露接口
 export 'src/app/app.dart';
 export 'src/plugin/plugin.dart';
 
-/// Darwin
-export 'src/platform/flutter_ecosed_darwin.dart';
+class FlutterEcosed extends FlutterEcosedPlatform {
+  FlutterEcosed();
 
-/// Linux
-export 'src/platform/flutter_ecosed_linux.dart';
-
-/// Windows
-export 'src/platform/flutter_ecosed_windows.dart';
-
-export 'src/platform/flutter_ecosed_method_channel.dart';
+  static void registerWith() {
+    FlutterEcosedPlatform.instance = MethodChannelFlutterEcosed();
+  }
+}
