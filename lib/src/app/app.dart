@@ -33,55 +33,22 @@ class EcosedApp extends EcosedPlugin
     required this.plugins,
   });
 
-  /// {@tool snippet}
   /// 应用名称
   ///
   /// 此名称将在管理器的顶部状态卡片的标题
   /// 和详细信息卡片的应用名称项上显示
-  ///
-  /// ```dart
-  /// EcosedApp(
-  ///   title: '应用名称',
-  /// )
-  /// ```
-  /// {@end-tool}
   final String title;
 
-  /// {@tool snippet}
   /// 应用主页
   ///
   /// 传入[EcosedExec]exec:插件方法的调用, [Widget]body: 管理器的布局
   /// 返回主页布局传入[EcosedScaffold]作为body
-  ///
-  /// ```dart
-  /// EcosedApp(
-  ///   home: (exec, body) {
-  ///     // exec('插件通道名称', '插件方法名称');
-  ///     // body 管理器的界面
-  ///     return body;
-  ///   },
-  /// )
-  /// ```
-  /// {@end-tool}
   final EcosedHome home;
 
-  /// {@tool snippet}
   /// 应用脚手架
   ///
   /// body:应用主页
-  ///
   /// 返回带有[Banner]的[Scaffold]为此[Widget]布局
-  ///
-  /// ```dart
-  /// EcosedApp(
-  ///   scaffold: (body) {
-  ///     return Scaffold(
-  ///       body: body,
-  ///     );
-  ///   },
-  /// )
-  /// ```
-  /// {@end-tool}
   final EcosedScaffold scaffold;
 
   /// 横幅位置
