@@ -35,12 +35,10 @@ flutter:
         dartPluginClass: FlutterEcosed
       ios:
         dartPluginClass: FlutterEcosed
-        sharedDarwinSource: true
       linux:
         dartPluginClass: FlutterEcosed
       macos:
         dartPluginClass: FlutterEcosed
-        sharedDarwinSource: true
       windows:
         dartPluginClass: FlutterEcosed
       web:

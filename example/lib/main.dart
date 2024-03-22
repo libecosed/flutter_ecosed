@@ -25,7 +25,7 @@ class ExampleApp extends EcosedPlugin {
   State<ExampleApp> createState() => _ExampleAppState();
 
   @override
-  Future<Object?> onPlatformCall(String name) async {
+  Future<Object?> onMethodCall(String name) async {
     return null;
   }
 }
@@ -40,6 +40,7 @@ class _ExampleAppState extends State<ExampleApp> {
         return MaterialApp(
           home: EcosedApp(
             home: (exec, body) {
+              
               return body;
             },
             plugins: [widget],

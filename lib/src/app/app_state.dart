@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecosed/src/values/urls.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../plugin/plugin.dart';
@@ -118,7 +119,7 @@ class EcosedAppState extends State<EcosedApp> {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel() == channel) {
-          return await element.onPlatformCall(method);
+          return await element.onMethodCall(method);
         }
       }
     }
@@ -156,33 +157,24 @@ class EcosedAppState extends State<EcosedApp> {
   }
 
   /// 统计普通插件数量
-  int _pluginNumber() {
-    var number = 0;
+  String _pluginCount() {
+    var count = 0;
     for (var element in _pluginList) {
       if (element.pluginChannel() != widget.pluginChannel()) {
-        number++;
+        count++;
       }
     }
-    return number;
+    return count.toString();
   }
 
   /// 打开对话框
   void _openDialog(BuildContext context) {
-    //if (!kIsWeb && Platform.isAndroid) {
     _exec(widget.pluginChannel(), openDialogMethod);
-    // } else {
-    //   _showTopic(context);
-    // }
   }
 
   /// 打开pub.dev
   void _openPubDev(BuildContext context) {
-    launchUrl(Uri.parse('https://pub.dev/packages/flutter_ecosed'));
-    //   if (!kIsWeb && Platform.isAndroid) {
-//    _exec(widget.pluginChannel(), openPubDevMethod);
-    // } else {
-    //   _showTopic(context);
-    // }
+    launchUrl(Uri.parse(pubDev));
   }
 
   /// 打开插件页面
@@ -194,17 +186,6 @@ class EcosedAppState extends State<EcosedApp> {
       ),
     );
   }
-
-  /// 显示提示
-  // void _showTopic(BuildContext context) {
-  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(
-  //       behavior: SnackBarBehavior.floating,
-  //       content: Text('不支持的操作系统'),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +327,7 @@ class EcosedAppState extends State<EcosedApp> {
                                           style: textTheme.bodyLarge,
                                         ),
                                         Text(
-                                          _pluginNumber().toString(),
+                                          _pluginCount(),
                                           textAlign: TextAlign.start,
                                           style: textTheme.bodyMedium,
                                         ),
