@@ -3,17 +3,17 @@ library flutter_ecosed;
 import 'package:flutter/foundation.dart';
 
 import 'flutter_ecosed_platform.dart';
-import 'native_bridge.dart';
+import '../bridge/native_bridge.dart';
 
 class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   final NativeBridge bridge = const NativeBridge();
 
   /// 从引擎获取原生插件JSON
   @override
-  Future<List?> getPluginList() async {
+  Future<List?> getAndroidPluginList() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return await bridge.getPluginList();
+        return await bridge.getAndroidPluginList();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -27,10 +27,10 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
 
   /// 从客户端启动对话框
   @override
-  void openDialog() {
+  void openAndroidDialog() {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        bridge.openDialog();
+        bridge.openAndroidDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:

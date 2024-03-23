@@ -2,7 +2,10 @@ library flutter_ecosed;
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-abstract class FlutterEcosedPlatform extends PlatformInterface {
+import '../bridge/bridge_wrapper.dart';
+
+abstract class FlutterEcosedPlatform extends PlatformInterface
+    implements BridgeWrapper {
   FlutterEcosedPlatform() : super(token: _token);
 
   static final Object _token = Object();
@@ -20,12 +23,14 @@ abstract class FlutterEcosedPlatform extends PlatformInterface {
   }
 
   /// 获取插件列表
-  Future<List?> getPluginList() {
+  @override
+  Future<List?> getAndroidPluginList() async {
     throw UnimplementedError('getPluginList()方法未实现');
   }
 
   /// 打开对话框
-  void openDialog() {
+  @override
+  void openAndroidDialog() {
     throw UnimplementedError('openDialog()方法未实现');
   }
 }

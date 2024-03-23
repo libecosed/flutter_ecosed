@@ -76,9 +76,9 @@ class EcosedApp extends EcosedPlugin
   Future<Object?> onMethodCall(String name) async {
     switch (name) {
       case getPluginMethod:
-        return await getPluginList();
+        return await getAndroidPluginList();
       case openDialogMethod:
-        openDialog();
+        openAndroidDialog();
         return null;
       default:
         return null;
@@ -89,12 +89,12 @@ class EcosedApp extends EcosedPlugin
   List<EcosedPlugin> initialPlugin() => [this];
 
   @override
-  Future<List?> getPluginList() {
-    return FlutterEcosedPlatform.instance.getPluginList();
+  Future<List?> getAndroidPluginList() {
+    return FlutterEcosedPlatform.instance.getAndroidPluginList();
   }
 
   @override
-  void openDialog() {
-    FlutterEcosedPlatform.instance.openDialog();
+  void openAndroidDialog() {
+    FlutterEcosedPlatform.instance.openAndroidDialog();
   }
 }

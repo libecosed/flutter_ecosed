@@ -3,9 +3,9 @@ library flutter_ecosed;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'flutter_ecosed_platform.dart';
+import 'bridge_wrapper.dart';
 
-class NativeBridge implements FlutterEcosedPlatform {
+class NativeBridge implements BridgeWrapper {
   const NativeBridge();
 
   /// 方法通道
@@ -14,7 +14,7 @@ class NativeBridge implements FlutterEcosedPlatform {
 
   /// 获取插件列表
   @override
-  Future<List?> getPluginList() async {
+  Future<List?> getAndroidPluginList() async {
     return await methodChannel.invokeListMethod(
       'getPlugins',
       {'channel': 'ecosed_engine'},
@@ -23,7 +23,7 @@ class NativeBridge implements FlutterEcosedPlatform {
 
   /// 打开对话框
   @override
-  void openDialog() {
+  void openAndroidDialog() {
     methodChannel.invokeMethod(
       'openDialog',
       {'channel': 'ecosed_invoke'},
