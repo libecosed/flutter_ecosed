@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 
 import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
-import '../values/method.dart';
+import '../values/methods.dart';
 import 'app_state.dart';
 import 'app_type.dart';
 import 'app_wrapper.dart';
@@ -76,7 +76,7 @@ class EcosedApp extends EcosedPlugin
   Future<Object?> onMethodCall(String name) async {
     switch (name) {
       case getPluginMethod:
-        return getPluginList();
+        return await getPluginList();
       case openDialogMethod:
         openDialog();
         return null;
