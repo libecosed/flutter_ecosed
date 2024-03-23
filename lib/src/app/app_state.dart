@@ -1,42 +1,12 @@
 library flutter_ecosed;
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../plugin/plugin.dart';
-import '../plugin/plugin_details.dart';
+import '../engine/ecosed_engine.dart';
 import '../plugin/plugin_type.dart';
-import '../values/methods.dart';
-import '../values/urls.dart';
 import 'app.dart';
 
-mixin Engine on State<EcosedApp> {
-
-  @override
-  void initState() {
-    print('initState');
-    super.initState();
-  }
-}
-
-class EcosedAppState extends State<EcosedApp> with Engine {
-  /// 占位用空模块
-  static const String _unknownPlugin = '{'
-      '"channel":"unknown",'
-      '"title":"unknown",'
-      '"description":"unknown",'
-      '"author":"unknown"'
-      '}';
-
-  /// Dart层插件列表
-  List<EcosedPlugin> _pluginList = [];
-
-  /// 插件详细信息列表
-  List<PluginDetails> _pluginDetailsList = [];
-
+class EcosedAppState extends State<EcosedApp> with EcosedEngine {
   /// 滚动控制器
   late ScrollController _controller;
 
@@ -45,165 +15,12 @@ class EcosedAppState extends State<EcosedApp> with Engine {
   void initState() {
     _controller = ScrollController();
     super.initState();
-    _initPlatformState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  /// 加载插件
-  Future<void> _initPlatformState() async {
-    // 内置插件列表
-    List<EcosedPlugin> initialPluginList = [];
-    // 插件详细信息列表
-    List<PluginDetails> pluginDetailsList = [];
-    //预加载Dart层关键内置插件
-    if (widget.initialPlugin().isNotEmpty) {
-      // 遍历内部插件
-      for (var element in widget.initialPlugin()) {
-        // 添加到内置插件列表
-        initialPluginList.add(element);
-        // 添加到插件详细信息列表
-        pluginDetailsList.add(
-          PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: true,
-          ),
-        );
-      }
-      // 设置插件列表
-      _pluginList = initialPluginList;
-    }
-    // 添加native层内置插件
-    try {
-      // 遍历原生插件
-      for (var element
-          in (await _exec(widget.pluginChannel(), getPluginMethod) as List? ??
-              [_unknownPlugin])) {
-        // 添加到插件详细信息列表
-        pluginDetailsList.add(
-          PluginDetails.formJSON(
-            json: jsonDecode(element),
-            type: PluginType.native,
-            initial: true,
-          ),
-        );
-      }
-    } on PlatformException {
-      pluginDetailsList.add(
-        PluginDetails.formJSON(
-          json: jsonDecode(_unknownPlugin),
-          type: PluginType.unknown,
-          initial: true,
-        ),
-      );
-    }
-    // 加载普通插件
-    if (widget.plugins.isNotEmpty) {
-      for (var element in widget.plugins) {
-        _pluginList.add(element);
-        pluginDetailsList.add(
-          PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: false,
-          ),
-        );
-      }
-    }
-    // 设置状态，更新界面
-    if (mounted) {
-      setState(() {
-        _pluginDetailsList = pluginDetailsList;
-      });
-    } else {
-      return;
-    }
-  }
-
-  /// 执行插件代码
-  Future<Object?> _exec(String channel, String method) async {
-    if (_pluginList.isNotEmpty) {
-      for (var element in _pluginList) {
-        if (element.pluginChannel() == channel) {
-          return await element.onMethodCall(method);
-        }
-      }
-    }
-    return null;
-  }
-
-  /// 获取插件
-  EcosedPlugin? _getPlugin(String channel) {
-    if (_pluginList.isNotEmpty) {
-      for (var element in _pluginList) {
-        if (element.pluginChannel() == channel) {
-          return element;
-        }
-      }
-    }
-    return null;
-  }
-
-  /// 获取插件类型
-  String _getType(PluginDetails details) {
-    switch (details.type) {
-      case PluginType.native:
-        return '内置插件 - Platform';
-      case PluginType.flutter:
-        return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
-      case PluginType.unknown:
-        return '未知插件类型';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  /// 判断插件是否可以打开
-  bool _isAllowPush(PluginDetails details) {
-    return details.type == PluginType.flutter &&
-        _getPlugin(details.channel) != null;
-  }
-
-  /// 统计普通插件数量
-  String _pluginCount() {
-    var count = 0;
-    for (var element in _pluginList) {
-      if (element.pluginChannel() != widget.pluginChannel()) {
-        count++;
-      }
-    }
-    return count.toString();
-  }
-
-  /// 打开对话框
-  void _openDialog(BuildContext context) {
-    _exec(widget.pluginChannel(), openDialogMethod);
-  }
-
-  /// 打开pub.dev
-  void _openPubDev(BuildContext context) {
-    launchUrl(Uri.parse(pubDev));
-  }
-
-  /// 打开插件页面
-  void _launchPlugin(BuildContext context, PluginDetails details) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) =>
-            _getPlugin(details.channel)!.pluginWidget(context),
-      ),
-    );
   }
 
   void _showAboutDialog(BuildContext context) {
@@ -243,7 +60,7 @@ class EcosedAppState extends State<EcosedApp> with Engine {
           Container(
             child: widget.home(
               (channel, method) async {
-                return await _exec(channel, method);
+                return await exec(channel, method);
               },
               Scrollbar(
                 controller: _controller,
@@ -299,7 +116,7 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      _openDialog(context);
+                                      openDialog(context);
                                     },
                                     icon: Icon(
                                       Icons.developer_mode,
@@ -370,7 +187,7 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                                           style: textTheme.bodyLarge,
                                         ),
                                         Text(
-                                          _pluginCount(),
+                                          pluginCount(),
                                           textAlign: TextAlign.start,
                                           style: textTheme.bodyMedium,
                                         ),
@@ -413,7 +230,7 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      _openPubDev(context);
+                                      openPubDev(context);
                                     },
                                     icon: const Icon(Icons.open_in_browser),
                                   )
@@ -431,7 +248,7 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
                       child: Column(
-                        children: _pluginDetailsList
+                        children: pluginDetailsList
                             .map(
                               (element) => Padding(
                                 padding: const EdgeInsets.only(bottom: 12),
@@ -533,18 +350,17 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                _getType(element),
+                                                getType(element),
                                                 textAlign: TextAlign.start,
                                                 style: textTheme.bodySmall,
                                               ),
                                             ),
                                             TextButton(
-                                              onPressed: _isAllowPush(element)
+                                              onPressed: isAllowPush(element)
                                                   ? () {
                                                       if (element.channel !=
-                                                          widget
-                                                              .pluginChannel()) {
-                                                        _launchPlugin(
+                                                          pluginChannel()) {
+                                                        launchPlugin(
                                                           context,
                                                           element,
                                                         );
@@ -555,10 +371,9 @@ class EcosedAppState extends State<EcosedApp> with Engine {
                                                     }
                                                   : null,
                                               child: Text(
-                                                _isAllowPush(element)
+                                                isAllowPush(element)
                                                     ? element.channel !=
-                                                            widget
-                                                                .pluginChannel()
+                                                            pluginChannel()
                                                         ? '打开'
                                                         : '关于'
                                                     : '无界面',

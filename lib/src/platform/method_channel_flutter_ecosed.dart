@@ -6,10 +6,7 @@ import '../bridge/native_bridge.dart';
 import 'flutter_ecosed_platform.dart';
 
 class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
-
-
   final NativeBridge _bridge = const NativeBridge();
-
 
   /// 从引擎获取原生插件JSON
   @override
@@ -42,5 +39,4 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
       default:
     }
   }
-
 }

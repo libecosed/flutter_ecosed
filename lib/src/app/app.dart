@@ -15,15 +15,11 @@ library flutter_ecosed;
 
 import 'package:flutter/material.dart';
 
-import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
-import '../values/methods.dart';
 import 'app_state.dart';
 import 'app_type.dart';
-import 'app_wrapper.dart';
 
-class EcosedApp extends StatefulWidget
-    implements EcosedPlugin, AppWrapper, FlutterEcosedPlatform {
+class EcosedApp extends StatefulWidget {
   const EcosedApp({
     super.key,
     required this.title,
@@ -59,47 +55,4 @@ class EcosedApp extends StatefulWidget
 
   @override
   State<EcosedApp> createState() => EcosedAppState();
-
-  @override
-  String pluginName() => 'EcosedApp';
-
-  @override
-  String pluginAuthor() => 'wyq0918dev';
-
-  @override
-  String pluginChannel() => 'ecosed_app';
-
-  @override
-  String pluginDescription() => title;
-
-  @override
-  Future<Object?> onMethodCall(String name) async {
-    switch (name) {
-      case getPluginMethod:
-        return await getAndroidPluginList();
-      case openDialogMethod:
-        openAndroidDialog();
-        return null;
-      default:
-        return null;
-    }
-  }
-
-  @override
-  List<EcosedPlugin> initialPlugin() => [this];
-
-  @override
-  Future<List?> getAndroidPluginList() {
-    return FlutterEcosedPlatform.instance.getAndroidPluginList();
-  }
-
-  @override
-  void openAndroidDialog() {
-    FlutterEcosedPlatform.instance.openAndroidDialog();
-  }
-  
-  @override
-  Widget pluginWidget(BuildContext context) {
-    return this;
-  }
 }

@@ -93,7 +93,7 @@ class ExamplePlugin extends StatelessWidget implements EcosedPlugin {
 
   @override
   Widget pluginWidget(BuildContext context) => this;
-  
+
   @override
   Widget build(BuildContext context) {
     return Container();

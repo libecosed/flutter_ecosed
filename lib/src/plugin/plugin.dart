@@ -3,7 +3,6 @@ library flutter_ecosed;
 import 'package:flutter/material.dart';
 
 abstract class EcosedPlugin {
-
   ///插件信息
   String pluginChannel();
 
