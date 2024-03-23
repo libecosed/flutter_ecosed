@@ -23,26 +23,6 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
     super.dispose();
   }
 
-  void _showAboutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('关于'),
-          content: const Text('flutter_about'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('确认'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
@@ -365,8 +345,30 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                                           element,
                                                         );
                                                       } else {
-                                                        _showAboutDialog(
-                                                            context);
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return AlertDialog(
+                                                              title: const Text(
+                                                                  '关于'),
+                                                              content: const Text(
+                                                                  'flutter_about'),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  child:
+                                                                      const Text(
+                                                                          '确认'),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
                                                       }
                                                     }
                                                   : null,

@@ -17,6 +17,20 @@ import '../values/urls.dart';
 
 mixin EcosedEngine on State<EcosedApp>
     implements EcosedPlugin, AppWrapper, FlutterEcosedPlatform {
+  /// 占位用空模块
+  static const String _unknownPlugin = '{'
+      '"channel":"unknown",'
+      '"title":"unknown",'
+      '"description":"unknown",'
+      '"author":"unknown"'
+      '}';
+
+  /// Dart层插件列表
+  List<EcosedPlugin> _pluginList = [];
+
+  /// 插件详细信息列表
+  List<PluginDetails> pluginDetailsList = [];
+
   @override
   String pluginName() => 'EcosedApp';
 
@@ -65,20 +79,6 @@ mixin EcosedEngine on State<EcosedApp>
     super.initState();
     _initPlatformState();
   }
-
-  /// 占位用空模块
-  static const String _unknownPlugin = '{'
-      '"channel":"unknown",'
-      '"title":"unknown",'
-      '"description":"unknown",'
-      '"author":"unknown"'
-      '}';
-
-  /// Dart层插件列表
-  List<EcosedPlugin> _pluginList = [];
-
-  /// 插件详细信息列表
-  List<PluginDetails> pluginDetailsList = [];
 
   /// 加载插件
   Future<void> _initPlatformState() async {
