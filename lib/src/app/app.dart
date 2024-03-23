@@ -85,17 +85,14 @@ class EcosedApp extends EcosedPlugin
     }
   }
 
-  /// internal function
   @override
   List<EcosedPlugin> initialPlugin() => [this];
 
-  /// internal function
   @override
   Future<List?> getPluginList() {
     return FlutterEcosedPlatform.instance.getPluginList();
   }
 
-  /// internal function
   @override
   void openDialog() {
     FlutterEcosedPlatform.instance.openDialog();

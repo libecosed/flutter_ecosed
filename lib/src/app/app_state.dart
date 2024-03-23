@@ -88,7 +88,13 @@ class EcosedAppState extends State<EcosedApp> {
         );
       }
     } on PlatformException {
-      pluginDetailsList.add(_pluginDetailsList.first);
+      pluginDetailsList.add(
+        PluginDetails.formJSON(
+          json: jsonDecode(_unknownPlugin),
+          type: PluginType.unknown,
+          initial: true,
+        ),
+      );
     }
     // 加载普通插件
     if (widget.plugins.isNotEmpty) {
@@ -147,6 +153,8 @@ class EcosedAppState extends State<EcosedApp> {
         return '内置插件 - Platform';
       case PluginType.flutter:
         return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
+      case PluginType.unknown:
+        return '未知插件类型';
       default:
         return 'Unknown';
     }
@@ -189,6 +197,26 @@ class EcosedAppState extends State<EcosedApp> {
     );
   }
 
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('关于'),
+          content: const Text('flutter_about'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('确认'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context)
@@ -205,8 +233,8 @@ class EcosedAppState extends State<EcosedApp> {
         child: widget.scaffold(
           Container(
             child: widget.home(
-              (channel, method) {
-                return _exec(channel, method);
+              (channel, method) async {
+                return await _exec(channel, method);
               },
               Scrollbar(
                 controller: _controller,
@@ -508,30 +536,8 @@ class EcosedAppState extends State<EcosedApp> {
                                                           element,
                                                         );
                                                       } else {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (context) {
-                                                            return AlertDialog(
-                                                              title: const Text(
-                                                                  '关于'),
-                                                              content: const Text(
-                                                                  'flutter_about'),
-                                                              actions: <Widget>[
-                                                                TextButton(
-                                                                  child:
-                                                                      const Text(
-                                                                          '确认'),
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  },
-                                                                ),
-                                                              ],
-                                                            );
-                                                          },
-                                                        );
+                                                        _showAboutDialog(
+                                                            context);
                                                       }
                                                     }
                                                   : null,
