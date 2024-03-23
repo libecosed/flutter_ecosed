@@ -2,8 +2,7 @@ library flutter_ecosed;
 
 import 'package:flutter/material.dart';
 
-abstract class EcosedPlugin extends StatefulWidget {
-  const EcosedPlugin({super.key});
+abstract class EcosedPlugin {
 
   ///插件信息
   String pluginChannel();
@@ -18,7 +17,7 @@ abstract class EcosedPlugin extends StatefulWidget {
   String pluginAuthor();
 
   ///插件界面
-  Widget pluginWidget(BuildContext context) => this;
+  Widget pluginWidget(BuildContext context);
 
   ///方法调用
   Future<Object?> onMethodCall(String name);

@@ -12,7 +12,7 @@ abstract class FlutterEcosedPlatform extends PlatformInterface
 
   /// 实例
   static late FlutterEcosedPlatform _instance;
-
+  
   /// 获取实例
   static FlutterEcosedPlatform get instance => _instance;
 

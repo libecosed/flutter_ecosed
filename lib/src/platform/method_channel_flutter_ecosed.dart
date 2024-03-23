@@ -3,12 +3,12 @@ library flutter_ecosed;
 import 'package:flutter/foundation.dart';
 
 import '../bridge/native_bridge.dart';
-import '../platform/flutter_ecosed_platform.dart';
+import 'flutter_ecosed_platform.dart';
 
-class EcosedEngine extends FlutterEcosedPlatform {
-  EcosedEngine();
+class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
 
-  final NativeBridge bridge = const NativeBridge();
+
+  final NativeBridge _bridge = const NativeBridge();
 
 
   /// 从引擎获取原生插件JSON
@@ -16,7 +16,7 @@ class EcosedEngine extends FlutterEcosedPlatform {
   Future<List?> getAndroidPluginList() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return await bridge.getAndroidPluginList();
+        return await _bridge.getAndroidPluginList();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -33,7 +33,7 @@ class EcosedEngine extends FlutterEcosedPlatform {
   void openAndroidDialog() {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        bridge.openAndroidDialog();
+        _bridge.openAndroidDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -42,4 +42,5 @@ class EcosedEngine extends FlutterEcosedPlatform {
       default:
     }
   }
+
 }

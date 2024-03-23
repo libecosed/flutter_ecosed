@@ -13,7 +13,16 @@ import '../values/methods.dart';
 import '../values/urls.dart';
 import 'app.dart';
 
-class EcosedAppState extends State<EcosedApp> {
+mixin Engine on State<EcosedApp> {
+
+  @override
+  void initState() {
+    print('initState');
+    super.initState();
+  }
+}
+
+class EcosedAppState extends State<EcosedApp> with Engine {
   /// 占位用空模块
   static const String _unknownPlugin = '{'
       '"channel":"unknown",'
@@ -247,17 +256,19 @@ class EcosedAppState extends State<EcosedApp> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
                           child: Card(
-                            color: platform == TargetPlatform.android
-                                ? colorScheme.primaryContainer
-                                : colorScheme.errorContainer,
+                            // color: platform == TargetPlatform.android
+                            //     ? colorScheme.primaryContainer
+                            //     : colorScheme.errorContainer,
+                            color: colorScheme.primaryContainer,
                             child: Padding(
                               padding: const EdgeInsets.all(24),
                               child: Row(
                                 children: [
                                   Icon(
-                                    platform == TargetPlatform.android
-                                        ? Icons.check_circle_outline
-                                        : Icons.error_outline,
+                                    // platform == TargetPlatform.android
+                                    //     ? Icons.check_circle_outline
+                                    //     : Icons.error_outline,
+                                    Icons.keyboard_command_key,
                                     size: iconTheme.size,
                                     color: colorScheme.onPrimaryContainer,
                                   ),
@@ -275,9 +286,10 @@ class EcosedAppState extends State<EcosedApp> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            platform == TargetPlatform.android
-                                                ? '一切正常'
-                                                : '不支持的操作系统',
+                                            // platform == TargetPlatform.android
+                                            //     ? '一切正常'
+                                            //     : '不支持的操作系统',
+                                            'default',
                                             textAlign: TextAlign.left,
                                             style: textTheme.bodyMedium,
                                           ),
@@ -333,9 +345,10 @@ class EcosedAppState extends State<EcosedApp> {
                                           style: textTheme.bodyLarge,
                                         ),
                                         Text(
-                                          platform == TargetPlatform.android
-                                              ? '一切正常'
-                                              : '不支持的操作系统',
+                                          // platform == TargetPlatform.android
+                                          //     ? '一切正常'
+                                          //     : '不支持的操作系统',
+                                          'default',
                                           textAlign: TextAlign.start,
                                           style: textTheme.bodyMedium,
                                         ),

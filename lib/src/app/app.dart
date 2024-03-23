@@ -22,8 +22,8 @@ import 'app_state.dart';
 import 'app_type.dart';
 import 'app_wrapper.dart';
 
-class EcosedApp extends EcosedPlugin
-    implements AppWrapper, FlutterEcosedPlatform {
+class EcosedApp extends StatefulWidget
+    implements EcosedPlugin, AppWrapper, FlutterEcosedPlatform {
   const EcosedApp({
     super.key,
     required this.title,
@@ -96,5 +96,10 @@ class EcosedApp extends EcosedPlugin
   @override
   void openAndroidDialog() {
     FlutterEcosedPlatform.instance.openAndroidDialog();
+  }
+  
+  @override
+  Widget pluginWidget(BuildContext context) {
+    return this;
   }
 }
