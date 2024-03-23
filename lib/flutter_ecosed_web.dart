@@ -14,10 +14,10 @@ class FlutterEcosedWeb extends FlutterEcosedPlatform {
   }
 
   @override
-  Future<List?> getPluginList() async => [];
+  Future<List?> getAndroidPluginList() async => [];
 
   @override
-  void openDialog() {
+  void openAndroidDialog() {
     html.window.alert('the function unsupported web');
   }
 }
