@@ -30,6 +30,7 @@ mixin EcosedEngine on State<EcosedApp>
   /// 插件详细信息列表
   List<PluginDetails> _pluginDetailsList = [];
 
+  /// 引擎状态
   EngineState _engineState = EngineState.uninitialized;
 
   @override
@@ -73,9 +74,6 @@ mixin EcosedEngine on State<EcosedApp>
     return widget;
   }
 
-  @override
-  List<EcosedPlugin> initialPlugin() => [this];
-
   /// 执行插件代码
   @override
   Future<Object?> exec(String channel, String method) async {
@@ -89,10 +87,9 @@ mixin EcosedEngine on State<EcosedApp>
     return null;
   }
 
+  /// 获取引擎状态
   @override
-  EngineState getEngineState() {
-    return _engineState;
-  }
+  EngineState getEngineState() => _engineState;
 
   /// 打开对话框
   @override
@@ -112,10 +109,9 @@ mixin EcosedEngine on State<EcosedApp>
     return count;
   }
 
+  ///获取插件信息列表
   @override
-  List<PluginDetails> getPluginDetailsList() {
-    return _pluginDetailsList;
-  }
+  List<PluginDetails> getPluginDetailsList() => _pluginDetailsList;
 
   /// 获取插件类型
   @override
@@ -167,26 +163,24 @@ mixin EcosedEngine on State<EcosedApp>
     // 插件详细信息列表
     List<PluginDetails> pluginDetailsList = [];
     //预加载Dart层关键内置插件
-    if (initialPlugin().isNotEmpty) {
-      // 遍历内部插件
-      for (var element in initialPlugin()) {
-        // 添加到内置插件列表
-        initialPluginList.add(element);
-        // 添加到插件详细信息列表
-        pluginDetailsList.add(
-          PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
-            type: PluginType.flutter,
-            initial: true,
-          ),
-        );
-      }
-      // 设置插件列表
-      _pluginList = initialPluginList;
+    // 遍历内部插件
+    for (var element in [this]) {
+      // 添加到内置插件列表
+      initialPluginList.add(element);
+      // 添加到插件详细信息列表
+      pluginDetailsList.add(
+        PluginDetails(
+          channel: element.pluginChannel(),
+          title: element.pluginName(),
+          description: element.pluginDescription(),
+          author: element.pluginAuthor(),
+          type: PluginType.flutter,
+          initial: true,
+        ),
+      );
     }
+    // 设置插件列表
+    _pluginList = initialPluginList;
     // 添加native层内置插件
     try {
       // 遍历原生插件

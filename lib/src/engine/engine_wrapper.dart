@@ -3,13 +3,9 @@ library flutter_ecosed;
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/engine/engine_state.dart';
 
-import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 
 abstract class EngineWrapper {
-  /// 内置插件列表
-  List<EcosedPlugin> initialPlugin();
-
   /// 获取引擎状态
   EngineState getEngineState();
 
