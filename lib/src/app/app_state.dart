@@ -1,6 +1,7 @@
 library flutter_ecosed;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/engine/engine_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../engine/ecosed_engine.dart';
@@ -55,19 +56,17 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
                           child: Card(
-                            // color: platform == TargetPlatform.android
-                            //     ? colorScheme.primaryContainer
-                            //     : colorScheme.errorContainer,
-                            color: colorScheme.primaryContainer,
+                            color: getEngineState() == EngineState.running
+                                ? colorScheme.primaryContainer
+                                : colorScheme.errorContainer,
                             child: Padding(
                               padding: const EdgeInsets.all(24),
                               child: Row(
                                 children: [
                                   Icon(
-                                    // platform == TargetPlatform.android
-                                    //     ? Icons.check_circle_outline
-                                    //     : Icons.error_outline,
-                                    Icons.keyboard_command_key,
+                                    getEngineState() == EngineState.running
+                                        ? Icons.check_circle_outline
+                                        : Icons.error_outline,
                                     size: iconTheme.size,
                                     color: colorScheme.onPrimaryContainer,
                                   ),
@@ -85,10 +84,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            // platform == TargetPlatform.android
-                                            //     ? '一切正常'
-                                            //     : '不支持的操作系统',
-                                            'default',
+                                            getEngineState().name,
                                             textAlign: TextAlign.left,
                                             style: textTheme.bodyMedium,
                                           ),
@@ -144,10 +140,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                           style: textTheme.bodyLarge,
                                         ),
                                         Text(
-                                          // platform == TargetPlatform.android
-                                          //     ? '一切正常'
-                                          //     : '不支持的操作系统',
-                                          'default',
+                                          getEngineState().name,
                                           textAlign: TextAlign.start,
                                           style: textTheme.bodyMedium,
                                         ),
@@ -169,7 +162,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                           style: textTheme.bodyLarge,
                                         ),
                                         Text(
-                                          pluginCount(),
+                                          pluginCount().toString(),
                                           textAlign: TextAlign.start,
                                           style: textTheme.bodyMedium,
                                         ),

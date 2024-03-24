@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecosed/src/engine/engine_state.dart';
 
 import '../app/app.dart';
 import '../platform/flutter_ecosed_platform.dart';
@@ -28,6 +29,19 @@ mixin EcosedEngine on State<EcosedApp>
 
   /// 插件详细信息列表
   List<PluginDetails> _pluginDetailsList = [];
+
+  EngineState _engineState = EngineState.uninitialized;
+
+  @override
+  void initState() {
+    _initPlatformState();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   String pluginName() => 'EcosedApp';
@@ -55,7 +69,86 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   @override
+  Widget pluginWidget(BuildContext context) {
+    return widget;
+  }
+
+  @override
   List<EcosedPlugin> initialPlugin() => [this];
+
+  /// 执行插件代码
+  @override
+  Future<Object?> exec(String channel, String method) async {
+    if (_pluginList.isNotEmpty) {
+      for (var element in _pluginList) {
+        if (element.pluginChannel() == channel) {
+          return await element.onMethodCall(method);
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
+  EngineState getEngineState() {
+    return _engineState;
+  }
+
+  /// 打开对话框
+  @override
+  void openDialog(BuildContext context) {
+    exec(pluginChannel(), openDialogMethod);
+  }
+
+  /// 统计普通插件数量
+  @override
+  int pluginCount() {
+    var count = 0;
+    for (var element in _pluginList) {
+      if (element.pluginChannel() != pluginChannel()) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  @override
+  List<PluginDetails> getPluginDetailsList() {
+    return _pluginDetailsList;
+  }
+
+  /// 获取插件类型
+  @override
+  String getPluginType(PluginDetails details) {
+    switch (details.type) {
+      case PluginType.native:
+        return '内置插件 - Platform';
+      case PluginType.flutter:
+        return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
+      case PluginType.unknown:
+        return '未知插件类型';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  /// 判断插件是否可以打开
+  @override
+  bool isAllowPush(PluginDetails details) {
+    return details.type == PluginType.flutter &&
+        _getPlugin(details.channel) != null;
+  }
+
+  /// 打开插件页面
+  @override
+  void launchPlugin(BuildContext context, PluginDetails details) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            _getPlugin(details.channel)!.pluginWidget(context),
+      ),
+    );
+  }
 
   @override
   Future<List?> getAndroidPluginList() {
@@ -65,17 +158,6 @@ mixin EcosedEngine on State<EcosedApp>
   @override
   void openAndroidDialog() {
     FlutterEcosedPlatform.instance.openAndroidDialog();
-  }
-
-  @override
-  Widget pluginWidget(BuildContext context) {
-    return widget;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _initPlatformState();
   }
 
   /// 加载插件
@@ -149,23 +231,11 @@ mixin EcosedEngine on State<EcosedApp>
     if (mounted) {
       setState(() {
         _pluginDetailsList = pluginDetailsList;
+        _engineState = EngineState.running;
       });
     } else {
       return;
     }
-  }
-
-  /// 执行插件代码
-  @override
-  Future<Object?> exec(String channel, String method) async {
-    if (_pluginList.isNotEmpty) {
-      for (var element in _pluginList) {
-        if (element.pluginChannel() == channel) {
-          return await element.onMethodCall(method);
-        }
-      }
-    }
-    return null;
   }
 
   /// 获取插件
@@ -178,61 +248,5 @@ mixin EcosedEngine on State<EcosedApp>
       }
     }
     return null;
-  }
-
-  /// 获取插件类型
-  @override
-  String getPluginType(PluginDetails details) {
-    switch (details.type) {
-      case PluginType.native:
-        return '内置插件 - Platform';
-      case PluginType.flutter:
-        return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
-      case PluginType.unknown:
-        return '未知插件类型';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  /// 判断插件是否可以打开
-  @override
-  bool isAllowPush(PluginDetails details) {
-    return details.type == PluginType.flutter &&
-        _getPlugin(details.channel) != null;
-  }
-
-  /// 统计普通插件数量
-  @override
-  String pluginCount() {
-    var count = 0;
-    for (var element in _pluginList) {
-      if (element.pluginChannel() != pluginChannel()) {
-        count++;
-      }
-    }
-    return count.toString();
-  }
-
-  /// 打开对话框
-  @override
-  void openDialog(BuildContext context) {
-    exec(pluginChannel(), openDialogMethod);
-  }
-
-  /// 打开插件页面
-  @override
-  void launchPlugin(BuildContext context, PluginDetails details) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) =>
-            _getPlugin(details.channel)!.pluginWidget(context),
-      ),
-    );
-  }
-
-  @override
-  List<PluginDetails> getPluginDetailsList() {
-    return _pluginDetailsList;
   }
 }
