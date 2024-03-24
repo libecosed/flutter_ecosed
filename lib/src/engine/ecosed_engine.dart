@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app.dart';
 import '../platform/flutter_ecosed_platform.dart';
@@ -12,7 +11,6 @@ import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../values/methods.dart';
-import '../values/urls.dart';
 import 'engine_wrapper.dart';
 
 mixin EcosedEngine on State<EcosedApp>
