@@ -1,9 +1,11 @@
 library flutter_ecosed;
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../engine/ecosed_engine.dart';
 import '../plugin/plugin_type.dart';
+import '../values/urls.dart';
 import 'app.dart';
 
 class EcosedAppState extends State<EcosedApp> with EcosedEngine {
@@ -210,7 +212,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      openPubDev(context);
+                                      launchUrl(Uri.parse(pubDev));
                                     },
                                     icon: const Icon(Icons.open_in_browser),
                                   )
@@ -228,7 +230,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
                       child: Column(
-                        children: pluginDetailsList
+                        children: getPluginDetailsList()
                             .map(
                               (element) => Padding(
                                 padding: const EdgeInsets.only(bottom: 12),
@@ -330,7 +332,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                getType(element),
+                                                getPluginType(element),
                                                 textAlign: TextAlign.start,
                                                 style: textTheme.bodySmall,
                                               ),

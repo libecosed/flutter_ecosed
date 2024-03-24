@@ -7,16 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app.dart';
-import '../app/app_wrapper.dart';
 import '../platform/flutter_ecosed_platform.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../values/methods.dart';
 import '../values/urls.dart';
+import 'engine_wrapper.dart';
 
 mixin EcosedEngine on State<EcosedApp>
-    implements EcosedPlugin, AppWrapper, FlutterEcosedPlatform {
+    implements EcosedPlugin, EngineWrapper, FlutterEcosedPlatform {
   /// 占位用空模块
   static const String _unknownPlugin = '{'
       '"channel":"unknown",'
@@ -29,7 +29,7 @@ mixin EcosedEngine on State<EcosedApp>
   List<EcosedPlugin> _pluginList = [];
 
   /// 插件详细信息列表
-  List<PluginDetails> pluginDetailsList = [];
+  List<PluginDetails> _pluginDetailsList = [];
 
   @override
   String pluginName() => 'EcosedApp';
@@ -85,7 +85,7 @@ mixin EcosedEngine on State<EcosedApp>
     // 内置插件列表
     List<EcosedPlugin> initialPluginList = [];
     // 插件详细信息列表
-    List<PluginDetails> allPluginDetailsList = [];
+    List<PluginDetails> pluginDetailsList = [];
     //预加载Dart层关键内置插件
     if (initialPlugin().isNotEmpty) {
       // 遍历内部插件
@@ -93,7 +93,7 @@ mixin EcosedEngine on State<EcosedApp>
         // 添加到内置插件列表
         initialPluginList.add(element);
         // 添加到插件详细信息列表
-        allPluginDetailsList.add(
+        pluginDetailsList.add(
           PluginDetails(
             channel: element.pluginChannel(),
             title: element.pluginName(),
@@ -114,7 +114,7 @@ mixin EcosedEngine on State<EcosedApp>
           in (await exec(pluginChannel(), getPluginMethod) as List? ??
               [_unknownPlugin])) {
         // 添加到插件详细信息列表
-        allPluginDetailsList.add(
+        pluginDetailsList.add(
           PluginDetails.formJSON(
             json: jsonDecode(element),
             type: PluginType.native,
@@ -123,7 +123,7 @@ mixin EcosedEngine on State<EcosedApp>
         );
       }
     } on PlatformException {
-      allPluginDetailsList.add(
+      pluginDetailsList.add(
         PluginDetails.formJSON(
           json: jsonDecode(_unknownPlugin),
           type: PluginType.unknown,
@@ -135,7 +135,7 @@ mixin EcosedEngine on State<EcosedApp>
     if (widget.plugins.isNotEmpty) {
       for (var element in widget.plugins) {
         _pluginList.add(element);
-        allPluginDetailsList.add(
+        pluginDetailsList.add(
           PluginDetails(
             channel: element.pluginChannel(),
             title: element.pluginName(),
@@ -150,7 +150,7 @@ mixin EcosedEngine on State<EcosedApp>
     // 设置状态，更新界面
     if (mounted) {
       setState(() {
-        pluginDetailsList = allPluginDetailsList;
+        _pluginDetailsList = pluginDetailsList;
       });
     } else {
       return;
@@ -158,6 +158,7 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   /// 执行插件代码
+  @override
   Future<Object?> exec(String channel, String method) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
@@ -170,7 +171,7 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   /// 获取插件
-  EcosedPlugin? getPlugin(String channel) {
+  EcosedPlugin? _getPlugin(String channel) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel() == channel) {
@@ -182,7 +183,8 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   /// 获取插件类型
-  String getType(PluginDetails details) {
+  @override
+  String getPluginType(PluginDetails details) {
     switch (details.type) {
       case PluginType.native:
         return '内置插件 - Platform';
@@ -196,12 +198,14 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   /// 判断插件是否可以打开
+  @override
   bool isAllowPush(PluginDetails details) {
     return details.type == PluginType.flutter &&
-        getPlugin(details.channel) != null;
+        _getPlugin(details.channel) != null;
   }
 
   /// 统计普通插件数量
+  @override
   String pluginCount() {
     var count = 0;
     for (var element in _pluginList) {
@@ -213,21 +217,24 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   /// 打开对话框
+  @override
   void openDialog(BuildContext context) {
     exec(pluginChannel(), openDialogMethod);
   }
 
-  /// 打开pub.dev
-  void openPubDev(BuildContext context) {
-    launchUrl(Uri.parse(pubDev));
-  }
-
   /// 打开插件页面
+  @override
   void launchPlugin(BuildContext context, PluginDetails details) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => getPlugin(details.channel)!.pluginWidget(context),
+        builder: (context) =>
+            _getPlugin(details.channel)!.pluginWidget(context),
       ),
     );
+  }
+
+  @override
+  List<PluginDetails> getPluginDetailsList() {
+    return _pluginDetailsList;
   }
 }

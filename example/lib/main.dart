@@ -96,6 +96,13 @@ class ExamplePlugin extends StatelessWidget implements EcosedPlugin {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Example Plugin'),
+      ),
+      body: const Center(
+        child: Text('Hello World!'),
+      ),
+    );
   }
 }
