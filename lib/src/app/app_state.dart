@@ -235,7 +235,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                      child: Column(
+                      child: ListBody(
                         children: getPluginDetailsList()
                             .map(
                               (element) => Padding(
