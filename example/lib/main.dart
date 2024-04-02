@@ -1,24 +1,10 @@
 import 'dart:async';
 
-import 'package:device_preview/device_preview.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DevicePreview(
-      builder: (context) {
-        return const ExampleApp();
-      },
-    );
-  }
-}
+void main() => runApp(const ExampleApp());
 
 class ExampleApp extends StatefulWidget {
   const ExampleApp({super.key});
@@ -34,37 +20,35 @@ class _ExampleAppState extends State<ExampleApp> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          home: EcosedApp(
-            home: (exec, body) {
-              return body;
-            },
-            plugins: const [ExamplePlugin()],
-            title: appName,
-            location: BannerLocation.topStart,
-            scaffold: (body) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text(appName),
-                ),
-                body: body,
-              );
-            },
-          ),
-          builder: DevicePreview.appBuilder,
+        return EcosedApp(
+          home: (context, exec, body) {
+            return body;
+          },
+          plugins: const [ExamplePlugin()],
           title: appName,
-          theme: ThemeData(
-            colorScheme: lightDynamic,
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: darkDynamic,
-            useMaterial3: true,
-          ),
-          themeMode: ThemeMode.system,
-          locale: DevicePreview.locale(context),
-          // ignore: deprecated_member_use
-          useInheritedMediaQuery: true,
+          location: BannerLocation.topStart,
+          scaffold: (body) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text(appName),
+              ),
+              body: body,
+            );
+          },
+          materialApp: (home, title) {
+            return MaterialApp(
+              home: home,
+              title: title,
+              theme: ThemeData(
+                colorScheme: lightDynamic,
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: darkDynamic,
+                useMaterial3: true,
+              ),
+            );
+          },
         );
       },
     );

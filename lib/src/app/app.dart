@@ -11,7 +11,7 @@ class EcosedApp extends StatefulWidget {
     required this.home,
     required this.scaffold,
     required this.location,
-    required this.plugins,
+    required this.plugins, required this.materialApp,
   });
 
   /// 应用名称
@@ -31,6 +31,8 @@ class EcosedApp extends StatefulWidget {
   /// body:应用主页
   /// 返回带有[Banner]的[Scaffold]为此[Widget]布局
   final EcosedScaffold scaffold;
+
+  final EcosedApps materialApp;
 
   /// 横幅位置
   final BannerLocation location;
