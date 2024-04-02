@@ -16,14 +16,7 @@ import 'app.dart';
 
 class EcosedAppState extends State<EcosedApp> with EcosedEngine {
   /// 滚动控制器
-  late ScrollController _controller;
-
-  /// 加载状态
-  @override
-  void initState() {
-    _controller = ScrollController();
-    super.initState();
-  }
+  final ScrollController _controller = ScrollController();
 
   @override
   void dispose() {
@@ -132,10 +125,13 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
                                               element,
                                             );
                                           } else {
-                                            showDialog(
+                                            showAboutDialog(
                                               context: context,
-                                              builder: (context) =>
-                                                  const AboutDialog(),
+                                              applicationName: widget.title,
+                                              applicationIcon:
+                                                  const FlutterLogo(),
+                                              applicationLegalese:
+                                                  'Powered by FlutterEcosed',
                                             );
                                           }
                                         }

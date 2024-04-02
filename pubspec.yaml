@@ -30,9 +30,9 @@ flutter:
   plugin:
     platforms:
       android:
+        dartPluginClass: FlutterEcosed
         package: io.libecosed.flutter_ecosed
         pluginClass: FlutterEcosedPlugin
-        dartPluginClass: FlutterEcosed
       ios:
         dartPluginClass: FlutterEcosed
       linux:

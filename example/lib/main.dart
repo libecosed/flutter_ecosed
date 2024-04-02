@@ -19,7 +19,7 @@ class _ExampleAppState extends State<ExampleApp> {
   @override
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      builder: (light, dark) {
         return EcosedApp(
           home: (context, exec, body) {
             return body;
@@ -39,14 +39,8 @@ class _ExampleAppState extends State<ExampleApp> {
             return MaterialApp(
               home: home,
               title: title,
-              theme: ThemeData(
-                colorScheme: lightDynamic,
-                useMaterial3: true,
-              ),
-              darkTheme: ThemeData(
-                colorScheme: darkDynamic,
-                useMaterial3: true,
-              ),
+              theme: ThemeData(colorScheme: light),
+              darkTheme: ThemeData(colorScheme: dark),
             );
           },
         );
