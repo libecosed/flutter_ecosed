@@ -30,8 +30,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -50,7 +48,6 @@ import androidx.appcompat.app.AppCompatCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -708,12 +705,26 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 需要子类重写的插件描述 */
         abstract val description: String
 
-        protected val engine: EngineWrapper
-            get() = mEngine
-
         /** 供子类使用的判断调试模式的接口 */
         protected val isDebug: Boolean
             get() = mDebug
+
+        /**
+         * 执行方法
+         * @param channel 插件通道
+         * @param method 插件方法
+         * @param bundle 传值
+         * @return 执行插件方法返回值
+         */
+        open fun <T> execPluginMethod(
+            channel: String,
+            method: String,
+            bundle: Bundle?,
+        ): T? = mEngine.execMethodCall<T>(
+            channel = channel,
+            method = method,
+            bundle = bundle,
+        )
 
         /**
          * 插件调用方法
@@ -1022,6 +1033,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
+
             when (call.method) {
                 "getPlugins" -> result.success(mJSONList)
                 else -> result.notImplemented()
@@ -1035,12 +1047,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onCreateEngine(context: Context) {
             when {
                 (mPluginList == null) or (mJSONList == null) or (mBinding == null) -> pluginUnit(
-                    context = context, debug = mBaseDebug
+                    context = context,
+                    debug = mBaseDebug
                 ) { plugin, binding ->
                     // 打印横幅
                     if (mBaseDebug) Log.i(
                         PLUGIN_TAG, String(
-                            bytes = Base64.decode(EcosedResources.BANNER, Base64.DEFAULT),
+                            bytes = Base64.decode(
+                                EcosedResources.BANNER,
+                                Base64.DEFAULT
+                            ),
                             charset = StandardCharsets.UTF_8
                         )
                     )
@@ -1155,7 +1171,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         when (pluginChannel.getChannel()) {
                             channel -> {
                                 result = pluginChannel.execMethodCall<T>(
-                                    name = channel, method = method, bundle = bundle
+                                    name = channel,
+                                    method = method,
+                                    bundle = bundle
                                 )
                                 if (mBaseDebug) {
                                     Log.d(
@@ -1203,8 +1221,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mEcosedServicesIntent = Intent(this@run, this@FlutterEcosedPlugin.javaClass)
             mEcosedServicesIntent.action = EcosedManifest.ACTION
 
-            //engine.execMethodCall<Any>(channel = "", method = "", bundle = Bundle())
-
             startService(mEcosedServicesIntent)
             bindEcosed(this@run)
 
@@ -1217,21 +1233,15 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-
-
-                "getPlatformVersion" -> result.success("Android API ${Build.VERSION.SDK_INT}")
-
                 "openDialog" -> {
                     openDialog()
-
                     result.success(0)
                 }
 
-                "openPubDev" -> {
-                    launchUrl(url = "https://pub.dev/packages/flutter_ecosed")
+                "closeDialog" -> {
+                    closeDialog()
                     result.success(0)
                 }
-
 
                 else -> result.notImplemented()
             }
@@ -1475,8 +1485,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
             // 执行Delegate函数
             if (this@activityUnit !is AppCompatActivity) delegateUnit {
-
-
                 onPostCreate(Bundle())
             }
         }
@@ -1547,7 +1555,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 当注册的传感器的精度发生变化时调用.
          */
         override fun onAccuracyChanged(
-            sensor: Sensor?, accuracy: Int
+            sensor: Sensor?,
+            accuracy: Int
         ) = Unit
     }
 
@@ -1935,6 +1944,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    private fun closeDialog() {
+        if (mDebugDialog.isShowing) {
+            mDebugDialog.dismiss()
+        }
+    }
+
     /**
      * 获取操作栏
      */
@@ -2070,11 +2085,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 Log.e(PLUGIN_TAG, "unbindEcosed", e)
             }
         }
-    }
-
-    private fun launchUrl(url: String) = activityUnit {
-        val intent = CustomTabsIntent.Builder().build()
-        intent.launchUrl(this@activityUnit, Uri.parse(url))
     }
 
     /**
