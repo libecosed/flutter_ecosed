@@ -657,6 +657,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 插件通道 */
         private lateinit var mPluginChannel: PluginChannel
 
+        private lateinit var mEngine: EngineWrapper
+
         /** 是否调试模式 */
         private var mDebug: Boolean = false
 
@@ -680,6 +682,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             attachBaseContext(
                 base = mPluginChannel.getContext()
             )
+
+            mEngine = mPluginChannel.getEngine()
             // 获取是否调试模式
             mDebug = mPluginChannel.isDebug()
             // 设置调用
@@ -704,6 +708,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 需要子类重写的插件描述 */
         abstract val description: String
 
+        protected val engine: EngineWrapper
+            get() = mEngine
+
         /** 供子类使用的判断调试模式的接口 */
         protected val isDebug: Boolean
             get() = mDebug
@@ -722,11 +729,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private class PluginBinding(
         context: Context,
+        engine: EngineWrapper,
         debug: Boolean,
     ) {
 
         /** 应用程序全局上下文. */
         private val mContext: Context = context
+
+        private val mEngine: EngineWrapper = engine
 
         /** 是否调试模式. */
         private val mDebug: Boolean = debug
@@ -737,6 +747,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         fun getContext(): Context {
             return mContext
+        }
+
+        fun getEngine(): EngineWrapper {
+            return mEngine
         }
 
         /**
@@ -796,6 +810,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @return 通道名称.
          */
         fun getChannel(): String = mChannel
+
+        fun getEngine(): EngineWrapper = mBinding.getEngine()
 
         /**
          * 执行方法回调.
@@ -1187,6 +1203,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mEcosedServicesIntent = Intent(this@run, this@FlutterEcosedPlugin.javaClass)
             mEcosedServicesIntent.action = EcosedManifest.ACTION
 
+            //engine.execMethodCall<Any>(channel = "", method = "", bundle = Bundle())
 
             startService(mEcosedServicesIntent)
             bindEcosed(this@run)
@@ -1206,6 +1223,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 "openDialog" -> {
                     openDialog()
+
                     result.success(0)
                 }
 
@@ -1609,7 +1627,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: (ArrayList<EcosedPlugin>, PluginBinding) -> R,
     ): R = content.invoke(
         arrayListOf(mEngineBridge, mEcosedEngine, mServiceInvoke, mServiceDelegate),
-        PluginBinding(context = context, debug = debug)
+        PluginBinding(
+            context = context,
+            engine = mEcosedEngine.run {
+                return@run when (this@run) {
+                    is EngineWrapper -> this@run
+                    else -> error(
+                        message = "引擎未实现引擎包装器方法"
+                    )
+                }
+            },
+            debug = debug
+        )
     )
 
     /**
