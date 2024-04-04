@@ -12,7 +12,7 @@ class NativeBridge implements BridgeWrapper {
 
   /// 获取插件列表
   @override
-  Future<List?> getAndroidPluginList() async {
+  Future<List?> getPlatformPluginList() async {
     return await methodChannel.invokeListMethod(
       'getPlugins',
       {'channel': 'ecosed_engine'},
@@ -21,15 +21,16 @@ class NativeBridge implements BridgeWrapper {
 
   /// 打开对话框
   @override
-  void openAndroidDialog() {
+  void openPlatformDialog() {
     methodChannel.invokeMethod(
       'openDialog',
       {'channel': 'ecosed_engine'},
     );
   }
 
+  /// 关闭对话框
   @override
-  void closeAndroidDialog() {
+  void closePlatformDialog() {
     methodChannel.invokeMethod(
       'closeDialog',
       {'channel': 'ecosed_engine'},

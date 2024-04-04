@@ -22,13 +22,18 @@ abstract class FlutterEcosedPlatform extends PlatformInterface
 
   /// 获取插件列表
   @override
-  Future<List?> getAndroidPluginList() async {
-    throw UnimplementedError('getPluginList()方法未实现');
+  Future<List?> getPlatformPluginList() async {
+    throw UnimplementedError('getPlatformPluginList()方法未实现');
   }
 
   /// 打开对话框
   @override
-  void openAndroidDialog() {
-    throw UnimplementedError('openDialog()方法未实现');
+  void openPlatformDialog() {
+    throw UnimplementedError('openPlatformDialog()方法未实现');
+  }
+
+  @override
+  void closePlatformDialog() {
+    throw UnimplementedError('closePlatformDialog()方法未实现');
   }
 }

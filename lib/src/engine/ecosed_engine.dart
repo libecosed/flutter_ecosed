@@ -58,12 +58,12 @@ mixin EcosedEngine on State<EcosedApp>
   Future<Object?> onMethodCall(String name) async {
     switch (name) {
       case getPluginMethod:
-        return await getAndroidPluginList();
+        return await getPlatformPluginList();
       case openDialogMethod:
-        openAndroidDialog();
+        openPlatformDialog();
         return null;
       case closeDialogMethod:
-        closeAndroidDialog();
+        closePlatformDialog();
         return null;
       default:
         return null;
@@ -153,18 +153,18 @@ mixin EcosedEngine on State<EcosedApp>
   }
 
   @override
-  Future<List?> getAndroidPluginList() {
-    return FlutterEcosedPlatform.instance.getAndroidPluginList();
+  Future<List?> getPlatformPluginList() {
+    return FlutterEcosedPlatform.instance.getPlatformPluginList();
   }
 
   @override
-  void openAndroidDialog() {
-    FlutterEcosedPlatform.instance.openAndroidDialog();
+  void openPlatformDialog() {
+    FlutterEcosedPlatform.instance.openPlatformDialog();
   }
 
   @override
-  void closeAndroidDialog() {
-    FlutterEcosedPlatform.instance.closeAndroidDialog();
+  void closePlatformDialog() {
+    FlutterEcosedPlatform.instance.closePlatformDialog();
   }
 
   /// 加载插件

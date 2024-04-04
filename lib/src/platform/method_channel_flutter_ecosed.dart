@@ -8,10 +8,10 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
 
   /// 从引擎获取原生插件JSON
   @override
-  Future<List?> getAndroidPluginList() async {
+  Future<List?> getPlatformPluginList() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return await _bridge.getAndroidPluginList();
+        return await _bridge.getPlatformPluginList();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -25,10 +25,10 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
 
   /// 从客户端启动对话框
   @override
-  void openAndroidDialog() {
+  void openPlatformDialog() {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        _bridge.openAndroidDialog();
+        _bridge.openPlatformDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -39,10 +39,10 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   }
 
   @override
-  void closeAndroidDialog() {
+  void closePlatformDialog() {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        _bridge.closeAndroidDialog();
+        _bridge.closePlatformDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
