@@ -62,6 +62,9 @@ mixin EcosedEngine on State<EcosedApp>
       case openDialogMethod:
         openAndroidDialog();
         return null;
+      case closeDialogMethod:
+        closeAndroidDialog();
+        return null;
       default:
         return null;
     }
@@ -93,6 +96,11 @@ mixin EcosedEngine on State<EcosedApp>
   @override
   void openDialog(BuildContext context) {
     exec(pluginChannel(), openDialogMethod);
+  }
+
+  @override
+  void closeDialog() {
+    exec(pluginChannel(), closeDialogMethod);
   }
 
   /// 统计普通插件数量
@@ -152,6 +160,11 @@ mixin EcosedEngine on State<EcosedApp>
   @override
   void openAndroidDialog() {
     FlutterEcosedPlatform.instance.openAndroidDialog();
+  }
+
+  @override
+  void closeAndroidDialog() {
+    FlutterEcosedPlatform.instance.closeAndroidDialog();
   }
 
   /// 加载插件

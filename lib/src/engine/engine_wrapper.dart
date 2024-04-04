@@ -13,6 +13,9 @@ abstract class EngineWrapper {
   /// 打开对话框
   void openDialog(BuildContext context);
 
+  /// 关闭对话框
+  void closeDialog();
+
   /// 插件数量统计
   int pluginCount();
 

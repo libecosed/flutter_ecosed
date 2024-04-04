@@ -4,4 +4,7 @@ abstract class BridgeWrapper {
 
   /// 打开对话框
   void openAndroidDialog();
+
+    /// 关闭对话框
+  void closeAndroidDialog();
 }

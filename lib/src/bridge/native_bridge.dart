@@ -27,4 +27,12 @@ class NativeBridge implements BridgeWrapper {
       {'channel': 'ecosed_engine'},
     );
   }
+
+  @override
+  void closeAndroidDialog() {
+    methodChannel.invokeMethod(
+      'closeDialog',
+      {'channel': 'ecosed_engine'},
+    );
+  }
 }

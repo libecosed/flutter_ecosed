@@ -37,4 +37,18 @@ class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
       default:
     }
   }
+
+  @override
+  void closeAndroidDialog() {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        _bridge.closeAndroidDialog();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.iOS:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+      default:
+    }
+  }
 }

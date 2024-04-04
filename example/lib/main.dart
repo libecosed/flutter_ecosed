@@ -67,7 +67,7 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                     tooltip: 'Home',
                     enabled: true,
                   ),
-                   NavigationDestination(
+                  NavigationDestination(
                     icon: Icon(Icons.dashboard_outlined),
                     selectedIcon: Icon(Icons.dashboard),
                     label: 'Manager',
