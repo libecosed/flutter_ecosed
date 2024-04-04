@@ -739,18 +739,26 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 插件绑定器
      */
     private class PluginBinding(
+        debug: Boolean,
         context: Context,
         engine: EngineWrapper,
-        debug: Boolean,
     ) {
+
+        /** 是否调试模式. */
+        private val mDebug: Boolean = debug
 
         /** 应用程序全局上下文. */
         private val mContext: Context = context
 
         private val mEngine: EngineWrapper = engine
 
-        /** 是否调试模式. */
-        private val mDebug: Boolean = debug
+        /**
+         * 是否调试模式.
+         * @return Boolean.
+         */
+        fun isDebug(): Boolean {
+            return mDebug
+        }
 
         /**
          * 获取上下文.
@@ -764,13 +772,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             return mEngine
         }
 
-        /**
-         * 是否调试模式.
-         * @return Boolean.
-         */
-        fun isDebug(): Boolean {
-            return mDebug
-        }
+
     }
 
     /**
@@ -1033,9 +1035,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
-
             when (call.method) {
-                "getPlugins" -> result.success(mJSONList)
+                "getPlugins" -> result.success(
+                    result = mJSONList
+                )
+
+                "openDialog" -> result.success(
+                    result = execPluginMethod(
+                        channel = INVOKE_CHANNEL_NAME,
+                        method = "openDialog",
+                        bundle = Bundle()
+                    )
+                )
+
+                "closeDialog" -> result.success(
+                    result = execPluginMethod(
+                        channel = INVOKE_CHANNEL_NAME,
+                        method = "closeDialog",
+                        bundle = Bundle()
+                    )
+                )
+
                 else -> result.notImplemented()
             }
         }
@@ -1047,8 +1067,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onCreateEngine(context: Context) {
             when {
                 (mPluginList == null) or (mJSONList == null) or (mBinding == null) -> pluginUnit(
-                    context = context,
-                    debug = mBaseDebug
+                    debug = mBaseDebug,
+                    context = context
                 ) { plugin, binding ->
                     // 打印横幅
                     if (mBaseDebug) Log.i(
@@ -1637,6 +1657,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     ): R = content.invoke(
         arrayListOf(mEngineBridge, mEcosedEngine, mServiceInvoke, mServiceDelegate),
         PluginBinding(
+            debug = debug,
             context = context,
             engine = mEcosedEngine.run {
                 return@run when (this@run) {
@@ -1645,8 +1666,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         message = "引擎未实现引擎包装器方法"
                     )
                 }
-            },
-            debug = debug
+            }
         )
     )
 

@@ -24,7 +24,7 @@ class NativeBridge implements BridgeWrapper {
   void openAndroidDialog() {
     methodChannel.invokeMethod(
       'openDialog',
-      {'channel': 'ecosed_invoke'},
+      {'channel': 'ecosed_engine'},
     );
   }
 }

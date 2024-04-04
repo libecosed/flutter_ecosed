@@ -57,6 +57,40 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                 title: const Text(appName),
               ),
               body: body,
+              bottomNavigationBar: NavigationBar(
+                selectedIndex: 0,
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: 'Home',
+                    tooltip: 'Home',
+                    enabled: true,
+                  ),
+                   NavigationDestination(
+                    icon: Icon(Icons.dashboard_outlined),
+                    selectedIcon: Icon(Icons.dashboard),
+                    label: 'Manager',
+                    tooltip: 'Manager',
+                    enabled: true,
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.publish_outlined),
+                    selectedIcon: Icon(Icons.publish),
+                    label: 'PubDev',
+                    tooltip: 'PubDev',
+                    enabled: true,
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.code_outlined),
+                    selectedIcon: Icon(Icons.code),
+                    label: 'GitHub',
+                    tooltip: 'GitHub',
+                    enabled: true,
+                  ),
+                ],
+                onDestinationSelected: (value) {},
+              ),
             );
           },
           materialApp: (home, title) {
