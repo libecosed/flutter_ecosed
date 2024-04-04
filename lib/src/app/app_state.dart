@@ -31,7 +31,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
       materialApp: widget.materialApp,
       home: EcosedBanner(
         location: widget.location,
-        child: EcosedScaffoldWidget(
+        child: EcosedMaterialScaffold(
           scaffold: widget.scaffold,
           body: Builder(
             builder: (context) => widget.home(

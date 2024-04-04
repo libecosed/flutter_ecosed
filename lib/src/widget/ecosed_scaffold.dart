@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/app/app_type.dart';
 
-class EcosedScaffoldWidget extends StatelessWidget {
-  const EcosedScaffoldWidget({
+class EcosedMaterialScaffold extends StatelessWidget {
+  const EcosedMaterialScaffold({
     super.key,
     required this.scaffold,
     required this.body,
