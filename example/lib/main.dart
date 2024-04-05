@@ -10,14 +10,27 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(const ExampleApp());
 
-class ExampleApp extends StatelessWidget implements EcosedPlugin {
+class ExampleApp extends StatefulWidget {
   const ExampleApp({super.key});
+
+  @override
+  State<ExampleApp> createState() => _ExampleAppState();
+}
+
+class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
+  _ExampleAppState();
 
   /// 应用名称
   static const String appName = 'flutter_ecosed 示例应用';
 
   /// 页面索引
   static ValueNotifier<int> pageIndex = ValueNotifier(0);
+
+  /// 方法执行
+  late dynamic _exec;
+
+  /// 计数 - 测试用
+  int _counter = 0;
 
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
@@ -35,8 +48,14 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
   @override
   String pluginName() => 'Example Plugin';
 
+  /// [onMethodCall]方法为插件的方法调用.
   @override
   Future<Object?> onMethodCall(String name) async {
+    if (name == "add") {
+      setState(() {
+        _counter++;
+      });
+    }
     return await null;
   }
 
@@ -53,12 +72,14 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
     );
   }
 
+  /// Widget的构建入口
   @override
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (light, dark) {
         return EcosedApp(
           home: (context, exec, body) {
+            _exec = exec;
             return ValueListenableBuilder(
               valueListenable: pageIndex,
               builder: (context, value, child) {
@@ -66,7 +87,8 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                   index: value,
                   children: <Widget>[
                     FutureBuilder(
-                      future: rootBundle.loadString('packages/flutter_ecosed/README.md'),
+                      future: rootBundle
+                          .loadString('packages/flutter_ecosed/README.md'),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Markdown(
@@ -105,7 +127,8 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                           controller: WebViewController()
                             ..loadRequest(
                               Uri.parse(
-                                  'https://pub.dev/packages/flutter_ecosed'),
+                                'https://pub.dev/packages/flutter_ecosed',
+                              ),
                             )
                             ..setJavaScriptMode(
                               JavaScriptMode.unrestricted,
@@ -134,7 +157,8 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                           controller: WebViewController()
                             ..loadRequest(
                               Uri.parse(
-                                  'https://github.com/libecosed/flutter_ecosed'),
+                                'https://github.com/libecosed/flutter_ecosed',
+                              ),
                             )
                             ..setJavaScriptMode(
                               JavaScriptMode.unrestricted,
@@ -149,11 +173,21 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
           },
           plugins: [this],
           title: appName,
-          location: BannerLocation.topStart,
+          location:
+              kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
           scaffold: (body) {
             return Scaffold(
               appBar: AppBar(
                 title: const Text(appName),
+                actions: [
+                  IconButton(
+                    onPressed: () => _exec(pluginChannel(), "add"),
+                    icon: Text(
+                      _counter.toString(),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  )
+                ],
               ),
               body: body,
               bottomNavigationBar: ValueListenableBuilder(
@@ -196,6 +230,10 @@ class ExampleApp extends StatelessWidget implements EcosedPlugin {
                     },
                   );
                 },
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => _exec(pluginChannel(), "add"),
+                child: const Icon(Icons.add),
               ),
             );
           },
