@@ -21,16 +21,16 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   _ExampleAppState();
 
   /// 应用名称
-  static const String appName = 'flutter_ecosed 示例应用';
+  static const String _appName = 'flutter_ecosed 示例应用';
 
   /// 页面索引
-  static ValueNotifier<int> pageIndex = ValueNotifier(0);
+  static final ValueNotifier<int> _pageIndex = ValueNotifier(0);
 
   /// 方法执行
   late dynamic _exec;
 
   /// 计数 - 测试用
-  int _counter = 0;
+  static final ValueNotifier<int> _counter = ValueNotifier(0);
 
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
@@ -52,9 +52,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   @override
   Future<Object?> onMethodCall(String name) async {
     if (name == "add") {
-      setState(() {
-        _counter++;
-      });
+      _counter.value++;
     }
     return await null;
   }
@@ -81,7 +79,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
           home: (context, exec, body) {
             _exec = exec;
             return ValueListenableBuilder(
-              valueListenable: pageIndex,
+              valueListenable: _pageIndex,
               builder: (context, value, child) {
                 return IndexedStack(
                   index: value,
@@ -172,26 +170,31 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
             );
           },
           plugins: [this],
-          title: appName,
+          title: _appName,
           location:
               kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
           scaffold: (body) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text(appName),
+                title: const Text(_appName),
                 actions: [
                   IconButton(
                     onPressed: () => _exec(pluginChannel(), "add"),
-                    icon: Text(
-                      _counter.toString(),
-                      style: Theme.of(context).textTheme.titleMedium,
+                    icon: ValueListenableBuilder(
+                      valueListenable: _counter,
+                      builder: (context, value, child) {
+                        return Text(
+                          value.toString(),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        );
+                      },
                     ),
                   )
                 ],
               ),
               body: body,
               bottomNavigationBar: ValueListenableBuilder(
-                valueListenable: pageIndex,
+                valueListenable: _pageIndex,
                 builder: (context, value, child) {
                   return NavigationBar(
                     selectedIndex: value,
@@ -199,40 +202,41 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                       NavigationDestination(
                         icon: Icon(Icons.home_outlined),
                         selectedIcon: Icon(Icons.home),
-                        label: 'Home',
-                        tooltip: 'Home',
+                        label: '主页',
+                        tooltip: '自述文件REDAME.md',
                         enabled: true,
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.dashboard_outlined),
                         selectedIcon: Icon(Icons.dashboard),
-                        label: 'Manager',
-                        tooltip: 'Manager',
+                        label: '管理器',
+                        tooltip: 'flutter_ecosed管理器页面',
                         enabled: true,
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.publish_outlined),
                         selectedIcon: Icon(Icons.publish),
-                        label: 'PubDev',
-                        tooltip: 'PubDev',
+                        label: 'Pub包',
+                        tooltip: 'Pub包发布页面',
                         enabled: true,
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.code_outlined),
                         selectedIcon: Icon(Icons.code),
                         label: 'GitHub',
-                        tooltip: 'GitHub',
+                        tooltip: 'GitHub源码存储仓库',
                         enabled: true,
                       ),
                     ],
                     onDestinationSelected: (value) {
-                      pageIndex.value = value;
+                      _pageIndex.value = value;
                     },
                   );
                 },
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () => _exec(pluginChannel(), "add"),
+                tooltip: '点击增加右上角的数字大小,此功能通过EcosedPlugin方法调用实现.',
                 child: const Icon(Icons.add),
               ),
             );
