@@ -20,9 +20,6 @@ class ExampleApp extends StatefulWidget {
 class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   _ExampleAppState();
 
-  /// 应用名称
-  static const String _appName = 'flutter_ecosed 示例应用';
-
   /// 页面索引
   static final ValueNotifier<int> _pageIndex = ValueNotifier(0);
 
@@ -170,13 +167,13 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
             );
           },
           plugins: [this],
-          title: _appName,
+          title: 'flutter_ecosed 示例应用',
           location:
               kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
-          scaffold: (body) {
+          scaffold: (body, title) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text(_appName),
+                title: Text(title),
                 actions: [
                   IconButton(
                     onPressed: () => _exec(pluginChannel(), "add"),

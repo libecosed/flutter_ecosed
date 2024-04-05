@@ -33,6 +33,7 @@ class EcosedAppState extends State<EcosedApp> with EcosedEngine {
         location: widget.location,
         child: EcosedMaterialScaffold(
           scaffold: widget.scaffold,
+          title: widget.title,
           body: Builder(
             builder: (context) => widget.home(
               context,
