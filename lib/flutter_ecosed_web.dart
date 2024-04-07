@@ -1,4 +1,4 @@
-library flutter_ecosed;
+library flutter_ecosed_web;
 
 import 'dart:html' as html show window;
 
