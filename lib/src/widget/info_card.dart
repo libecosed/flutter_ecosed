@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'info_item.dart';
 
 class InfoCard extends StatelessWidget {
-  const InfoCard({
-    super.key,
-    required this.appName,
-    required this.state,
-    required this.platform,
-    required this.count,
-  f});
+  const InfoCard(
+      {super.key,
+      required this.appName,
+      required this.state,
+      required this.platform,
+      required this.count,
+      f});
 
   final String appName;
   final String state;

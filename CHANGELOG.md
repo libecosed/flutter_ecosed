@@ -10,3 +10,5 @@
 * Improve the function.
 ## 0.0.6
 * Add all platform support.
+## 0.0.7
+* Improve the function.

@@ -1886,7 +1886,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 初始化对话框
         AlertDialog.Builder(this@activityUnit).apply {
             setTitle("Debug Menu (Native)")
-            setItems(arrayOf("Launch Shizuku", "Launch microG", "3")) { dialog, which ->
+            setItems(arrayOf("Launch Shizuku", "Launch microG", "Request Permissions")) { dialog, which ->
                 when (which) {
                     0 -> if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
                         AppUtils.launchApp(EcosedManifest.SHIZUKU_PACKAGE)
@@ -1899,21 +1899,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
                     }
 
-                    2 -> {}
+                    2 -> {
+                        requestPermissions()
+                    }
                     else -> {}
                 }
             }
             setView(mToolbar)
-
-            setNegativeButton("NO") { dialog, which -> }
             setPositiveButton("OK") { dialog, which -> }
-            setNeutralButton("菜单") { _, _ ->
-                if (mToolbar.isOverflowMenuShowing) {
-                    mToolbar.hideOverflowMenu()
-                } else {
-                    mToolbar.showOverflowMenu()
-                }
-            }
             mDebugDialog = create()
         }
         // 设置操作栏
