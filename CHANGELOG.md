@@ -12,3 +12,6 @@
 * Add all platform support.
 ## 0.0.7
 * Improve the function.
+## 0.0.8
+* Fix some bugs.
+* Update dependencies.
