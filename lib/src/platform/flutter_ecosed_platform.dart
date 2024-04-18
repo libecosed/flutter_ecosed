@@ -1,7 +1,7 @@
-import 'package:flutter_ecosed/src/platform/default_platform.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../bridge/bridge_wrapper.dart';
+import 'default_platform.dart';
 
 abstract class FlutterEcosedPlatform extends PlatformInterface
     implements BridgeWrapper {

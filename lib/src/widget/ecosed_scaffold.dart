@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/app/app_type.dart';
+
+import '../app/app_type.dart';
 
 class EcosedMaterialScaffold extends StatelessWidget {
   const EcosedMaterialScaffold({

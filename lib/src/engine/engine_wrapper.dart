@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/engine/engine_state.dart';
 
 import '../plugin/plugin_details.dart';
+import 'engine_state.dart';
 
 abstract class EngineWrapper {
   /// 获取引擎状态
