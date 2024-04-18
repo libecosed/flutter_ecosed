@@ -1,17 +1,19 @@
 ## 0.0.1
-* Publish test.
+* 首次发布测试
 ## 0.0.2
-* Improve the function.
+* 完善功能
 ## 0.0.3
-* Improve the function.
+* 完善功能
 ## 0.0.4
-* Improve the function.
+* 完善功能
 ## 0.0.5
-* Improve the function.
+* 完善功能完善功能
 ## 0.0.6
-* Add all platform support.
+* 支持所有平台
 ## 0.0.7
-* Improve the function.
+* 完善功能完善功能
 ## 0.0.8
-* Fix some bugs.
-* Update dependencies.
+* 修复一些bug
+* 更新依赖
+## 0.0.9
+* 修复一些bug
