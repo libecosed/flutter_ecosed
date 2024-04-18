@@ -55,8 +55,8 @@ mixin EcosedEngine<T extends EcosedApp> on State<T>
   String pluginDescription() => widget.title;
 
   @override
-  Future<Object?> onMethodCall(String name) async {
-    switch (name) {
+  Future<dynamic> onMethodCall(String method) async {
+    switch (method) {
       case getPluginMethod:
         return await getPlatformPluginList();
       case openDialogMethod:
@@ -77,7 +77,7 @@ mixin EcosedEngine<T extends EcosedApp> on State<T>
 
   /// 执行插件代码
   @override
-  Future<Object?> exec(String channel, String method) async {
+  Future<dynamic> exec(String channel, String method) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel() == channel) {

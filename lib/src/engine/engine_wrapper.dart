@@ -8,7 +8,7 @@ abstract class EngineWrapper {
   EngineState getEngineState();
 
   /// 执行插件方法
-  Future<Object?> exec(String channel, String method);
+  Future<dynamic> exec(String channel, String method);
 
   /// 打开对话框
   void openDialog(BuildContext context);
