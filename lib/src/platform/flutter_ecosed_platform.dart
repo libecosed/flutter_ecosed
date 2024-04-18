@@ -1,3 +1,4 @@
+import 'package:flutter_ecosed/src/platform/default_platform.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../bridge/bridge_wrapper.dart';
@@ -9,7 +10,7 @@ abstract class FlutterEcosedPlatform extends PlatformInterface
   static final Object _token = Object();
 
   /// 实例
-  static late FlutterEcosedPlatform _instance;
+  static FlutterEcosedPlatform _instance = DefaultPlatform();
 
   /// 获取实例
   static FlutterEcosedPlatform get instance => _instance;

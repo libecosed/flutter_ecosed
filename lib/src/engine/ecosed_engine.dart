@@ -12,7 +12,7 @@ import '../values/methods.dart';
 import 'engine_state.dart';
 import 'engine_wrapper.dart';
 
-mixin EcosedEngine on State<EcosedApp>
+mixin EcosedEngine<T extends EcosedApp> on State<T>
     implements EcosedPlugin, EngineWrapper, FlutterEcosedPlatform {
   /// 占位用空模块
   static const String _unknownPlugin = '{'
