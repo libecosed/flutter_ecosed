@@ -8,13 +8,62 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() => runApp(const ExampleApp());
+void main() {
+  runApp(const ExampleApp());
+}
 
-class _Executor {
-  const _Executor(this.exec);
+class Executor {
+  const Executor(this.exec);
   final dynamic exec;
   Future<dynamic> call(String channel, String method) async {
     return await exec(channel, method);
+  }
+}
+
+extension ContextExecutor on BuildContext {
+  Future<dynamic> execPluginMethod(String channel, String method) async {
+    return await Global.executor(channel, method);
+  }
+}
+
+/// Global全局类
+class Global {
+  /// 应用名称
+  static const String appName = 'flutter_ecosed 示例应用';
+
+  /// 页面索引
+  static final ValueNotifier<int> pageIndex = ValueNotifier(0);
+
+  /// 方法执行
+  static late Executor executor;
+
+  /// 计数 - 测试用
+  static final ValueNotifier<int> counter = ValueNotifier(0);
+
+  /// 是否显示FAB
+  static final ValueNotifier<bool> showFab = ValueNotifier(true);
+}
+
+class ExecutorBuilder extends StatefulWidget {
+  const ExecutorBuilder({super.key, required this.exec, required this.child});
+
+  final Future<dynamic> Function(String, String) exec;
+  final Widget child;
+
+  @override
+  State<ExecutorBuilder> createState() => _ExecutorBuilderState();
+}
+
+class _ExecutorBuilderState extends State<ExecutorBuilder> {
+  @override
+  void initState() {
+    super.initState();
+    Global.executor = Executor(widget.exec);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: widget.child);
   }
 }
 
@@ -26,23 +75,6 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
-  _ExampleAppState();
-
-  /// 应用名称
-  static const String _appName = 'flutter_ecosed 示例应用';
-
-  /// 页面索引
-  static final ValueNotifier<int> _pageIndex = ValueNotifier(0);
-
-  /// 方法执行
-  static late _Executor _executor;
-
-  /// 计数 - 测试用
-  static final ValueNotifier<int> _counter = ValueNotifier(0);
-
-  /// 是否显示FAB
-  static final ValueNotifier<bool> _showFab = ValueNotifier(true);
-
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
   String pluginAuthor() => 'ExampleAuthor';
@@ -64,8 +96,8 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   Future<dynamic> onMethodCall(String method) async {
     switch (method) {
       case "add":
-        _counter.value++;
-        return _counter.value;
+        Global.counter.value++;
+        return Global.counter.value;
       default:
         return await null;
     }
@@ -91,33 +123,35 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
       builder: (light, dark) {
         return EcosedApp(
           home: (context, exec, body) {
-            _executor = _Executor(exec);
-            return ValueListenableBuilder(
-              valueListenable: _pageIndex,
-              builder: (context, value, child) {
-                return IndexedStack(
-                  index: value,
-                  children: <Widget>[
-                    ValueListenableBuilder(
-                      valueListenable: _counter,
-                      builder: (context, value, child) {
-                        return HomeScreen(counter: value);
-                      },
-                    ),
-                    ManagerScreen(body: body),
-                    const WebViewScreen(
-                      url: 'https://pub.dev/packages/flutter_ecosed',
-                    ),
-                    const WebViewScreen(
-                      url: 'https://github.com/libecosed/flutter_ecosed',
-                    ),
-                  ],
-                );
-              },
+            return ExecutorBuilder(
+              exec: exec,
+              child: ValueListenableBuilder(
+                valueListenable: Global.pageIndex,
+                builder: (context, value, child) {
+                  return IndexedStack(
+                    index: value,
+                    children: <Widget>[
+                      ValueListenableBuilder(
+                        valueListenable: Global.counter,
+                        builder: (context, value, child) {
+                          return HomeScreen(counter: value);
+                        },
+                      ),
+                      ManagerScreen(body: body),
+                      const WebViewScreen(
+                        url: 'https://pub.dev/packages/flutter_ecosed',
+                      ),
+                      const WebViewScreen(
+                        url: 'https://github.com/libecosed/flutter_ecosed',
+                      ),
+                    ],
+                  );
+                },
+              ),
             );
           },
           plugins: [this],
-          title: _appName,
+          title: Global.appName,
           location:
               kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
           scaffold: (body, title) {
@@ -127,7 +161,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
               ),
               body: body,
               bottomNavigationBar: ValueListenableBuilder(
-                valueListenable: _pageIndex,
+                valueListenable: Global.pageIndex,
                 builder: (context, value, child) {
                   return NavigationBar(
                     selectedIndex: value,
@@ -162,19 +196,20 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                       ),
                     ],
                     onDestinationSelected: (value) {
-                      _pageIndex.value = value;
-                      _showFab.value = _pageIndex.value == 0;
+                      Global.pageIndex.value = value;
+                      Global.showFab.value = Global.pageIndex.value == 0;
                     },
                   );
                 },
               ),
               floatingActionButton: ValueListenableBuilder(
-                valueListenable: _showFab,
+                valueListenable: Global.showFab,
                 builder: (context, value, child) {
                   return Visibility(
                     visible: value,
                     child: FloatingActionButton(
-                      onPressed: () => _executor(pluginChannel(), "add"),
+                      onPressed: () =>
+                          context.execPluginMethod(pluginChannel(), "add"),
                       tooltip: '点击增加右上角的数字大小,此功能通过EcosedPlugin方法调用实现.',
                       child: const Icon(Icons.add),
                     ),

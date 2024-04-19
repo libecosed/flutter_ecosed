@@ -34,7 +34,7 @@ class InfoCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   InfoItem(
-                    title: '当前状态',
+                    title: '引擎状态',
                     subtitle: state,
                   ),
                   const SizedBox(height: 16),
