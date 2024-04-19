@@ -4,7 +4,7 @@ import '../plugin/plugin.dart';
 import 'app_state.dart';
 import 'app_type.dart';
 
-class EcosedApp extends StatefulWidget {
+final class EcosedApp extends StatefulWidget {
   const EcosedApp({
     super.key,
     required this.title,

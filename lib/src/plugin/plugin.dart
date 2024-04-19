@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class EcosedPlugin {
+abstract interface class EcosedPlugin {
   ///插件信息
   String pluginChannel();
 

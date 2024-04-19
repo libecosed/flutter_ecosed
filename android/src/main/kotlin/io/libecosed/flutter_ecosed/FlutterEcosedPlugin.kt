@@ -639,6 +639,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         fun getBinder(intent: Intent): IBinder
 
+        /**
+         * 附加代理基本上下文
+         */
         fun attachDelegateBaseContext()
     }
 
@@ -656,6 +659,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 插件通道 */
         private lateinit var mPluginChannel: PluginChannel
 
+        /** 引擎 */
         private lateinit var mEngine: EngineWrapper
 
         /** 是否调试模式 */
@@ -681,7 +685,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             attachBaseContext(
                 base = mPluginChannel.getContext()
             )
-
+            // 引擎
             mEngine = mPluginChannel.getEngine()
             // 获取是否调试模式
             mDebug = mPluginChannel.isDebug()
@@ -752,6 +756,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 应用程序全局上下文. */
         private val mContext: Context = context
 
+        /** 引擎 */
         private val mEngine: EngineWrapper = engine
 
         /**
@@ -770,11 +775,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             return mContext
         }
 
+        /**
+         * 获取引擎
+         * @return EngineWrapper.
+         */
         fun getEngine(): EngineWrapper {
             return mEngine
         }
-
-
     }
 
     /**
@@ -826,6 +833,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         fun getChannel(): String = mChannel
 
+        /**
+         * 获取引擎.
+         * @return 引擎.
+         */
         fun getEngine(): EngineWrapper = mBinding.getEngine()
 
         /**
@@ -2017,7 +2028,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断是否支持谷歌基础服务
      */
     private fun isSupportGMS(): Boolean = activityUnit {
-        val result = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this@activityUnit)
+        val result =
+            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this@activityUnit)
         return@activityUnit if (result == ConnectionResult.SUCCESS) true else AppUtils.isAppInstalled(
             EcosedManifest.GMS_PACKAGE
         )
