@@ -35,6 +35,8 @@ extension ContextExecutor on BuildContext {
 
 /// Global全局类
 class Global {
+  const Global();
+
   /// 应用名称
   static const String appName = 'flutter_ecosed 示例应用';
 
@@ -178,8 +180,6 @@ class MyApp extends StatefulWidget {
 
 class _ExampleAppState extends State<MyApp>
     with SingleTickerProviderStateMixin {
-  _ExampleAppState();
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   late final AnimationController controller;
   late final CurvedAnimation railAnimation;
@@ -443,16 +443,17 @@ class WebViewScreen extends StatelessWidget {
 }
 
 class NavigationTransition extends StatefulWidget {
-  const NavigationTransition(
-      {super.key,
-      required this.scaffoldKey,
-      required this.animationController,
-      required this.railAnimation,
-      required this.navigationRail,
-      required this.navigationBar,
-      required this.appBar,
-      required this.body,
-      required this.floatingActionButton});
+  const NavigationTransition({
+    super.key,
+    required this.scaffoldKey,
+    required this.animationController,
+    required this.railAnimation,
+    required this.navigationRail,
+    required this.navigationBar,
+    required this.appBar,
+    required this.body,
+    required this.floatingActionButton,
+  });
 
   final GlobalKey<ScaffoldState> scaffoldKey;
   final AnimationController animationController;
@@ -477,10 +478,8 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   @override
   void initState() {
     super.initState();
-
     controller = widget.animationController;
     railAnimation = widget.railAnimation;
-
     barAnimation = ReverseAnimation(
       CurvedAnimation(
         parent: controller,
@@ -576,11 +575,12 @@ class OffsetAnimation extends CurvedAnimation {
 
 /// 左侧垂直导航切换动画
 class RailTransition extends StatefulWidget {
-  const RailTransition(
-      {super.key,
-      required this.animation,
-      required this.backgroundColor,
-      required this.child});
+  const RailTransition({
+    super.key,
+    required this.animation,
+    required this.backgroundColor,
+    required this.child,
+  });
 
   final Animation<double> animation;
   final Widget child;
@@ -597,16 +597,11 @@ class _RailTransition extends State<RailTransition> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // The animations are only rebuilt by this method when the text
-    // direction changes because this widget only depends on Directionality.
     final bool ltr = Directionality.of(context) == TextDirection.ltr;
-
     widthAnimation = Tween<double>(
       begin: 0,
       end: 1,
     ).animate(SizeAnimation(widget.animation));
-
     offsetAnimation = Tween<Offset>(
       begin: ltr ? const Offset(-1, 0) : const Offset(1, 0),
       end: Offset.zero,
@@ -654,12 +649,10 @@ class _BarTransition extends State<BarTransition> {
   @override
   void initState() {
     super.initState();
-
     offsetAnimation = Tween<Offset>(
       begin: const Offset(0, 1),
       end: Offset.zero,
     ).animate(OffsetAnimation(widget.animation));
-
     heightAnimation = Tween<double>(
       begin: 0,
       end: 1,
