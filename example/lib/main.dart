@@ -61,6 +61,7 @@ class Global {
   /// 是否显示FAB
   static final ValueNotifier<bool> showFab = ValueNotifier(true);
 
+  /// 导航栏目的地
   static const List<NavigationDestination> appBarDestinations = [
     NavigationDestination(
       icon: Icon(Icons.home_outlined),
@@ -112,12 +113,25 @@ class Global {
           .toList();
 }
 
+/// 调用方法
 class Method {
+  /// 计数器
   static const String add = 'add';
 }
 
-enum SizeSelected { compact, medium, expanded }
+/// 主页布局类型枚举
+enum SizeSelected {
+  ///折叠
+  compact,
 
+  /// 中等
+  medium,
+
+  /// 展开
+  expanded,
+}
+
+/// 执行器构建器
 class ExecutorBuilder extends StatelessWidget {
   const ExecutorBuilder({
     super.key,
