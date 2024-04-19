@@ -13,7 +13,7 @@ final class FlutterEcosedWeb extends FlutterEcosedPlatform {
   }
 
   @override
-  Future<List?> getPlatformPluginList() async => [];
+  Future<List?> getPlatformPluginList() async => List.empty();
 
   @override
   void openPlatformDialog() {
