@@ -90,6 +90,10 @@ class ExamplePlugin implements EcosedPlugin {
   @override
   String pluginName() => 'Example Plugin';
 
+  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
+  @override
+  Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
+
   /// [onMethodCall]方法为插件的方法调用.
   @override
   Future<dynamic> onMethodCall(String method) async {
@@ -101,19 +105,6 @@ class ExamplePlugin implements EcosedPlugin {
         return await null;
     }
   }
-
-  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
-  @override
-  Widget pluginWidget(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Example Plugin'),
-      ),
-      body: const Center(
-        child: Text('Hello, World!'),
-      ),
-    );
-  }
 }
 
 class MyApp extends StatefulWidget {
@@ -124,6 +115,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<MyApp> {
+  _ExampleAppState();
+
+  BannerLocation getLocation() {
+    return kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd;
+  }
+
   /// Widget的构建入口
   @override
   Widget build(BuildContext context) {
@@ -138,8 +135,7 @@ class _ExampleAppState extends State<MyApp> {
           },
           plugins: const [ExamplePlugin()],
           title: Global.appName,
-          location:
-              kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
+          location: getLocation(),
           scaffold: (body, title) {
             return Scaffold(
               appBar: AppBar(
@@ -247,6 +243,22 @@ class MyHomePage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class ExamplePluginPage extends StatelessWidget {
+  const ExamplePluginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Example Plugin'),
+      ),
+      body: const Center(
+        child: Text('Hello, World!'),
+      ),
     );
   }
 }

@@ -13,9 +13,10 @@ class EcosedBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Banner(
-        message: 'EcosedApp',
-        location: location,
-        color: Colors.pinkAccent,
-        child: child);
+      message: 'EcosedApp',
+      location: location,
+      color: Colors.pinkAccent,
+      child: child,
+    );
   }
 }
