@@ -40,6 +40,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -1887,7 +1888,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 初始化对话框
         AlertDialog.Builder(this@activityUnit).apply {
             setTitle("Debug Menu (Native)")
-            setItems(arrayOf("Launch Shizuku", "Launch microG", "Request Permissions")) { dialog, which ->
+            setItems(
+                arrayOf(
+                    "Launch Shizuku",
+                    "Launch microG",
+                    "Request Permissions"
+                )
+            ) { dialog, which ->
                 when (which) {
                     0 -> if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
                         AppUtils.launchApp(EcosedManifest.SHIZUKU_PACKAGE)
@@ -1910,6 +1917,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     2 -> {
                         requestPermissions()
                     }
+
                     else -> {}
                 }
             }
@@ -1922,11 +1930,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             setSupportActionBar(mToolbar)
         }
         // 设置根视图触摸事件
-        findRootView(
-            activity = this@activityUnit
-        )?.setOnTouchListener(
-            delayHideTouchListener
-        )
+        findRootView()?.setOnTouchListener(delayHideTouchListener)
     }
 
     /**
@@ -1942,9 +1946,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun registerSensor(): Unit = sensorUnit {
         mSensorManager.registerListener(
             this@sensorUnit,
-            mSensorManager.getDefaultSensor(
-                Sensor.TYPE_ACCELEROMETER
-            ),
+            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
             SensorManager.SENSOR_DELAY_UI,
         )
     }
@@ -2014,11 +2016,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 判断是否支持谷歌基础服务
      */
-    private fun isSupportGMS(): Boolean {
-        val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity!!)
-        return if (code == ConnectionResult.SUCCESS) true else {
-            AppUtils.isAppInstalled(EcosedManifest.GMS_PACKAGE)
-        }
+    private fun isSupportGMS(): Boolean = activityUnit {
+        val result = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this@activityUnit)
+        return@activityUnit if (result == ConnectionResult.SUCCESS) true else AppUtils.isAppInstalled(
+            EcosedManifest.GMS_PACKAGE
+        )
     }
 
     /**
@@ -2036,13 +2038,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 获取根视图
      */
-    private fun findRootView(activity: Activity): View? {
-        return when (activity) {
+    private fun findRootView(): View? = activityUnit {
+        return@activityUnit when (this@activityUnit) {
             is FlutterActivity -> findFlutterView(
-                view = activity.window.decorView
+                view = window.decorView
             )
 
-            else -> activity.window.decorView
+            else -> window.decorView
         }
     }
 

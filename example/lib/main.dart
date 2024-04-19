@@ -10,11 +10,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(const ExampleApp());
 
-class Executor {
-  const Executor({required this.exec});
+class _Executor {
+  const _Executor(this.exec);
   final dynamic exec;
-  Future<dynamic> call(String channel, String method) {
-    return exec(channel, method);
+  Future<dynamic> call(String channel, String method) async {
+    return await exec(channel, method);
   }
 }
 
@@ -35,7 +35,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   static final ValueNotifier<int> _pageIndex = ValueNotifier(0);
 
   /// 方法执行
-  static late Executor _exec;
+  static late _Executor _executor;
 
   /// 计数 - 测试用
   static final ValueNotifier<int> _counter = ValueNotifier(0);
@@ -91,132 +91,26 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
       builder: (light, dark) {
         return EcosedApp(
           home: (context, exec, body) {
-            _exec = Executor(exec: exec);
+            _executor = _Executor(exec);
             return ValueListenableBuilder(
               valueListenable: _pageIndex,
               builder: (context, value, child) {
                 return IndexedStack(
                   index: value,
                   children: <Widget>[
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text(
-                            'You have pushed the button this many times:',
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: _counter,
-                            builder: (context, value, child) {
-                              return Text(
-                                value.toString(),
-                                style: Theme.of(context).textTheme.titleMedium,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                    ValueListenableBuilder(
+                      valueListenable: _counter,
+                      builder: (context, value, child) {
+                        return HomeScreen(counter: value);
+                      },
                     ),
-                    Container(child: body),
-                    Theme.of(context).platform == TargetPlatform.android ||
-                            Theme.of(context).platform == TargetPlatform.iOS
-                        ? Focus(
-                            onKeyEvent: (node, event) {
-                              if (!kIsWeb) {
-                                if ({
-                                  LogicalKeyboardKey.arrowLeft,
-                                  LogicalKeyboardKey.arrowRight,
-                                  LogicalKeyboardKey.arrowUp,
-                                  LogicalKeyboardKey.arrowDown,
-                                  LogicalKeyboardKey.tab
-                                }.contains(event.logicalKey)) {
-                                  return KeyEventResult.skipRemainingHandlers;
-                                }
-                              }
-                              return KeyEventResult.ignored;
-                            },
-                            child: GestureDetector(
-                              onSecondaryTap: () {},
-                              child: WebViewWidget(
-                                controller: WebViewController()
-                                  ..loadRequest(
-                                    Uri.parse(
-                                      'https://pub.dev/packages/flutter_ecosed',
-                                    ),
-                                  )
-                                  ..setJavaScriptMode(
-                                    JavaScriptMode.unrestricted,
-                                  ),
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
-                                ),
-                                TextButton(
-                                  onPressed: () => launchUrl(
-                                    Uri.parse(
-                                      'https://pub.dev/packages/flutter_ecosed',
-                                    ),
-                                  ),
-                                  child: const Text('通过浏览器打开'),
-                                ),
-                              ],
-                            ),
-                          ),
-                    Theme.of(context).platform == TargetPlatform.android ||
-                            Theme.of(context).platform == TargetPlatform.iOS
-                        ? Focus(
-                            onKeyEvent: (node, event) {
-                              if (!kIsWeb) {
-                                if ({
-                                  LogicalKeyboardKey.arrowLeft,
-                                  LogicalKeyboardKey.arrowRight,
-                                  LogicalKeyboardKey.arrowUp,
-                                  LogicalKeyboardKey.arrowDown,
-                                  LogicalKeyboardKey.tab
-                                }.contains(event.logicalKey)) {
-                                  return KeyEventResult.skipRemainingHandlers;
-                                }
-                              }
-                              return KeyEventResult.ignored;
-                            },
-                            child: GestureDetector(
-                              onSecondaryTap: () {},
-                              child: WebViewWidget(
-                                controller: WebViewController()
-                                  ..loadRequest(
-                                    Uri.parse(
-                                      'https://github.com/libecosed/flutter_ecosed',
-                                    ),
-                                  )
-                                  ..setJavaScriptMode(
-                                    JavaScriptMode.unrestricted,
-                                  ),
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
-                                ),
-                                TextButton(
-                                  onPressed: () => launchUrl(
-                                    Uri.parse(
-                                        'https://github.com/libecosed/flutter_ecosed'),
-                                  ),
-                                  child: const Text('通过浏览器打开'),
-                                ),
-                              ],
-                            ),
-                          ),
+                    ManagerScreen(body: body),
+                    const WebViewScreen(
+                      url: 'https://pub.dev/packages/flutter_ecosed',
+                    ),
+                    const WebViewScreen(
+                      url: 'https://github.com/libecosed/flutter_ecosed',
+                    ),
                   ],
                 );
               },
@@ -280,7 +174,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                   return Visibility(
                     visible: value,
                     child: FloatingActionButton(
-                      onPressed: () => _exec(pluginChannel(), "add"),
+                      onPressed: () => _executor(pluginChannel(), "add"),
                       tooltip: '点击增加右上角的数字大小,此功能通过EcosedPlugin方法调用实现.',
                       child: const Icon(Icons.add),
                     ),
@@ -300,5 +194,96 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
         );
       },
     );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key, required this.counter});
+
+  final int counter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            'You have pushed the button this many times:',
+          ),
+          Text(
+            '$counter',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ManagerScreen extends StatelessWidget {
+  const ManagerScreen({super.key, required this.body});
+
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: body);
+  }
+}
+
+class WebViewScreen extends StatelessWidget {
+  const WebViewScreen({super.key, required this.url});
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme.of(context).platform == TargetPlatform.android ||
+            Theme.of(context).platform == TargetPlatform.iOS
+        ? Focus(
+            onKeyEvent: (node, event) {
+              if (!kIsWeb) {
+                if ({
+                  LogicalKeyboardKey.arrowLeft,
+                  LogicalKeyboardKey.arrowRight,
+                  LogicalKeyboardKey.arrowUp,
+                  LogicalKeyboardKey.arrowDown,
+                  LogicalKeyboardKey.tab
+                }.contains(event.logicalKey)) {
+                  return KeyEventResult.skipRemainingHandlers;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: GestureDetector(
+              onSecondaryTap: () {},
+              child: WebViewWidget(
+                controller: WebViewController()
+                  ..loadRequest(
+                    Uri.parse(url),
+                  )
+                  ..setJavaScriptMode(
+                    JavaScriptMode.unrestricted,
+                  ),
+              ),
+            ),
+          )
+        : Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
+                ),
+                TextButton(
+                  onPressed: () => launchUrl(
+                    Uri.parse(url),
+                  ),
+                  child: const Text('通过浏览器打开'),
+                ),
+              ],
+            ),
+          );
   }
 }
