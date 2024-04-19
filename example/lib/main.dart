@@ -5,10 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(const ExampleApp());
+
+class Executor {
+  const Executor({required this.exec});
+  final dynamic exec;
+  Future<dynamic> call(String channel, String method) {
+    return exec(channel, method);
+  }
+}
 
 class ExampleApp extends StatefulWidget {
   const ExampleApp({super.key});
@@ -27,10 +35,12 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   static final ValueNotifier<int> _pageIndex = ValueNotifier(0);
 
   /// 方法执行
-  static late dynamic _exec;
+  static late Executor _exec;
 
   /// 计数 - 测试用
   static final ValueNotifier<int> _counter = ValueNotifier(0);
+
+  /// 是否显示FAB
   static final ValueNotifier<bool> _showFab = ValueNotifier(true);
 
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
@@ -81,31 +91,31 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
       builder: (light, dark) {
         return EcosedApp(
           home: (context, exec, body) {
-            _exec = exec;
+            _exec = Executor(exec: exec);
             return ValueListenableBuilder(
               valueListenable: _pageIndex,
               builder: (context, value, child) {
                 return IndexedStack(
                   index: value,
                   children: <Widget>[
-                    FutureBuilder(
-                      future: rootBundle
-                          .loadString('packages/flutter_ecosed/README.md'),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Markdown(
-                            data: snapshot.data!,
-                            selectable: true,
-                          );
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                            child: Text('自述文件加载错误'),
-                          );
-                        }
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text(
+                            'You have pushed the button this many times:',
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: _counter,
+                            builder: (context, value, child) {
+                              return Text(
+                                value.toString(),
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     Container(child: body),
                     Theme.of(context).platform == TargetPlatform.android ||
@@ -142,15 +152,18 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                           )
                         : Center(
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    ('通过浏览器打开'),
+                                TextButton(
+                                  onPressed: () => launchUrl(
+                                    Uri.parse(
+                                      'https://pub.dev/packages/flutter_ecosed',
+                                    ),
                                   ),
+                                  child: const Text('通过浏览器打开'),
                                 ),
                               ],
                             ),
@@ -189,15 +202,17 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                           )
                         : Center(
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    ('通过浏览器打开'),
+                                TextButton(
+                                  onPressed: () => launchUrl(
+                                    Uri.parse(
+                                        'https://github.com/libecosed/flutter_ecosed'),
                                   ),
+                                  child: const Text('通过浏览器打开'),
                                 ),
                               ],
                             ),
@@ -215,20 +230,6 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
             return Scaffold(
               appBar: AppBar(
                 title: Text(title),
-                actions: [
-                  IconButton(
-                    onPressed: () => _exec(pluginChannel(), "add"),
-                    icon: ValueListenableBuilder(
-                      valueListenable: _counter,
-                      builder: (context, value, child) {
-                        return Text(
-                          value.toString(),
-                          style: Theme.of(context).textTheme.titleMedium,
-                        );
-                      },
-                    ),
-                  )
-                ],
               ),
               body: body,
               bottomNavigationBar: ValueListenableBuilder(
@@ -241,7 +242,7 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                         icon: Icon(Icons.home_outlined),
                         selectedIcon: Icon(Icons.home),
                         label: '主页',
-                        tooltip: '自述文件REDAME.md',
+                        tooltip: '主页',
                         enabled: true,
                       ),
                       NavigationDestination(

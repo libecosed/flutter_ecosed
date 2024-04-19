@@ -53,6 +53,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.AppUtils
+import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -1890,13 +1891,20 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 when (which) {
                     0 -> if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
                         AppUtils.launchApp(EcosedManifest.SHIZUKU_PACKAGE)
+
                     } else {
 
                     }
 
                     1 -> {
+                        val i = IntentUtils.getLaunchAppIntent(EcosedManifest.GMS_PACKAGE)
+                        if (i != null) {
+                            AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
+                        } else {
+
+                        }
                         //gms(this@activityUnit)
-                        AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
+
                     }
 
                     2 -> {
@@ -2104,11 +2112,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 切换工具栏显示状态
      */
     private fun toggle() {
-        if (isVisible) {
-            hide()
-        } else {
-            show()
-        }
+        if (isVisible) hide() else show()
     }
 
     /**
