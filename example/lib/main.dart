@@ -9,17 +9,21 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  runApp(const ExampleApp());
+  runApp(const MyApp());
 }
 
+/// 插件方法执行器
 class Executor {
-  const Executor(this.exec);
-  final dynamic exec;
+  const Executor({required this.exec});
+
+  final Future<dynamic> Function(String channel, String method) exec;
+
   Future<dynamic> call(String channel, String method) async {
     return await exec(channel, method);
   }
 }
 
+/// 通过上下文调用插件方法
 extension ContextExecutor on BuildContext {
   Future<dynamic> execPluginMethod(String channel, String method) async {
     return await Global.executor(channel, method);
@@ -47,7 +51,7 @@ class Global {
 class ExecutorBuilder extends StatefulWidget {
   const ExecutorBuilder({super.key, required this.exec, required this.child});
 
-  final Future<dynamic> Function(String, String) exec;
+  final Future<dynamic> Function(String channel, String method) exec;
   final Widget child;
 
   @override
@@ -58,7 +62,7 @@ class _ExecutorBuilderState extends State<ExecutorBuilder> {
   @override
   void initState() {
     super.initState();
-    Global.executor = Executor(widget.exec);
+    Global.executor = Executor(exec: widget.exec);
   }
 
   @override
@@ -67,14 +71,9 @@ class _ExecutorBuilderState extends State<ExecutorBuilder> {
   }
 }
 
-class ExampleApp extends StatefulWidget {
-  const ExampleApp({super.key});
+class ExamplePlugin implements EcosedPlugin {
+  const ExamplePlugin();
 
-  @override
-  State<ExampleApp> createState() => _ExampleAppState();
-}
-
-class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
   String pluginAuthor() => 'ExampleAuthor';
@@ -115,7 +114,16 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
       ),
     );
   }
+}
 
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _ExampleAppState();
+}
+
+class _ExampleAppState extends State<MyApp> {
   /// Widget的构建入口
   @override
   Widget build(BuildContext context) {
@@ -125,32 +133,10 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
           home: (context, exec, body) {
             return ExecutorBuilder(
               exec: exec,
-              child: ValueListenableBuilder(
-                valueListenable: Global.pageIndex,
-                builder: (context, value, child) {
-                  return IndexedStack(
-                    index: value,
-                    children: <Widget>[
-                      ValueListenableBuilder(
-                        valueListenable: Global.counter,
-                        builder: (context, value, child) {
-                          return HomeScreen(counter: value);
-                        },
-                      ),
-                      ManagerScreen(body: body),
-                      const WebViewScreen(
-                        url: 'https://pub.dev/packages/flutter_ecosed',
-                      ),
-                      const WebViewScreen(
-                        url: 'https://github.com/libecosed/flutter_ecosed',
-                      ),
-                    ],
-                  );
-                },
-              ),
+              child: MyHomePage(manager: body),
             );
           },
-          plugins: [this],
+          plugins: const [ExamplePlugin()],
           title: Global.appName,
           location:
               kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
@@ -209,8 +195,8 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
                     visible: value,
                     child: FloatingActionButton(
                       onPressed: () =>
-                          context.execPluginMethod(pluginChannel(), "add"),
-                      tooltip: '点击增加右上角的数字大小,此功能通过EcosedPlugin方法调用实现.',
+                          context.execPluginMethod('example_channel', 'add'),
+                      tooltip: 'Increment',
                       child: const Icon(Icons.add),
                     ),
                   );
@@ -226,6 +212,39 @@ class _ExampleAppState extends State<ExampleApp> implements EcosedPlugin {
               darkTheme: ThemeData(colorScheme: dark),
             );
           },
+        );
+      },
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key, required this.manager});
+
+  final Widget manager;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: Global.pageIndex,
+      builder: (context, value, child) {
+        return IndexedStack(
+          index: value,
+          children: <Widget>[
+            ValueListenableBuilder(
+              valueListenable: Global.counter,
+              builder: (context, value, child) {
+                return HomeScreen(counter: value);
+              },
+            ),
+            ManagerScreen(manager: manager),
+            const WebViewScreen(
+              url: 'https://pub.dev/packages/flutter_ecosed',
+            ),
+            const WebViewScreen(
+              url: 'https://github.com/libecosed/flutter_ecosed',
+            ),
+          ],
         );
       },
     );
@@ -257,13 +276,13 @@ class HomeScreen extends StatelessWidget {
 }
 
 class ManagerScreen extends StatelessWidget {
-  const ManagerScreen({super.key, required this.body});
+  const ManagerScreen({super.key, required this.manager});
 
-  final Widget body;
+  final Widget manager;
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: body);
+    return Container(child: manager);
   }
 }
 
