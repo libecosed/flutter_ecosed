@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class EcosedBanner extends StatelessWidget {
+final class EcosedBanner extends StatelessWidget {
   const EcosedBanner({
     super.key,
     required this.location,

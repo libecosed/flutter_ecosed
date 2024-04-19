@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class StateCard extends StatelessWidget {
+final class StateCard extends StatelessWidget {
   const StateCard({
     super.key,
     required this.color,

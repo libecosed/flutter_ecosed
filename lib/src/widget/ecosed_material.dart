@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app/app_type.dart';
 
-class EcosedMaterialApp extends StatelessWidget {
+final class EcosedMaterialApp extends StatelessWidget {
   const EcosedMaterialApp({
     super.key,
     required this.title,

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'bridge_wrapper.dart';
 
-class NativeBridge implements BridgeWrapper {
+final class NativeBridge implements BridgeWrapper {
   const NativeBridge();
 
   /// 方法通道

@@ -1,6 +1,6 @@
 import 'plugin_type.dart';
 
-class PluginDetails {
+final class PluginDetails {
   const PluginDetails({
     required this.channel,
     required this.title,

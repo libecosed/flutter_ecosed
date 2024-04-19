@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app/app_type.dart';
 
-class EcosedMaterialScaffold extends StatelessWidget {
+final class EcosedMaterialScaffold extends StatelessWidget {
   const EcosedMaterialScaffold({
     super.key,
     required this.scaffold,

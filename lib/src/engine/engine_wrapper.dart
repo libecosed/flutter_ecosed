@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../plugin/plugin_details.dart';
 import 'engine_state.dart';
 
-abstract class EngineWrapper {
+abstract interface class EngineWrapper {
   /// 获取引擎状态
   EngineState getEngineState();
 

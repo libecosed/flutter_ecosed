@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PluginCard extends StatelessWidget {
+final class PluginCard extends StatelessWidget {
   const PluginCard({
     super.key,
     required this.title,

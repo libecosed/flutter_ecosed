@@ -14,7 +14,7 @@ import '../widget/plugin_card.dart';
 import '../widget/state_card.dart';
 import 'app.dart';
 
-class EcosedAppState extends State<EcosedApp> with EcosedEngine<EcosedApp> {
+final class EcosedAppState extends State<EcosedApp> with EcosedEngine<EcosedApp> {
   /// 滚动控制器
   final ScrollController _controller = ScrollController();
 

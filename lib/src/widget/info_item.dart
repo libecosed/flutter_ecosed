@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class InfoItem extends StatelessWidget {
+final class InfoItem extends StatelessWidget {
   const InfoItem({
     super.key,
     required this.title,
