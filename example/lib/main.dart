@@ -16,8 +16,10 @@ void main() {
 class Executor {
   const Executor({required this.exec});
 
+  /// 传入方法执行函数
   final Future<dynamic> Function(String channel, String method) exec;
 
+  /// 调用方法
   Future<dynamic> call(String channel, String method) async {
     return await exec(channel, method);
   }
@@ -25,6 +27,7 @@ class Executor {
 
 /// 通过上下文调用插件方法
 extension ContextExecutor on BuildContext {
+  /// 调用插件方法
   Future<dynamic> execPluginMethod(String channel, String method) async {
     return await Global.executor(channel, method);
   }
@@ -35,39 +38,98 @@ class Global {
   /// 应用名称
   static const String appName = 'flutter_ecosed 示例应用';
 
+  /// compact阈值
+  static const double compactWidthBreakpoint = 600;
+
+  /// medium阈值
+  static const double mediumWidthBreakpoint = 840;
+
+  /// 大小切换动画速率
+  static const double transitionLength = 500;
+
   /// 页面索引
   static final ValueNotifier<int> pageIndex = ValueNotifier(0);
 
   /// 方法执行
   static late Executor executor;
 
-  /// 计数 - 测试用
+  /// 计数
   static final ValueNotifier<int> counter = ValueNotifier(0);
 
   /// 是否显示FAB
   static final ValueNotifier<bool> showFab = ValueNotifier(true);
+
+  static const List<NavigationDestination> appBarDestinations = [
+    NavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home),
+      label: '主页',
+      tooltip: '主页',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.dashboard_outlined),
+      selectedIcon: Icon(Icons.dashboard),
+      label: '管理器',
+      tooltip: 'flutter_ecosed管理器页面',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.publish_outlined),
+      selectedIcon: Icon(Icons.publish),
+      label: 'Pub包',
+      tooltip: 'Pub包发布页面',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.code_outlined),
+      selectedIcon: Icon(Icons.code),
+      label: 'GitHub',
+      tooltip: 'GitHub源码存储仓库',
+      enabled: true,
+    ),
+  ];
+
+  /// 纵向导航栏目的地
+  static final List<NavigationRailDestination> navRailDestinations =
+      appBarDestinations
+          .map(
+            (destination) => NavigationRailDestination(
+              icon: Tooltip(
+                message: destination.label,
+                child: destination.icon,
+              ),
+              selectedIcon: Tooltip(
+                message: destination.label,
+                child: destination.selectedIcon,
+              ),
+              label: Text(destination.label),
+              disabled: false,
+            ),
+          )
+          .toList();
 }
 
-class ExecutorBuilder extends StatefulWidget {
-  const ExecutorBuilder({super.key, required this.exec, required this.child});
+class Method {
+  static const String add = 'add';
+}
+
+enum SizeSelected { compact, medium, expanded }
+
+class ExecutorBuilder extends StatelessWidget {
+  const ExecutorBuilder({
+    super.key,
+    required this.exec,
+    required this.child,
+  });
 
   final Future<dynamic> Function(String channel, String method) exec;
   final Widget child;
 
   @override
-  State<ExecutorBuilder> createState() => _ExecutorBuilderState();
-}
-
-class _ExecutorBuilderState extends State<ExecutorBuilder> {
-  @override
-  void initState() {
-    super.initState();
-    Global.executor = Executor(exec: widget.exec);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(child: widget.child);
+    Global.executor = Executor(exec: exec);
+    return Container(child: child);
   }
 }
 
@@ -98,7 +160,7 @@ class ExamplePlugin implements EcosedPlugin {
   @override
   Future<dynamic> onMethodCall(String method) async {
     switch (method) {
-      case "add":
+      case Method.add:
         Global.counter.value++;
         return Global.counter.value;
       default:
@@ -114,100 +176,126 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _ExampleAppState();
 }
 
-class _ExampleAppState extends State<MyApp> {
+class _ExampleAppState extends State<MyApp>
+    with SingleTickerProviderStateMixin {
   _ExampleAppState();
 
-  BannerLocation getLocation() {
-    return kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  late final AnimationController controller;
+  late final CurvedAnimation railAnimation;
+  bool controllerInitialized = false;
+
+  SizeSelected windowSize = SizeSelected.compact;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: Duration(milliseconds: Global.transitionLength.toInt() * 2),
+      value: 0,
+      vsync: this,
+    );
+    railAnimation = CurvedAnimation(
+      parent: controller,
+      curve: const Interval(0.5, 1.0),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final double width = MediaQuery.of(context).size.width;
+    final AnimationStatus status = controller.status;
+    switch (width) {
+      case < Global.compactWidthBreakpoint:
+        windowSize = SizeSelected.compact;
+        if (status != AnimationStatus.reverse &&
+            status != AnimationStatus.dismissed) {
+          controller.reverse();
+        }
+      case < Global.mediumWidthBreakpoint:
+        windowSize = SizeSelected.medium;
+        if (status != AnimationStatus.forward &&
+            status != AnimationStatus.completed) {
+          controller.forward();
+        }
+      default:
+        windowSize = SizeSelected.expanded;
+        if (status != AnimationStatus.forward &&
+            status != AnimationStatus.completed) {
+          controller.forward();
+        }
+    }
+    if (!controllerInitialized) {
+      controllerInitialized = true;
+      controller.value = width > Global.mediumWidthBreakpoint ? 1 : 0;
+    }
   }
 
   /// Widget的构建入口
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (light, dark) {
-        return EcosedApp(
-          home: (context, exec, body) {
-            return ExecutorBuilder(
-              exec: exec,
-              child: MyHomePage(manager: body),
-            );
-          },
-          plugins: const [ExamplePlugin()],
-          title: Global.appName,
-          location: getLocation(),
-          scaffold: (body, title) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(title),
-              ),
-              body: body,
-              bottomNavigationBar: ValueListenableBuilder(
-                valueListenable: Global.pageIndex,
-                builder: (context, value, child) {
-                  return NavigationBar(
-                    selectedIndex: value,
-                    destinations: const [
-                      NavigationDestination(
-                        icon: Icon(Icons.home_outlined),
-                        selectedIcon: Icon(Icons.home),
-                        label: '主页',
-                        tooltip: '主页',
-                        enabled: true,
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.dashboard_outlined),
-                        selectedIcon: Icon(Icons.dashboard),
-                        label: '管理器',
-                        tooltip: 'flutter_ecosed管理器页面',
-                        enabled: true,
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.publish_outlined),
-                        selectedIcon: Icon(Icons.publish),
-                        label: 'Pub包',
-                        tooltip: 'Pub包发布页面',
-                        enabled: true,
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.code_outlined),
-                        selectedIcon: Icon(Icons.code),
-                        label: 'GitHub',
-                        tooltip: 'GitHub源码存储仓库',
-                        enabled: true,
-                      ),
-                    ],
-                    onDestinationSelected: (value) {
-                      Global.pageIndex.value = value;
-                      Global.showFab.value = Global.pageIndex.value == 0;
-                    },
-                  );
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        return NavigationTransition(
+          scaffoldKey: scaffoldKey,
+          animationController: controller,
+          railAnimation: railAnimation,
+          appBar: (title) => AppBar(
+            title: Text(title),
+          ),
+          body: (body) => Expanded(
+            child: MyHomePage(manager: body),
+          ),
+          navigationRail: ValueListenableBuilder(
+            valueListenable: Global.pageIndex,
+            builder: (context, value, child) {
+              return NavigationRail(
+                extended: windowSize == SizeSelected.expanded,
+                destinations: Global.navRailDestinations,
+                selectedIndex: value,
+                onDestinationSelected: (index) {
+                  Global.pageIndex.value = index;
+                  Global.showFab.value = Global.pageIndex.value == 0;
                 },
-              ),
-              floatingActionButton: ValueListenableBuilder(
-                valueListenable: Global.showFab,
-                builder: (context, value, child) {
-                  return Visibility(
-                    visible: value,
-                    child: FloatingActionButton(
-                      onPressed: () =>
-                          context.execPluginMethod('example_channel', 'add'),
-                      tooltip: 'Increment',
-                      child: const Icon(Icons.add),
-                    ),
-                  );
+                // trailing: ,
+              );
+            },
+          ),
+          navigationBar: ValueListenableBuilder(
+            valueListenable: Global.pageIndex,
+            builder: (context, value, child) {
+              return NavigationBar(
+                selectedIndex: value,
+                destinations: Global.appBarDestinations,
+                onDestinationSelected: (index) {
+                  Global.pageIndex.value = index;
+                  Global.showFab.value = Global.pageIndex.value == 0;
                 },
-              ),
-            );
-          },
-          materialApp: (home, title) {
-            return MaterialApp(
-              home: home,
-              title: title,
-              theme: ThemeData(colorScheme: light),
-              darkTheme: ThemeData(colorScheme: dark),
-            );
-          },
+              );
+            },
+          ),
+          floatingActionButton: ValueListenableBuilder(
+            valueListenable: Global.showFab,
+            builder: (context, value, child) {
+              return Visibility(
+                visible: value,
+                child: FloatingActionButton(
+                  onPressed: () =>
+                      context.execPluginMethod('example_channel', Method.add),
+                  tooltip: 'Increment',
+                  child: const Icon(Icons.add),
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -351,5 +439,247 @@ class WebViewScreen extends StatelessWidget {
               ],
             ),
           );
+  }
+}
+
+class NavigationTransition extends StatefulWidget {
+  const NavigationTransition(
+      {super.key,
+      required this.scaffoldKey,
+      required this.animationController,
+      required this.railAnimation,
+      required this.navigationRail,
+      required this.navigationBar,
+      required this.appBar,
+      required this.body,
+      required this.floatingActionButton});
+
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final AnimationController animationController;
+  final CurvedAnimation railAnimation;
+  final Widget navigationRail;
+  final Widget navigationBar;
+  final Widget floatingActionButton;
+  final PreferredSizeWidget Function(String title) appBar;
+  final Widget Function(Widget body) body;
+
+  @override
+  State<NavigationTransition> createState() => _NavigationTransitionState();
+}
+
+class _NavigationTransitionState extends State<NavigationTransition> {
+  late final AnimationController controller;
+  late final CurvedAnimation railAnimation;
+  late final ReverseAnimation barAnimation;
+  bool controllerInitialized = false;
+  bool showDivider = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = widget.animationController;
+    railAnimation = widget.railAnimation;
+
+    barAnimation = ReverseAnimation(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.0, 0.5),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
+      builder: (light, dark) {
+        return EcosedApp(
+          home: (context, exec, body) {
+            return ExecutorBuilder(
+              exec: exec,
+              child: Row(
+                children: <Widget>[
+                  RailTransition(
+                    animation: railAnimation,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    child: widget.navigationRail,
+                  ),
+                  widget.body(body),
+                ],
+              ),
+            );
+          },
+          plugins: const [ExamplePlugin()],
+          title: Global.appName,
+          location: BannerLocation.topStart,
+          scaffold: (body, title) {
+            return Scaffold(
+              key: widget.scaffoldKey,
+              appBar: widget.appBar(title),
+              body: body,
+              bottomNavigationBar: BarTransition(
+                animation: barAnimation,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                child: widget.navigationBar,
+              ),
+              // drawer: true ? const NavigationDrawerSection() : null
+              floatingActionButton: widget.floatingActionButton,
+            );
+          },
+          materialApp: (home, title) {
+            return MaterialApp(
+              home: home,
+              title: title,
+              theme: ThemeData(colorScheme: light),
+              darkTheme: ThemeData(colorScheme: dark),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class SizeAnimation extends CurvedAnimation {
+  SizeAnimation(Animation<double> parent)
+      : super(
+          parent: parent,
+          curve: const Interval(
+            0.2,
+            0.8,
+            curve: Curves.easeInOutCubicEmphasized,
+          ),
+          reverseCurve: Interval(
+            0,
+            0.2,
+            curve: Curves.easeInOutCubicEmphasized.flipped,
+          ),
+        );
+}
+
+class OffsetAnimation extends CurvedAnimation {
+  OffsetAnimation(Animation<double> parent)
+      : super(
+          parent: parent,
+          curve: const Interval(
+            0.4,
+            1.0,
+            curve: Curves.easeInOutCubicEmphasized,
+          ),
+          reverseCurve: Interval(
+            0,
+            0.2,
+            curve: Curves.easeInOutCubicEmphasized.flipped,
+          ),
+        );
+}
+
+/// 左侧垂直导航切换动画
+class RailTransition extends StatefulWidget {
+  const RailTransition(
+      {super.key,
+      required this.animation,
+      required this.backgroundColor,
+      required this.child});
+
+  final Animation<double> animation;
+  final Widget child;
+  final Color backgroundColor;
+
+  @override
+  State<RailTransition> createState() => _RailTransition();
+}
+
+class _RailTransition extends State<RailTransition> {
+  late Animation<Offset> offsetAnimation;
+  late Animation<double> widthAnimation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // The animations are only rebuilt by this method when the text
+    // direction changes because this widget only depends on Directionality.
+    final bool ltr = Directionality.of(context) == TextDirection.ltr;
+
+    widthAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(SizeAnimation(widget.animation));
+
+    offsetAnimation = Tween<Offset>(
+      begin: ltr ? const Offset(-1, 0) : const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(OffsetAnimation(widget.animation));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: widget.backgroundColor),
+        child: Align(
+          alignment: Alignment.topLeft,
+          widthFactor: widthAnimation.value,
+          child: FractionalTranslation(
+            translation: offsetAnimation.value,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+///底部导航切换动画
+class BarTransition extends StatefulWidget {
+  const BarTransition(
+      {super.key,
+      required this.animation,
+      required this.backgroundColor,
+      required this.child});
+
+  final Animation<double> animation;
+  final Color backgroundColor;
+  final Widget child;
+
+  @override
+  State<BarTransition> createState() => _BarTransition();
+}
+
+class _BarTransition extends State<BarTransition> {
+  late final Animation<Offset> offsetAnimation;
+  late final Animation<double> heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    offsetAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(OffsetAnimation(widget.animation));
+
+    heightAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(SizeAnimation(widget.animation));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: widget.backgroundColor),
+        child: Align(
+          alignment: Alignment.topLeft,
+          heightFactor: heightAnimation.value,
+          child: FractionalTranslation(
+            translation: offsetAnimation.value,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
   }
 }
