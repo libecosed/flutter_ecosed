@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:device_preview/device_preview.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
+  runApp(DevicePreview(builder: (context) => const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -344,10 +347,20 @@ class _NavigationTransitionState extends State<NavigationTransition> {
           materialApp: (home, title) {
             return MaterialApp(
               home: home,
+              builder: DevicePreview.appBuilder,
               title: title,
               theme: ThemeData(colorScheme: light),
               darkTheme: ThemeData(colorScheme: dark),
+              locale: DevicePreview.locale(context),
+              // ignore: deprecated_member_use
+              useInheritedMediaQuery: true,
             );
+            // return MaterialApp(
+            //   home: home,
+            //   title: title,
+            //   theme: ThemeData(colorScheme: light),
+            //   darkTheme: ThemeData(colorScheme: dark),
+            // );
           },
         );
       },
@@ -500,8 +513,7 @@ class WebViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme.of(context).platform == TargetPlatform.android ||
-            Theme.of(context).platform == TargetPlatform.iOS
+    return Platform.isAndroid || Platform.isIOS
         ? Focus(
             onKeyEvent: (node, event) {
               if (!kIsWeb) {
