@@ -11,8 +11,28 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  //runApp(const MyApp());
-  runApp(DevicePreview(builder: (context) => const MyApp()));
+  runApp(const PreviewWrapper());
+}
+
+class PreviewWrapper extends StatefulWidget {
+  const PreviewWrapper({super.key});
+
+  @override
+  State<PreviewWrapper> createState() => _PreviewWrapperState();
+}
+
+class _PreviewWrapperState extends State<PreviewWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    return DevicePreview(
+      builder: (context) => const MyApp(),
+      tools: const [
+        DevicePreviewAddPlugin(),
+        ...DevicePreview.defaultTools,
+      ],
+      enabled: true,
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -259,6 +279,23 @@ extension ContextExecutor on BuildContext {
   /// 调用插件方法
   Future<dynamic> execPluginMethod(String channel, String method) async {
     return await Global.executor(channel, method);
+  }
+}
+
+class DevicePreviewAddPlugin extends StatelessWidget {
+  const DevicePreviewAddPlugin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ToolPanelSection(
+      title: 'Counter',
+      children: [
+        ListTile(
+          title: const Text('counter add'),
+          onTap: () => context.execPluginMethod("example_channel", Method.add),
+        )
+      ],
+    );
   }
 }
 
