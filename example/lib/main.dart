@@ -542,9 +542,15 @@ class WebViewScreen extends StatelessWidget {
 
   final String url;
 
+  bool canShowWebView() {
+    if (kIsWeb) return false;
+    if (Platform.isAndroid || Platform.isIOS) return true;
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Platform.isAndroid || Platform.isIOS
+    return canShowWebView()
         ? Focus(
             onKeyEvent: (node, event) {
               if (!kIsWeb) {
