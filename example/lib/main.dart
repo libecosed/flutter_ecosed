@@ -12,193 +12,18 @@ void main() {
   runApp(const MyApp());
 }
 
-/// 插件方法执行器
-class Executor {
-  const Executor({required this.exec});
-
-  /// 传入方法执行函数
-  final Future<dynamic> Function(String channel, String method) exec;
-
-  /// 调用方法
-  Future<dynamic> call(String channel, String method) async {
-    return await exec(channel, method);
-  }
-}
-
-/// 通过上下文调用插件方法
-extension ContextExecutor on BuildContext {
-  /// 调用插件方法
-  Future<dynamic> execPluginMethod(String channel, String method) async {
-    return await Global.executor(channel, method);
-  }
-}
-
-/// Global全局类
-class Global {
-  const Global();
-
-  /// 应用名称
-  static const String appName = 'flutter_ecosed 示例应用';
-
-  /// compact阈值
-  static const double compactWidthBreakpoint = 600;
-
-  /// medium阈值
-  static const double mediumWidthBreakpoint = 840;
-
-  /// 大小切换动画速率
-  static const double transitionLength = 500;
-
-  /// 页面索引
-  static final ValueNotifier<int> pageIndex = ValueNotifier(0);
-
-  /// 方法执行
-  static late Executor executor;
-
-  /// 计数
-  static final ValueNotifier<int> counter = ValueNotifier(0);
-
-  /// 是否显示FAB
-  static final ValueNotifier<bool> showFab = ValueNotifier(true);
-
-  /// 导航栏目的地
-  static const List<NavigationDestination> appBarDestinations = [
-    NavigationDestination(
-      icon: Icon(Icons.home_outlined),
-      selectedIcon: Icon(Icons.home),
-      label: '主页',
-      tooltip: '主页',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.dashboard_outlined),
-      selectedIcon: Icon(Icons.dashboard),
-      label: '管理器',
-      tooltip: 'flutter_ecosed管理器页面',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.publish_outlined),
-      selectedIcon: Icon(Icons.publish),
-      label: 'Pub包',
-      tooltip: 'Pub包发布页面',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.code_outlined),
-      selectedIcon: Icon(Icons.code),
-      label: 'GitHub',
-      tooltip: 'GitHub源码存储仓库',
-      enabled: true,
-    ),
-  ];
-
-  /// 纵向导航栏目的地
-  static final List<NavigationRailDestination> navRailDestinations =
-      appBarDestinations
-          .map(
-            (destination) => NavigationRailDestination(
-              icon: Tooltip(
-                message: destination.label,
-                child: destination.icon,
-              ),
-              selectedIcon: Tooltip(
-                message: destination.label,
-                child: destination.selectedIcon,
-              ),
-              label: Text(destination.label),
-              disabled: false,
-            ),
-          )
-          .toList();
-}
-
-/// 调用方法
-class Method {
-  /// 计数器
-  static const String add = 'add';
-}
-
-/// 主页布局类型枚举
-enum SizeSelected {
-  ///折叠
-  compact,
-
-  /// 中等
-  medium,
-
-  /// 展开
-  expanded,
-}
-
-/// 执行器构建器
-class ExecutorBuilder extends StatelessWidget {
-  const ExecutorBuilder({
-    super.key,
-    required this.exec,
-    required this.child,
-  });
-
-  final Future<dynamic> Function(String channel, String method) exec;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    Global.executor = Executor(exec: exec);
-    return Container(child: child);
-  }
-}
-
-class ExamplePlugin implements EcosedPlugin {
-  const ExamplePlugin();
-
-  /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
-  @override
-  String pluginAuthor() => 'ExampleAuthor';
-
-  /// “example_channel”为插件的通道,可以理解为插件的唯一标识,我们通常使用全小写英文字母加下划线的命名方式,通过[pluginChannel]方法定义.
-  @override
-  String pluginChannel() => 'example_channel';
-
-  /// "Example description"为插件的描述,通过[pluginDescription]方法定.
-  @override
-  String pluginDescription() => 'Example description';
-
-  /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
-  @override
-  String pluginName() => 'Example Plugin';
-
-  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
-  @override
-  Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
-
-  /// [onMethodCall]方法为插件的方法调用.
-  @override
-  Future<dynamic> onMethodCall(String method) async {
-    switch (method) {
-      case Method.add:
-        Global.counter.value++;
-        return Global.counter.value;
-      default:
-        return await null;
-    }
-  }
-}
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _ExampleAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _ExampleAppState extends State<MyApp>
-    with SingleTickerProviderStateMixin {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   late final AnimationController controller;
   late final CurvedAnimation railAnimation;
   bool controllerInitialized = false;
-
   SizeSelected windowSize = SizeSelected.compact;
 
   @override
@@ -316,143 +141,122 @@ class _ExampleAppState extends State<MyApp>
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.manager});
+/// 主页布局类型枚举
+enum SizeSelected {
+  ///折叠
+  compact,
 
-  final Widget manager;
+  /// 中等
+  medium,
 
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: Global.pageIndex,
-      builder: (context, value, child) {
-        return IndexedStack(
-          index: value,
-          children: <Widget>[
-            ValueListenableBuilder(
-              valueListenable: Global.counter,
-              builder: (context, value, child) {
-                return HomeScreen(counter: value);
-              },
-            ),
-            ManagerScreen(manager: manager),
-            const WebViewScreen(
-              url: 'https://pub.dev/packages/flutter_ecosed',
-            ),
-            const WebViewScreen(
-              url: 'https://github.com/libecosed/flutter_ecosed',
-            ),
-          ],
-        );
-      },
-    );
-  }
+  /// 展开
+  expanded,
 }
 
-class ExamplePluginPage extends StatelessWidget {
-  const ExamplePluginPage({super.key});
+/// Global全局类
+class Global {
+  const Global();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Example Plugin'),
-      ),
-      body: const Center(
-        child: Text('Hello, World!'),
-      ),
-    );
-  }
-}
+  /// 应用名称
+  static const String appName = 'flutter_ecosed 示例应用';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.counter});
+  /// compact阈值
+  static const double compactWidthBreakpoint = 600;
 
-  final int counter;
+  /// medium阈值
+  static const double mediumWidthBreakpoint = 840;
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            'You have pushed the button this many times:',
-          ),
-          Text(
-            '$counter',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
-      ),
-    );
-  }
-}
+  /// 大小切换动画速率
+  static const double transitionLength = 500;
 
-class ManagerScreen extends StatelessWidget {
-  const ManagerScreen({super.key, required this.manager});
+  /// 页面索引
+  static final ValueNotifier<int> pageIndex = ValueNotifier(0);
 
-  final Widget manager;
+  /// 方法执行
+  static late Executor executor;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(child: manager);
-  }
-}
+  /// 计数
+  static final ValueNotifier<int> counter = ValueNotifier(0);
 
-class WebViewScreen extends StatelessWidget {
-  const WebViewScreen({super.key, required this.url});
+  /// 是否显示FAB
+  static final ValueNotifier<bool> showFab = ValueNotifier(true);
 
-  final String url;
+  /// 导航栏目的地
+  static const List<NavigationDestination> appBarDestinations = [
+    NavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home),
+      label: '主页',
+      tooltip: '主页',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.dashboard_outlined),
+      selectedIcon: Icon(Icons.dashboard),
+      label: '管理器',
+      tooltip: 'flutter_ecosed管理器页面',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.publish_outlined),
+      selectedIcon: Icon(Icons.publish),
+      label: 'Pub包',
+      tooltip: 'Pub包发布页面',
+      enabled: true,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.code_outlined),
+      selectedIcon: Icon(Icons.code),
+      label: 'GitHub',
+      tooltip: 'GitHub源码存储仓库',
+      enabled: true,
+    ),
+  ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Theme.of(context).platform == TargetPlatform.android ||
-            Theme.of(context).platform == TargetPlatform.iOS
-        ? Focus(
-            onKeyEvent: (node, event) {
-              if (!kIsWeb) {
-                if ({
-                  LogicalKeyboardKey.arrowLeft,
-                  LogicalKeyboardKey.arrowRight,
-                  LogicalKeyboardKey.arrowUp,
-                  LogicalKeyboardKey.arrowDown,
-                  LogicalKeyboardKey.tab
-                }.contains(event.logicalKey)) {
-                  return KeyEventResult.skipRemainingHandlers;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: GestureDetector(
-              onSecondaryTap: () {},
-              child: WebViewWidget(
-                controller: WebViewController()
-                  ..loadRequest(
-                    Uri.parse(url),
-                  )
-                  ..setJavaScriptMode(
-                    JavaScriptMode.unrestricted,
-                  ),
+  /// 纵向导航栏目的地
+  static final List<NavigationRailDestination> navRailDestinations =
+      appBarDestinations
+          .map(
+            (destination) => NavigationRailDestination(
+              icon: Tooltip(
+                message: destination.label,
+                child: destination.icon,
               ),
+              selectedIcon: Tooltip(
+                message: destination.label,
+                child: destination.selectedIcon,
+              ),
+              label: Text(destination.label),
+              disabled: false,
             ),
           )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
-                ),
-                TextButton(
-                  onPressed: () => launchUrl(
-                    Uri.parse(url),
-                  ),
-                  child: const Text('通过浏览器打开'),
-                ),
-              ],
-            ),
-          );
+          .toList();
+}
+
+/// 调用方法
+class Method {
+  /// 计数器
+  static const String add = 'add';
+}
+
+/// 插件方法执行器
+class Executor {
+  const Executor({required this.exec});
+
+  /// 传入方法执行函数
+  final Future<dynamic> Function(String channel, String method) exec;
+
+  /// 调用方法
+  Future<dynamic> call(String channel, String method) async {
+    return await exec(channel, method);
+  }
+}
+
+/// 通过上下文调用插件方法
+extension ContextExecutor on BuildContext {
+  /// 调用插件方法
+  Future<dynamic> execPluginMethod(String channel, String method) async {
+    return await Global.executor(channel, method);
   }
 }
 
@@ -552,38 +356,198 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   }
 }
 
-class SizeAnimation extends CurvedAnimation {
-  SizeAnimation(Animation<double> parent)
-      : super(
-          parent: parent,
-          curve: const Interval(
-            0.2,
-            0.8,
-            curve: Curves.easeInOutCubicEmphasized,
-          ),
-          reverseCurve: Interval(
-            0,
-            0.2,
-            curve: Curves.easeInOutCubicEmphasized.flipped,
-          ),
-        );
+/// 执行器构建器
+class ExecutorBuilder extends StatelessWidget {
+  const ExecutorBuilder({
+    super.key,
+    required this.exec,
+    required this.child,
+  });
+
+  final Future<dynamic> Function(String channel, String method) exec;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    Global.executor = Executor(exec: exec);
+    return Container(child: child);
+  }
 }
 
-class OffsetAnimation extends CurvedAnimation {
-  OffsetAnimation(Animation<double> parent)
-      : super(
-          parent: parent,
-          curve: const Interval(
-            0.4,
-            1.0,
-            curve: Curves.easeInOutCubicEmphasized,
-          ),
-          reverseCurve: Interval(
-            0,
-            0.2,
-            curve: Curves.easeInOutCubicEmphasized.flipped,
-          ),
+class ExamplePlugin implements EcosedPlugin {
+  const ExamplePlugin();
+
+  /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
+  @override
+  String pluginAuthor() => 'ExampleAuthor';
+
+  /// “example_channel”为插件的通道,可以理解为插件的唯一标识,我们通常使用全小写英文字母加下划线的命名方式,通过[pluginChannel]方法定义.
+  @override
+  String pluginChannel() => 'example_channel';
+
+  /// "Example description"为插件的描述,通过[pluginDescription]方法定.
+  @override
+  String pluginDescription() => 'Example description';
+
+  /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
+  @override
+  String pluginName() => 'Example Plugin';
+
+  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
+  @override
+  Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
+
+  /// [onMethodCall]方法为插件的方法调用.
+  @override
+  Future<dynamic> onMethodCall(String method) async {
+    switch (method) {
+      case Method.add:
+        Global.counter.value++;
+        return Global.counter.value;
+      default:
+        return await null;
+    }
+  }
+}
+
+class ExamplePluginPage extends StatelessWidget {
+  const ExamplePluginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Example Plugin'),
+      ),
+      body: const Center(
+        child: Text('Hello, World!'),
+      ),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key, required this.manager});
+
+  final Widget manager;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: Global.pageIndex,
+      builder: (context, value, child) {
+        return IndexedStack(
+          index: value,
+          children: <Widget>[
+            ValueListenableBuilder(
+              valueListenable: Global.counter,
+              builder: (context, value, child) {
+                return HomeScreen(counter: value);
+              },
+            ),
+            ManagerScreen(manager: manager),
+            const WebViewScreen(
+              url: 'https://pub.dev/packages/flutter_ecosed',
+            ),
+            const WebViewScreen(
+              url: 'https://github.com/libecosed/flutter_ecosed',
+            ),
+          ],
         );
+      },
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key, required this.counter});
+
+  final int counter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            'You have pushed the button this many times:',
+          ),
+          Text(
+            '$counter',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ManagerScreen extends StatelessWidget {
+  const ManagerScreen({super.key, required this.manager});
+
+  final Widget manager;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: manager);
+  }
+}
+
+class WebViewScreen extends StatelessWidget {
+  const WebViewScreen({super.key, required this.url});
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme.of(context).platform == TargetPlatform.android ||
+            Theme.of(context).platform == TargetPlatform.iOS
+        ? Focus(
+            onKeyEvent: (node, event) {
+              if (!kIsWeb) {
+                if ({
+                  LogicalKeyboardKey.arrowLeft,
+                  LogicalKeyboardKey.arrowRight,
+                  LogicalKeyboardKey.arrowUp,
+                  LogicalKeyboardKey.arrowDown,
+                  LogicalKeyboardKey.tab
+                }.contains(event.logicalKey)) {
+                  return KeyEventResult.skipRemainingHandlers;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: GestureDetector(
+              onSecondaryTap: () {},
+              child: WebViewWidget(
+                controller: WebViewController()
+                  ..loadRequest(
+                    Uri.parse(url),
+                  )
+                  ..setJavaScriptMode(
+                    JavaScriptMode.unrestricted,
+                  ),
+              ),
+            ),
+          )
+        : Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
+                ),
+                TextButton(
+                  onPressed: () => launchUrl(
+                    Uri.parse(url),
+                  ),
+                  child: const Text('通过浏览器打开'),
+                ),
+              ],
+            ),
+          );
+  }
 }
 
 /// 左侧垂直导航切换动画
@@ -688,4 +652,38 @@ class _BarTransition extends State<BarTransition> {
       ),
     );
   }
+}
+
+class SizeAnimation extends CurvedAnimation {
+  SizeAnimation(Animation<double> parent)
+      : super(
+          parent: parent,
+          curve: const Interval(
+            0.2,
+            0.8,
+            curve: Curves.easeInOutCubicEmphasized,
+          ),
+          reverseCurve: Interval(
+            0,
+            0.2,
+            curve: Curves.easeInOutCubicEmphasized.flipped,
+          ),
+        );
+}
+
+class OffsetAnimation extends CurvedAnimation {
+  OffsetAnimation(Animation<double> parent)
+      : super(
+          parent: parent,
+          curve: const Interval(
+            0.4,
+            1.0,
+            curve: Curves.easeInOutCubicEmphasized,
+          ),
+          reverseCurve: Interval(
+            0,
+            0.2,
+            curve: Curves.easeInOutCubicEmphasized.flipped,
+          ),
+        );
 }

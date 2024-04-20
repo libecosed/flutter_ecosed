@@ -46,6 +46,7 @@ flutter:
     - LICENSE
     - README.md
     - CHANGELOG.md
+    - screenshot.png
 
 screenshots:
   - description: "Screenshots 0"
