@@ -535,7 +535,6 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 child: widget.navigationBar,
               ),
-              // drawer: true ? const NavigationDrawerSection() : null
               floatingActionButton: widget.floatingActionButton,
             );
           },
