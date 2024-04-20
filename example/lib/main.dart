@@ -104,7 +104,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   Global.pageIndex.value = index;
                   Global.showFab.value = Global.pageIndex.value == 0;
                 },
-                // trailing: ,
               );
             },
           ),
