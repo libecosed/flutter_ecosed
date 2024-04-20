@@ -17,7 +17,6 @@ final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
-        return [];
       default:
         return [];
     }
@@ -28,13 +27,14 @@ final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   Future<void> openPlatformDialog() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        _bridge.openPlatformDialog();
+        return await _bridge.openPlatformDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
       default:
+        return await null;
     }
   }
 
@@ -42,13 +42,14 @@ final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   Future<void> closePlatformDialog() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        _bridge.closePlatformDialog();
+        return await _bridge.closePlatformDialog();
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
       default:
+        return await null;
     }
   }
 }

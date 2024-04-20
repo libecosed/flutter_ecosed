@@ -92,14 +92,31 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
 
   /// 打开对话框
   @override
-  void openDialog(BuildContext context) {
-    exec(this.pluginChannel(), openDialogMethod);
-  }
-
-  /// 关闭对话框
-  @override
-  void closeDialog() {
-    exec(this.pluginChannel(), closeDialogMethod);
+  void openDialog(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('title'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => exec(
+                this.pluginChannel(),
+                openDialogMethod,
+              ),
+              child: const Text('open'),
+            ),
+            TextButton(
+              onPressed: () => exec(
+                this.pluginChannel(),
+                closeDialogMethod,
+              ),
+              child: const Text('close'),
+            )
+          ],
+        );
+      },
+    );
   }
 
   /// 统计普通插件数量
