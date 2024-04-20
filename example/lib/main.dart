@@ -355,12 +355,6 @@ class _NavigationTransitionState extends State<NavigationTransition> {
               // ignore: deprecated_member_use
               useInheritedMediaQuery: true,
             );
-            // return MaterialApp(
-            //   home: home,
-            //   title: title,
-            //   theme: ThemeData(colorScheme: light),
-            //   darkTheme: ThemeData(colorScheme: dark),
-            // );
           },
         );
       },
