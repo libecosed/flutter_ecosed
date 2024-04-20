@@ -5,8 +5,8 @@ final class DefaultPlatform extends FlutterEcosedPlatform {
   Future<List?> getPlatformPluginList() async => [];
 
   @override
-  void openPlatformDialog() {}
+  Future<void> openPlatformDialog() async {}
 
   @override
-  void closePlatformDialog() {}
+  Future<void> closePlatformDialog() async {}
 }

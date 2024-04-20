@@ -10,30 +10,23 @@ final class NativeBridge implements BridgeWrapper {
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
 
+  final arguments = const {'channel': 'ecosed_engine'};
+
   /// 获取插件列表
   @override
   Future<List?> getPlatformPluginList() async {
-    return await methodChannel.invokeListMethod(
-      'getPlugins',
-      {'channel': 'ecosed_engine'},
-    );
+    return await methodChannel.invokeListMethod<String?>('getPlugins', arguments);
   }
 
   /// 打开对话框
   @override
-  void openPlatformDialog() {
-    methodChannel.invokeMethod(
-      'openDialog',
-      {'channel': 'ecosed_engine'},
-    );
+  Future<void> openPlatformDialog() async {
+    return await methodChannel.invokeMethod<void>('openDialog', arguments);
   }
 
   /// 关闭对话框
   @override
-  void closePlatformDialog() {
-    methodChannel.invokeMethod(
-      'closeDialog',
-      {'channel': 'ecosed_engine'},
-    );
+  Future<void> closePlatformDialog() async {
+    return await methodChannel.invokeMethod<void>('closeDialog', arguments);
   }
 }

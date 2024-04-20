@@ -29,12 +29,12 @@ abstract class FlutterEcosedPlatform extends PlatformInterface
 
   /// 打开对话框
   @override
-  void openPlatformDialog() {
+  Future<void> openPlatformDialog() async {
     throw UnimplementedError('openPlatformDialog()方法未实现');
   }
 
   @override
-  void closePlatformDialog() {
+  Future<void> closePlatformDialog() async {
     throw UnimplementedError('closePlatformDialog()方法未实现');
   }
 }

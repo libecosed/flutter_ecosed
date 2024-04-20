@@ -3,8 +3,8 @@ abstract interface class BridgeWrapper {
   Future<List?> getPlatformPluginList();
 
   /// 打开对话框
-  void openPlatformDialog();
+  Future<void> openPlatformDialog();
 
   /// 关闭对话框
-  void closePlatformDialog();
+  Future<void> closePlatformDialog();
 }

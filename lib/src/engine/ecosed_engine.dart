@@ -60,13 +60,11 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
       case getPluginMethod:
         return await getPlatformPluginList();
       case openDialogMethod:
-        openPlatformDialog();
-        return null;
+        return await openPlatformDialog();
       case closeDialogMethod:
-        closePlatformDialog();
-        return null;
+        return await closePlatformDialog();
       default:
-        return null;
+        return await null;
     }
   }
 
@@ -95,12 +93,13 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
   /// 打开对话框
   @override
   void openDialog(BuildContext context) {
-    exec(pluginChannel(), openDialogMethod);
+    exec(this.pluginChannel(), openDialogMethod);
   }
 
+  /// 关闭对话框
   @override
   void closeDialog() {
-    exec(pluginChannel(), closeDialogMethod);
+    exec(this.pluginChannel(), closeDialogMethod);
   }
 
   /// 统计普通插件数量
@@ -108,7 +107,7 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
   int pluginCount() {
     var count = 0;
     for (var element in _pluginList) {
-      if (element.pluginChannel() != pluginChannel()) {
+      if (element.pluginChannel() != this.pluginChannel()) {
         count++;
       }
     }
@@ -153,18 +152,18 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
   }
 
   @override
-  Future<List?> getPlatformPluginList() {
-    return FlutterEcosedPlatform.instance.getPlatformPluginList();
+  Future<List?> getPlatformPluginList() async {
+    return await FlutterEcosedPlatform.instance.getPlatformPluginList();
   }
 
   @override
-  void openPlatformDialog() {
-    FlutterEcosedPlatform.instance.openPlatformDialog();
+  Future<void> openPlatformDialog() async {
+    return await FlutterEcosedPlatform.instance.openPlatformDialog();
   }
 
   @override
-  void closePlatformDialog() {
-    FlutterEcosedPlatform.instance.closePlatformDialog();
+  Future<void> closePlatformDialog() async {
+    return await FlutterEcosedPlatform.instance.closePlatformDialog();
   }
 
   /// 加载插件

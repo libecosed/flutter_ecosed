@@ -25,7 +25,7 @@ final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
 
   /// 从客户端启动对话框
   @override
-  void openPlatformDialog() {
+  Future<void> openPlatformDialog() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         _bridge.openPlatformDialog();
@@ -39,7 +39,7 @@ final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   }
 
   @override
-  void closePlatformDialog() {
+  Future<void> closePlatformDialog() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         _bridge.closePlatformDialog();
