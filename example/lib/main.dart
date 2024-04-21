@@ -445,8 +445,7 @@ class ExamplePlugin implements EcosedPlugin {
   Future<dynamic> onMethodCall(String method) async {
     switch (method) {
       case Method.add:
-        Global.counter.value++;
-        return Global.counter.value;
+        return Global.counter.value++;
       default:
         return await null;
     }
