@@ -212,7 +212,7 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
     try {
       // 遍历原生插件
       for (var element
-          in (await exec(pluginChannel(), getPluginMethod) as List? ??
+          in (await exec(this.pluginChannel(), getPluginMethod) as List? ??
               [_unknownPlugin])) {
         // 添加到插件详细信息列表
         pluginDetailsList.add(
