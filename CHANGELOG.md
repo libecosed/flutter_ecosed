@@ -1,21 +1,21 @@
 ## 0.0.1
-* 首次发布测试
+* First publish test.
 ## 0.0.2
-* 完善功能
+* Improve the function.
 ## 0.0.3
-* 完善功能
+* Improve the function.
 ## 0.0.4
-* 完善功能
+* Improve the function.
 ## 0.0.5
-* 完善功能
+* Improve the function.
 ## 0.0.6
-* 支持所有平台
+* Support all platforms.
 ## 0.0.7
-* 完善功能
+* Improve the function.
 ## 0.0.8
-* 修复一些bug
-* 更新依赖
+* Fix some bugs.
+* Update dependencies.
 ## 0.0.9
-* 修复一些bug
-* 完善功能
-* 完善示例代码
+* Fix some bugs.
+* Improve the function.
+* Improve sample code.
