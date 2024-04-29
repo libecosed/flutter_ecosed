@@ -297,7 +297,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
         // 解绑Shizuku服务
         connectUnit {
-            Shizuku.unbindUserService(mUserServiceArgs, this@connectUnit, true)
+            Shizuku.unbindUserService(
+                this@FlutterEcosedPlugin.mUserServiceArgs,
+                this@connectUnit,
+                true,
+            )
         }
     }
 
@@ -314,7 +318,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         binding: FlutterPlugin.FlutterPluginBinding
     ): Unit = bridgeUnit {
         // 初始化方法通道
-        mMethodChannel = MethodChannel(binding.binaryMessenger, EcosedChannel.FLUTTER_CHANNEL_NAME)
+        mMethodChannel = MethodChannel(
+            binding.binaryMessenger,
+            EcosedChannel.FLUTTER_CHANNEL_NAME,
+        )
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
@@ -339,7 +346,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 调用方法
      */
     override fun onMethodCall(
-        call: MethodCall, result: MethodChannel.Result
+        call: MethodCall,
+        result: MethodChannel.Result,
     ): Unit = bridgeUnit {
         return@bridgeUnit this@bridgeUnit.onMethodCall(
             call = object : MethodCallProxy {
@@ -452,13 +460,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun onActivityResult(
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            data: Intent?,
         ): Boolean
 
         fun onRequestPermissionsResult(
             requestCode: Int,
             permissions: Array<out String>,
-            grantResults: IntArray
+            grantResults: IntArray,
         ): Boolean
 
         /** 引擎初始化 */
@@ -470,7 +478,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 方法调用 */
         fun onMethodCall(
             call: MethodCallProxy,
-            result: ResultProxy
+            result: ResultProxy,
         )
     }
 
@@ -506,7 +514,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         fun error(
             errorCodeProxy: String,
             errorMessageProxy: String?,
-            errorDetailsProxy: Any?
+            errorDetailsProxy: Any?,
         )
 
         /**
@@ -674,27 +682,27 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         open fun onEcosedAdded(binding: PluginBinding) {
             // 初始化插件通道
-            mPluginChannel = PluginChannel(
+            this@EcosedPlugin.mPluginChannel = PluginChannel(
                 binding = binding,
-                channel = channel
+                channel = this@EcosedPlugin.channel,
             )
             // 插件附加基本上下文
-            attachBaseContext(
-                base = mPluginChannel.getContext()
+            this@EcosedPlugin.attachBaseContext(
+                base = this@EcosedPlugin.mPluginChannel.getContext()
             )
             // 引擎
-            mEngine = mPluginChannel.getEngine()
+            this@EcosedPlugin.mEngine = this@EcosedPlugin.mPluginChannel.getEngine()
             // 获取是否调试模式
-            mDebug = mPluginChannel.isDebug()
+            this@EcosedPlugin.mDebug = this@EcosedPlugin.mPluginChannel.isDebug()
             // 设置调用
-            mPluginChannel.setMethodCallHandler(
+            this@EcosedPlugin.mPluginChannel.setMethodCallHandler(
                 handler = this@EcosedPlugin
             )
         }
 
         /** 获取插件通道 */
         val getPluginChannel: PluginChannel
-            get() = mPluginChannel
+            get() = this@EcosedPlugin.mPluginChannel
 
         /** 需要子类重写的插件标题 */
         abstract val title: String
@@ -710,7 +718,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 供子类使用的判断调试模式的接口 */
         protected val isDebug: Boolean
-            get() = mDebug
+            get() = this@EcosedPlugin.mDebug
 
         /**
          * 执行方法
@@ -723,7 +731,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             channel: String,
             method: String,
             bundle: Bundle?,
-        ): T? = mEngine.execMethodCall<T>(
+        ): T? = this@EcosedPlugin.mEngine.execMethodCall<T>(
             channel = channel,
             method = method,
             bundle = bundle,
@@ -760,25 +768,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 是否调试模式.
          * @return Boolean.
          */
-        fun isDebug(): Boolean {
-            return mDebug
-        }
+        fun isDebug(): Boolean = this@PluginBinding.mDebug
 
         /**
          * 获取上下文.
          * @return Context.
          */
-        fun getContext(): Context {
-            return mContext
-        }
+        fun getContext(): Context = this@PluginBinding.mContext
 
         /**
          * 获取引擎
          * @return EngineWrapper.
          */
-        fun getEngine(): EngineWrapper {
-            return mEngine
-        }
+        fun getEngine(): EngineWrapper = this@PluginBinding.mEngine
     }
 
     /**
@@ -809,32 +811,32 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * @param handler 执行方法时调用EcosedMethodCallHandler.
          */
         fun setMethodCallHandler(handler: EcosedPlugin) {
-            mPlugin = handler
+            this@PluginChannel.mPlugin = handler
         }
 
         /**
          * 获取上下文.
          * @return Context.
          */
-        fun getContext(): Context = mBinding.getContext()
+        fun getContext(): Context = this@PluginChannel.mBinding.getContext()
 
         /**
          * 是否调试模式.
          * @return Boolean.
          */
-        fun isDebug(): Boolean = mBinding.isDebug()
+        fun isDebug(): Boolean = this@PluginChannel.mBinding.isDebug()
 
         /**
          * 获取通道.
          * @return 通道名称.
          */
-        fun getChannel(): String = mChannel
+        fun getChannel(): String = this@PluginChannel.mChannel
 
         /**
          * 获取引擎.
          * @return 引擎.
          */
-        fun getEngine(): EngineWrapper = mBinding.getEngine()
+        fun getEngine(): EngineWrapper = this@PluginChannel.mBinding.getEngine()
 
         /**
          * 执行方法回调.
@@ -844,14 +846,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         @Suppress("UNCHECKED_CAST")
         fun <T> execMethodCall(name: String, method: String?, bundle: Bundle?): T? {
-            mMethod = method
-            mBundle = bundle
-            if (name == mChannel) {
-                mPlugin?.onEcosedMethodCall(
-                    call = call, result = result
+            this@PluginChannel.mMethod = method
+            this@PluginChannel.mBundle = bundle
+            if (name == this@PluginChannel.mChannel) {
+                this@PluginChannel.mPlugin?.onEcosedMethodCall(
+                    call = this@PluginChannel.call, result = this@PluginChannel.result
                 )
             }
-            return mResult as T?
+            return this@PluginChannel.mResult as T?
         }
 
         /** 用于调用方法的接口. */
@@ -861,13 +863,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
              * 要调用的方法名.
              */
             override val method: String?
-                get() = mMethod
+                get() = this@PluginChannel.mMethod
 
             /**
              * 要传入的参数.
              */
             override val bundle: Bundle?
-                get() = mBundle
+                get() = this@PluginChannel.mBundle
         }
 
         /** 方法调用结果回调. */
@@ -877,7 +879,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
              * 处理成功结果.
              */
             override fun success(result: Any?) {
-                mResult = result
+                this@PluginChannel.mResult = result
             }
 
             /**
@@ -886,7 +888,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             override fun error(
                 errorCode: String,
                 errorMessage: String?,
-                errorDetails: Any?
+                errorDetails: Any?,
             ): Nothing = error(
                 message = "错误代码:$errorCode\n错误消息:$errorMessage\n详细信息:$errorDetails"
             )
@@ -895,7 +897,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
              * 处理对未实现方法的调用.
              */
             override fun notImplemented() {
-                mResult = null
+                this@PluginChannel.mResult = null
             }
         }
 
@@ -945,24 +947,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onActivityResult(
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            data: Intent?,
         ): Boolean = engineUnit {
             return@engineUnit this@engineUnit.onActivityResult(
                 requestCode = requestCode,
                 resultCode = resultCode,
-                data = data
+                data = data,
             )
         }
 
         override fun onRequestPermissionsResult(
             requestCode: Int,
             permissions: Array<out String>,
-            grantResults: IntArray
+            grantResults: IntArray,
         ): Boolean = engineUnit {
             return@engineUnit this@engineUnit.onRequestPermissionsResult(
                 requestCode = requestCode,
                 permissions = permissions,
-                grantResults = grantResults
+                grantResults = grantResults,
             )
         }
 
@@ -1019,7 +1021,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onActivityResult(
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            data: Intent?,
         ): Boolean {
 
             return true
@@ -1028,7 +1030,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onRequestPermissionsResult(
             requestCode: Int,
             permissions: Array<out String>,
-            grantResults: IntArray
+            grantResults: IntArray,
         ): Boolean {
 
             return true
@@ -1047,7 +1049,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             super.onEcosedMethodCall(call, result)
             when (call.method) {
                 EcosedMethod.GET_PLUGINS_METHOD -> result.success(
-                    result = mJSONList
+                    result = this@FlutterEcosedPlugin.mJSONList
                 )
 
                 EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
@@ -1094,41 +1096,42 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         ),
                     )
                     // 初始化插件列表.
-                    mPluginList = arrayListOf()
-                    mJSONList = arrayListOf()
+                    this@FlutterEcosedPlugin.mPluginList = arrayListOf()
+                    this@FlutterEcosedPlugin.mJSONList = arrayListOf()
                     // 添加所有插件.
                     plugin.forEach { item ->
                         item.apply {
                             try {
                                 onEcosedAdded(binding = binding)
-                                if (mBaseDebug) Log.d(
+                                if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
                                     PLUGIN_TAG, "插件${item.javaClass.name}已加载",
                                 )
                             } catch (e: Exception) {
-                                if (mBaseDebug) Log.e(
+                                if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                                     PLUGIN_TAG, "插件添加失败!", e,
                                 )
                             }
                         }.run {
-                            mPluginList?.add(
+                            this@FlutterEcosedPlugin.mPluginList?.add(
                                 element = item
                             )
-                            mJSONList?.add(
-                                element = JSONObject().run {
-                                    put("channel", channel)
-                                    put("title", title)
-                                    put("description", description)
-                                    put("author", author)
+                            this@FlutterEcosedPlugin.mJSONList?.add(
+                                element = JSONObject().let { json ->
+                                    json.put("channel", this@run.channel)
+                                    json.put("title", this@run.title)
+                                    json.put("description", this@run.description)
+                                    json.put("author", this@run.author)
+                                    return@let null
                                 }.toString()
                             )
-                            if (mBaseDebug) Log.d(
+                            if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
                                 PLUGIN_TAG, "插件${item.javaClass.name}已添加到插件列表"
                             )
                         }
                     }
                 }
 
-                else -> if (mBaseDebug) Log.e(
+                else -> if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                     PLUGIN_TAG, "请勿重复执行onCreateEngine!"
                 )
             }
@@ -1139,13 +1142,15 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroyEngine() {
             when {
-                mPluginList.isNotNull or mJSONList.isNotNull or mBinding.isNotNull -> {
+                this@FlutterEcosedPlugin.mPluginList.isNotNull or
+                        this@FlutterEcosedPlugin.mJSONList.isNotNull or
+                        this@FlutterEcosedPlugin.mBinding.isNotNull -> {
                     // 清空插件列表
-                    mPluginList = null
-                    mJSONList = null
+                    this@FlutterEcosedPlugin.mPluginList = null
+                    this@FlutterEcosedPlugin.mJSONList = null
                 }
 
-                else -> if (mBaseDebug) Log.e(
+                else -> if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                     PLUGIN_TAG, "请勿重复执行onDestroyEngine!",
                 )
             }
@@ -1169,7 +1174,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     bundle = call.bundleProxy,
                 ).apply {
                     // 判断是否为空并提交数据
-                    if (isNotNull) result.success(
+                    if (this@apply.isNotNull) result.success(
                         resultProxy = this@apply
                     ) else {
                         result.notImplemented()
@@ -1208,7 +1213,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     method = method,
                                     bundle = bundle
                                 )
-                                if (mBaseDebug) {
+                                if (this@FlutterEcosedPlugin.mBaseDebug) {
                                     Log.d(
                                         PLUGIN_TAG,
                                         "插件代码调用成功!\n通道名称:${channel}.\n方法名称:${method}.\n返回结果:${result}."
@@ -1219,7 +1224,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     }
                 }
             } catch (e: Exception) {
-                if (mBaseDebug) {
+                if (this@FlutterEcosedPlugin.mBaseDebug) {
                     Log.e(PLUGIN_TAG, "插件代码调用失败!", e)
                 }
             }
@@ -1251,10 +1256,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onEcosedAdded(binding: PluginBinding) = run {
             super.onEcosedAdded(binding)
-            mEcosedServicesIntent = Intent(this@run, this@FlutterEcosedPlugin.javaClass)
-            mEcosedServicesIntent.action = EcosedManifest.ACTION
+            this@FlutterEcosedPlugin.mEcosedServicesIntent = Intent(
+                this@run,
+                this@FlutterEcosedPlugin.javaClass,
+            )
+            this@FlutterEcosedPlugin.mEcosedServicesIntent.action = EcosedManifest.ACTION
 
-            startService(mEcosedServicesIntent)
+            startService(this@FlutterEcosedPlugin.mEcosedServicesIntent)
             bindEcosed(this@run)
 
             Toast.makeText(this@run, "client", Toast.LENGTH_SHORT).show()
@@ -1331,7 +1339,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun attachBaseContext(base: Context?) {
             super.attachBaseContext(base)
             base?.let { context ->
-                mAppCompatDelegateBaseContext = context
+                this@FlutterEcosedPlugin.mAppCompatDelegateBaseContext = context
             }
         }
 
@@ -1354,26 +1362,29 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun attachDelegateBaseContext() {
-            mAppCompatDelegate.attachBaseContext2(mAppCompatDelegateBaseContext)
+            this@FlutterEcosedPlugin.mAppCompatDelegate.attachBaseContext2(
+                this@FlutterEcosedPlugin.mAppCompatDelegateBaseContext
+            )
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             when (name?.className) {
                 UserService().javaClass.name -> {
                     if ((service != null) and (service?.pingBinder() == true)) {
-                        mIUserService = IUserService.Stub.asInterface(service)
+                        this@FlutterEcosedPlugin.mIUserService =
+                            IUserService.Stub.asInterface(service)
                     }
                     when {
-                        mIUserService != null -> {
+                        this@FlutterEcosedPlugin.mIUserService != null -> {
                             Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT).show()
                         }
 
-                        else -> if (mFullDebug) Log.e(
+                        else -> if (this@FlutterEcosedPlugin.mFullDebug) Log.e(
                             PLUGIN_TAG, "UserService接口获取失败 - onServiceConnected"
                         )
                     }
                     when {
-                        mFullDebug -> Log.i(
+                        this@FlutterEcosedPlugin.mFullDebug -> Log.i(
                             PLUGIN_TAG, "服务已连接 - onServiceConnected"
                         )
                     }
@@ -1381,17 +1392,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
                     if ((service != null) and (service?.pingBinder() == true)) {
-                        mAIDL = FlutterEcosed.Stub.asInterface(service)
+                        this@FlutterEcosedPlugin.mAIDL = FlutterEcosed.Stub.asInterface(service)
                     }
                     when {
-                        mAIDL != null -> {
-                            mIsBind = true
+                        this@FlutterEcosedPlugin.mAIDL != null -> {
+                            this@FlutterEcosedPlugin.mIsBind = true
                             invokeUnit {
                                 onEcosedConnected()
                             }
                         }
 
-                        else -> if (mFullDebug) Log.e(
+                        else -> if (this@FlutterEcosedPlugin.mFullDebug) Log.e(
                             PLUGIN_TAG, "AIDL接口获取失败 - onServiceConnected"
                         )
                     }
@@ -1415,13 +1426,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
-                    mIsBind = false
-                    mAIDL = null
+                    this@FlutterEcosedPlugin.mIsBind = false
+                    this@FlutterEcosedPlugin.mAIDL = null
                     unbindService(this)
                     invokeUnit {
                         onEcosedDisconnected()
                     }
-                    if (mFullDebug) {
+                    if (this@FlutterEcosedPlugin.mFullDebug) {
                         Log.i(PLUGIN_TAG, "服务意外断开连接 - onServiceDisconnected")
                     }
                 }
@@ -1458,7 +1469,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
-                    if (mFullDebug) {
+                    if (this@FlutterEcosedPlugin.mFullDebug) {
                         Log.e(PLUGIN_TAG, "Binder为空 - onNullBinding")
                     }
                 }
@@ -1883,15 +1894,20 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun initDelegate(): Unit = activityUnit {
         // 初始化Delegate
-        mAppCompatDelegate = if (this@activityUnit is AppCompatActivity) delegate else {
+        this@FlutterEcosedPlugin.mAppCompatDelegate = if (this@activityUnit.isAppCompat) {
+            (this@activityUnit as AppCompatActivity).run {
+                return@run this@run.delegate
+            }
+        } else {
             appCompatUnit {
                 return@appCompatUnit AppCompatDelegate.create(
-                    this@activityUnit, this@appCompatUnit
+                    this@activityUnit,
+                    this@appCompatUnit,
                 )
             }
         }
         // 附加Delegate基本上下文
-        if (this@activityUnit !is AppCompatActivity) serviceUnit {
+        if (this@activityUnit.isNotAppCompat) serviceUnit {
             attachDelegateBaseContext()
         }
     }
@@ -2120,7 +2136,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         try {
             if (!mIsBind) {
                 context.bindService(
-                    mEcosedServicesIntent, this@connectUnit, Context.BIND_AUTO_CREATE
+                    this@FlutterEcosedPlugin.mEcosedServicesIntent,
+                    this@connectUnit,
+                    Context.BIND_AUTO_CREATE,
                 ).let { bind ->
                     invokeUnit {
                         if (!bind) onEcosedDead()
@@ -2128,7 +2146,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
             }
         } catch (e: Exception) {
-            if (mFullDebug) {
+            if (this@FlutterEcosedPlugin.mFullDebug) {
                 Log.e(PLUGIN_TAG, "bindEcosed", e)
             }
         }
@@ -2140,22 +2158,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun unbindEcosed(context: Context) = connectUnit {
         try {
-            if (mIsBind) {
+            if (this@FlutterEcosedPlugin.mIsBind) {
                 context.unbindService(
                     this@connectUnit
                 ).run {
-                    mIsBind = false
-                    mAIDL = null
+                    this@FlutterEcosedPlugin.mIsBind = false
+                    this@FlutterEcosedPlugin.mAIDL = null
                     invokeUnit {
                         onEcosedDisconnected()
                     }
-                    if (mFullDebug) {
+                    if (this@FlutterEcosedPlugin.mFullDebug) {
                         Log.i(PLUGIN_TAG, "服务已断开连接 - onServiceDisconnected")
                     }
                 }
             }
         } catch (e: Exception) {
-            if (mFullDebug) {
+            if (this@FlutterEcosedPlugin.mFullDebug) {
                 Log.e(PLUGIN_TAG, "unbindEcosed", e)
             }
         }
@@ -2165,7 +2183,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 切换工具栏显示状态
      */
     private fun toggle() {
-        if (isVisible) hide() else show()
+        if (this@FlutterEcosedPlugin.isVisible) hide() else show()
     }
 
     /**
@@ -2173,24 +2191,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun hide() {
         getActionBar()?.hide()
-        isVisible = false
-        hideHandler.removeCallbacks(showPart2Runnable)
+        this@FlutterEcosedPlugin.isVisible = false
+        this@FlutterEcosedPlugin.hideHandler.removeCallbacks(showPart2Runnable)
     }
 
     /**
      * 显示工具栏
      */
     private fun show() {
-        isVisible = true
-        hideHandler.postDelayed(showPart2Runnable, UI_ANIMATOR_DELAY.toLong())
+        this@FlutterEcosedPlugin.isVisible = true
+        this@FlutterEcosedPlugin.hideHandler.postDelayed(showPart2Runnable, UI_ANIMATOR_DELAY.toLong())
     }
 
     /**
      * 延时隐藏
      */
     private fun delayedHide() {
-        hideHandler.removeCallbacks(hideRunnable)
-        hideHandler.postDelayed(hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong())
+        this@FlutterEcosedPlugin.hideHandler.removeCallbacks(hideRunnable)
+        this@FlutterEcosedPlugin.hideHandler.postDelayed(hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong())
     }
 
     /**
@@ -2213,9 +2231,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     val deltaY: Float = nowY - lastY
                     val deltaZ: Float = nowZ - lastZ
                     //赋值
-                    lastX = nowX
-                    lastY = nowY
-                    lastZ = nowZ
+                    this@FlutterEcosedPlugin.lastX = nowX
+                    this@FlutterEcosedPlugin.lastY = nowY
+                    this@FlutterEcosedPlugin.lastZ = nowZ
                     //计算
                     val nowSpeed: Double = sqrt(
                         x = (deltaX.pow(
@@ -2303,9 +2321,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
     private fun getShizukuVersion(): String? {
         return try {
-            if (mIsBind) {
-                if (mAIDL != null) {
-                    mAIDL!!.shizukuVersion
+            if (this@FlutterEcosedPlugin.mIsBind) {
+                if (this@FlutterEcosedPlugin.mAIDL != null) {
+                    this@FlutterEcosedPlugin.mAIDL!!.shizukuVersion
                 } else {
                     invokeUnit {
                         onEcosedUnbind()
@@ -2319,7 +2337,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 null
             }
         } catch (e: Exception) {
-            if (mFullDebug) {
+            if (this@FlutterEcosedPlugin.mFullDebug) {
                 Log.e(PLUGIN_TAG, "getShizukuVersion", e)
             }
             null
