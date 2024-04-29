@@ -23,16 +23,12 @@ class UserService : IUserService.Stub() {
     /**
      * ShizukuAPI内置方法
      */
-    override fun destroy() = exitProcess(
-        status = 0
-    )
+    override fun destroy() = exitProcess(status = 0)
 
     /**
      * ShizukuAPI内置方法
      */
-    override fun exit() = exitProcess(
-        status = 0
-    )
+    override fun exit() = exitProcess(status = 0)
 
     override fun poem() {
         Log.d("", "Shizuku - poem")
@@ -44,9 +40,15 @@ class UserService : IUserService.Stub() {
      */
     private external fun main(args: Array<String>)
 
+    /**
+     * 伴生对象
+     */
     companion object {
+        /**
+         * 初始化
+         */
         init {
-            // 加载C++代码
+            // 加载动态链接库
             System.loadLibrary("flutter_ecosed")
         }
     }

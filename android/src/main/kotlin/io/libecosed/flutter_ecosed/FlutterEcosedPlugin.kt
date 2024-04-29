@@ -40,7 +40,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.Keep
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -74,6 +73,7 @@ import rikka.shizuku.Shizuku
 import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.system.exitProcess
 
 /**
  * 作者: wyq0918dev
@@ -317,7 +317,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         binding: FlutterPlugin.FlutterPluginBinding
     ): Unit = bridgeUnit {
         // 初始化方法通道
-        mMethodChannel = MethodChannel(binding.binaryMessenger, FLUTTER_CHANNEL_NAME)
+        mMethodChannel = MethodChannel(binding.binaryMessenger, EcosedChannel.FLUTTER_CHANNEL_NAME)
         // 设置方法通道回调程序
         mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
         // 初始化引擎
@@ -919,7 +919,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = BRIDGE_CHANNEL_NAME
+            get() = EcosedChannel.BRIDGE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
@@ -991,7 +991,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = ENGINE_CHANNEL_NAME
+            get() = EcosedChannel.ENGINE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
@@ -1049,22 +1049,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                "getPlugins" -> result.success(
+                EcosedMethod.GET_PLUGINS_METHOD -> result.success(
                     result = mJSONList
                 )
 
-                "openDialog" -> result.success(
+                EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
                     result = execPluginMethod(
-                        channel = INVOKE_CHANNEL_NAME,
-                        method = "openDialog",
+                        channel = EcosedChannel.INVOKE_CHANNEL_NAME,
+                        method = EcosedMethod.OPEN_DIALOG_METHOD,
                         bundle = Bundle()
                     )
                 )
 
-                "closeDialog" -> result.success(
+                EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(
                     result = execPluginMethod(
-                        channel = INVOKE_CHANNEL_NAME,
-                        method = "closeDialog",
+                        channel = EcosedChannel.INVOKE_CHANNEL_NAME,
+                        method = EcosedMethod.CLOSE_DIALOG_METHOD,
                         bundle = Bundle()
                     )
                 )
@@ -1162,7 +1162,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 // 执行代码并获取执行后的返回值
                 val execResult = execMethodCall<Any>(
                     channel = call.bundleProxy.getString(
-                        "channel", ENGINE_CHANNEL_NAME
+                        "channel", EcosedChannel.ENGINE_CHANNEL_NAME
                     ),
                     method = call.methodProxy,
                     bundle = call.bundleProxy
@@ -1236,7 +1236,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = INVOKE_CHANNEL_NAME
+            get() = EcosedChannel.INVOKE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
@@ -1266,12 +1266,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                "openDialog" -> {
+                EcosedMethod.OPEN_DIALOG_METHOD -> {
                     openDialog()
                     result.success(0)
                 }
 
-                "closeDialog" -> {
+                EcosedMethod.CLOSE_DIALOG_METHOD -> {
                     closeDialog()
                     result.success(0)
                 }
@@ -1318,7 +1318,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 插件通道 */
         override val channel: String
-            get() = DELEGATE_CHANNEL_NAME
+            get() = EcosedChannel.DELEGATE_CHANNEL_NAME
 
         /** 插件作者 */
         override val author: String
@@ -2304,6 +2304,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA="
     }
 
+    /**
+     * 清单
+     */
     private object EcosedManifest {
         /** 服务动作 */
         const val ACTION: String = "io.libecosed.flutter_ecosed.action"
@@ -2318,20 +2321,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         const val FAKE_PACKAGE_SIGNATURE: String = "android.permission.FAKE_PACKAGE_SIGNATURE"
     }
 
-    private companion object {
-
-        /** 操作栏是否应该在[AUTO_HIDE_DELAY_MILLIS]毫秒后自动隐藏。*/
-        const val AUTO_HIDE = false
-
-        /** 如果设置了[AUTO_HIDE]，则在用户交互后隐藏操作栏之前等待的毫秒数。*/
-        const val AUTO_HIDE_DELAY_MILLIS = 3000
-
-        /** 一些较老的设备需要在小部件更新和状态和导航栏更改之间有一个小的延迟。*/
-        const val UI_ANIMATOR_DELAY = 300
-
-        /** 用于打印日志的标签 */
-        const val PLUGIN_TAG: String = "FlutterEcosedPlugin"
-
+    /**
+     * 通道
+     */
+    private object EcosedChannel {
         /** Flutter插件通道名称 */
         const val FLUTTER_CHANNEL_NAME: String = "flutter_ecosed"
 
@@ -2346,6 +2339,36 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 服务代理插件 */
         const val DELEGATE_CHANNEL_NAME: String = "ecosed_delegate"
+    }
 
+    /**
+     * 方法
+     */
+    private object EcosedMethod {
+        /** 获取插件列表 */
+        const val GET_PLUGINS_METHOD: String = "getPlugins"
+
+        /** 打开对话框 */
+        const val OPEN_DIALOG_METHOD: String = "openDialog"
+
+        /** 关闭对话框 */
+        const val CLOSE_DIALOG_METHOD: String = "closeDialog"
+    }
+
+    /**
+     * 伴生对象
+     */
+    private companion object {
+        /** 用于打印日志的标签 */
+        const val PLUGIN_TAG: String = "FlutterEcosedPlugin"
+
+        /** 操作栏是否应该在[AUTO_HIDE_DELAY_MILLIS]毫秒后自动隐藏。*/
+        const val AUTO_HIDE: Boolean = false
+
+        /** 如果设置了[AUTO_HIDE]，则在用户交互后隐藏操作栏之前等待的毫秒数。*/
+        const val AUTO_HIDE_DELAY_MILLIS: Int = 3000
+
+        /** 一些较老的设备需要在小部件更新和状态和导航栏更改之间有一个小的延迟。*/
+        const val UI_ANIMATOR_DELAY: Int = 300
     }
 }
