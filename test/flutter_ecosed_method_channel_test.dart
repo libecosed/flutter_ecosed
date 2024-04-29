@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/src/platform/method_channel_flutter_ecosed.dart';
+import 'package:flutter_ecosed/src/platform/flutter_ecosed_platform.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelFlutterEcosed platform = MethodChannelFlutterEcosed();
+  FlutterEcosedPlatform platform = FlutterEcosedPlatform();
   const MethodChannel channel = MethodChannel('flutter_ecosed');
 
   setUp(() {

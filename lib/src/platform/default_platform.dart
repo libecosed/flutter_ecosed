@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import 'flutter_ecosed_platform.dart';
+import 'ecosed_platform_interface.dart';
 
-final class DefaultPlatform extends FlutterEcosedPlatform {
+final class DefaultPlatform extends EcosedPlatformInterface {
   @override
   Future<List?> getPlatformPluginList() async {
     return List.empty();

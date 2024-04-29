@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app/app.dart';
-import '../platform/flutter_ecosed_platform.dart';
+import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
@@ -13,7 +13,7 @@ import 'engine_state.dart';
 import 'engine_wrapper.dart';
 
 base mixin EcosedEngine<T extends EcosedApp> on State<T>
-    implements EcosedPlugin, EngineWrapper, FlutterEcosedPlatform {
+    implements EcosedPlugin, EngineWrapper, EcosedPlatformInterface {
   /// 占位用空模块
   static const String _unknownPlugin = '{'
       '"channel":"unknown",'
@@ -171,17 +171,17 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
 
   @override
   Future<List?> getPlatformPluginList() async {
-    return await FlutterEcosedPlatform.instance.getPlatformPluginList();
+    return await EcosedPlatformInterface.instance.getPlatformPluginList();
   }
 
   @override
   Future<void> openPlatformDialog() async {
-    return await FlutterEcosedPlatform.instance.openPlatformDialog();
+    return await EcosedPlatformInterface.instance.openPlatformDialog();
   }
 
   @override
   Future<void> closePlatformDialog() async {
-    return await FlutterEcosedPlatform.instance.closePlatformDialog();
+    return await EcosedPlatformInterface.instance.closePlatformDialog();
   }
 
   /// 加载插件

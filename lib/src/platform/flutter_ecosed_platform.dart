@@ -1,40 +1,56 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 
-import '../bridge/bridge_wrapper.dart';
-import 'default_platform.dart';
+import '../bridge/native_bridge.dart';
+import 'ecosed_platform_interface.dart';
 
-abstract class FlutterEcosedPlatform extends PlatformInterface
-    implements BridgeWrapper {
-  FlutterEcosedPlatform() : super(token: _token);
+final class FlutterEcosedPlatform extends EcosedPlatformInterface {
+  /// 方法通道平台代码调用Android平台独占
+  final NativeBridge _bridge = const NativeBridge();
 
-  static final Object _token = Object();
-
-  /// 实例
-  static FlutterEcosedPlatform _instance = DefaultPlatform();
-
-  /// 获取实例
-  static FlutterEcosedPlatform get instance => _instance;
-
-  /// 设置实例
-  static set instance(FlutterEcosedPlatform instance) {
-    PlatformInterface.verify(instance, _token);
-    _instance = instance;
-  }
-
-  /// 获取插件列表
+  /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPlatformPluginList() async {
-    throw UnimplementedError('getPlatformPluginList()方法未实现');
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return await _bridge.getPlatformPluginList();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.iOS:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+      default:
+        return [];
+    }
   }
 
-  /// 打开对话框
+  /// 从客户端启动对话框
   @override
   Future<void> openPlatformDialog() async {
-    throw UnimplementedError('openPlatformDialog()方法未实现');
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return await _bridge.openPlatformDialog();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.iOS:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+      default:
+        return await null;
+    }
   }
 
   @override
   Future<void> closePlatformDialog() async {
-    throw UnimplementedError('closePlatformDialog()方法未实现');
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return await _bridge.closePlatformDialog();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.iOS:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+      default:
+        return await null;
+    }
   }
 }

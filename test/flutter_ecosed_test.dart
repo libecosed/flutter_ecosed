@@ -1,11 +1,11 @@
+import 'package:flutter_ecosed/src/platform/ecosed_platform_interface.dart';
 import 'package:flutter_ecosed/src/platform/flutter_ecosed_platform.dart';
-import 'package:flutter_ecosed/src/platform/method_channel_flutter_ecosed.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockFlutterEcosedPlatform
     with MockPlatformInterfaceMixin
-    implements FlutterEcosedPlatform {
+    implements EcosedPlatformInterface {
   @override
   Future<List?> getPlatformPluginList() => Future.value(List.empty());
 
@@ -17,28 +17,28 @@ class MockFlutterEcosedPlatform
 }
 
 void main() {
-  final FlutterEcosedPlatform initialPlatform = FlutterEcosedPlatform.instance;
+  final EcosedPlatformInterface initialPlatform = EcosedPlatformInterface.instance;
 
-  test('$MethodChannelFlutterEcosed is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelFlutterEcosed>());
+  test('$FlutterEcosedPlatform is the default instance', () {
+    expect(initialPlatform, isInstanceOf<FlutterEcosedPlatform>());
   });
 
   test('getPlatformPluginList', () async {
     MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    FlutterEcosedPlatform.instance = fakePlatform;
-    expect(await FlutterEcosedPlatform.instance.getPlatformPluginList(),
+    EcosedPlatformInterface.instance = fakePlatform;
+    expect(await EcosedPlatformInterface.instance.getPlatformPluginList(),
         List.empty());
   });
 
   test('openPlatformDialog', () async {
     MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    FlutterEcosedPlatform.instance = fakePlatform;
-    expect(FlutterEcosedPlatform.instance.openPlatformDialog(), null);
+    EcosedPlatformInterface.instance = fakePlatform;
+    expect(EcosedPlatformInterface.instance.openPlatformDialog(), null);
   });
 
   test('closePlatformDialog', () async {
     MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    FlutterEcosedPlatform.instance = fakePlatform;
-    expect(FlutterEcosedPlatform.instance.closePlatformDialog(), null);
+    EcosedPlatformInterface.instance = fakePlatform;
+    expect(EcosedPlatformInterface.instance.closePlatformDialog(), null);
   });
 }
