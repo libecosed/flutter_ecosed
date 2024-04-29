@@ -73,7 +73,6 @@ import rikka.shizuku.Shizuku
 import java.nio.charset.StandardCharsets
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.system.exitProcess
 
 /**
  * 作者: wyq0918dev
