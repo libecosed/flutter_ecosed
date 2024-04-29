@@ -1076,19 +1076,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreateEngine(context: Context) {
             when {
-                (mPluginList == null) or (mJSONList == null) or (mBinding == null) -> pluginUnit(
-                    debug = mBaseDebug,
-                    context = context
+                this@FlutterEcosedPlugin.mPluginList.isNull or
+                        this@FlutterEcosedPlugin.mJSONList.isNull or
+                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
+                    debug = this@FlutterEcosedPlugin.mBaseDebug,
+                    context = context,
                 ) { plugin, binding ->
                     // 打印横幅
-                    if (mBaseDebug) Log.i(
-                        PLUGIN_TAG, String(
+                    if (this@FlutterEcosedPlugin.mBaseDebug) Log.i(
+                        PLUGIN_TAG,
+                        String(
                             bytes = Base64.decode(
                                 EcosedResources.BANNER,
-                                Base64.DEFAULT
+                                Base64.DEFAULT,
                             ),
-                            charset = StandardCharsets.UTF_8
-                        )
+                            charset = StandardCharsets.UTF_8,
+                        ),
                     )
                     // 初始化插件列表.
                     mPluginList = arrayListOf()
@@ -1099,11 +1102,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                             try {
                                 onEcosedAdded(binding = binding)
                                 if (mBaseDebug) Log.d(
-                                    PLUGIN_TAG, "插件${item.javaClass.name}已加载"
+                                    PLUGIN_TAG, "插件${item.javaClass.name}已加载",
                                 )
                             } catch (e: Exception) {
                                 if (mBaseDebug) Log.e(
-                                    PLUGIN_TAG, "插件添加失败!", e
+                                    PLUGIN_TAG, "插件添加失败!", e,
                                 )
                             }
                         }.run {
@@ -1136,14 +1139,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroyEngine() {
             when {
-                (mPluginList != null) or (mJSONList == null) or (mBinding != null) -> {
+                mPluginList.isNotNull or mJSONList.isNotNull or mBinding.isNotNull -> {
                     // 清空插件列表
                     mPluginList = null
                     mJSONList = null
                 }
 
                 else -> if (mBaseDebug) Log.e(
-                    PLUGIN_TAG, "请勿重复执行onDestroyEngine!"
+                    PLUGIN_TAG, "请勿重复执行onDestroyEngine!",
                 )
             }
         }
@@ -1157,20 +1160,20 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) {
             try {
                 // 执行代码并获取执行后的返回值
-                val execResult = execMethodCall<Any>(
+                execMethodCall<Any>(
                     channel = call.bundleProxy.getString(
-                        "channel", EcosedChannel.ENGINE_CHANNEL_NAME
+                        "channel",
+                        EcosedChannel.ENGINE_CHANNEL_NAME,
                     ),
                     method = call.methodProxy,
-                    bundle = call.bundleProxy
-                )
-                // 判断是否为空并提交数据
-                if (execResult != null) {
-                    result.success(
-                        resultProxy = execResult
-                    )
-                } else {
-                    result.notImplemented()
+                    bundle = call.bundleProxy,
+                ).apply {
+                    // 判断是否为空并提交数据
+                    if (isNotNull) result.success(
+                        resultProxy = this@apply
+                    ) else {
+                        result.notImplemented()
+                    }
                 }
             } catch (e: Exception) {
                 // 抛出异常
@@ -1504,7 +1507,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
             super.onCreate(owner)
             // 初始化
-            init(isAppCompat = this@activityUnit !is AppCompatActivity) {
+            init {
                 delegateUnit {
                     // 调用Delegate onCreate函数
                     onCreate(Bundle())
@@ -1514,7 +1517,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             //toggle()
 
             // 执行Delegate函数
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+            if (this@activityUnit.isNotAppCompat) delegateUnit {
                 onPostCreate(Bundle())
             }
         }
@@ -1525,7 +1528,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
             super.onStart(owner)
             // 执行Delegate onStart函数
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+            if (this@activityUnit.isNotAppCompat) delegateUnit {
                 onStart()
             }
         }
@@ -1538,7 +1541,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             // 注册监听
             registerSensor()
             // 执行Delegate onPostResume函数
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+            if (this@activityUnit.isNotAppCompat) delegateUnit {
                 onPostResume()
             }
         }
@@ -1557,7 +1560,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
             super.onStop(owner)
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+            if (this@activityUnit.isNotAppCompat) delegateUnit {
                 onStop()
             }
         }
@@ -1567,7 +1570,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
             super.onDestroy(owner)
-            if (this@activityUnit !is AppCompatActivity) delegateUnit {
+            if (this@activityUnit.isNotAppCompat) delegateUnit {
                 onDestroy()
             }
         }
@@ -1826,15 +1829,44 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
 
     /**
+     * 扩展函数判断是否为空
+     */
+    private inline val Any?.isNull: Boolean
+        get() = this == null
+
+    /**
+     * 扩展函数判断是否为空
+     */
+    private inline val Any?.isNotNull: Boolean
+        get() = this != null
+
+    private inline val Activity.isAppCompat: Boolean
+        get() = this is AppCompatActivity
+
+    private inline val Activity.isNotAppCompat: Boolean
+        get() = this !is AppCompatActivity
+
+    /**
+     * 判断Activity是否为FlutterActivity
+     */
+    private inline val Activity.isFlutter: Boolean
+        get() = when (this) {
+            is FlutterActivity,
+            is FlutterFragmentActivity -> true
+
+            else -> false
+        }
+
+    /**
      * 初始化
      */
-    private fun init(isAppCompat: Boolean, onCreate: () -> Unit) {
+    private fun init(onCreate: () -> Unit) = activityUnit {
         // 初始化Delegate
         initDelegate()
         // 初始化工具栏状态
         isVisible = true
         // 判断Activity是否为AppCompatActivity
-        if (isAppCompat) delegateUnit {
+        if (this@activityUnit.isNotAppCompat) delegateUnit {
             // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
             initTheme()
             // 调用Delegate onCreate函数
@@ -1936,10 +1968,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         // 设置操作栏
         delegateUnit {
             // 仅在使用Flutter的Activity时设置ActionBar,防止影响混合应用的界面.
-            when (this@activityUnit) {
-                is FlutterActivity,
-                is FlutterFragmentActivity -> setSupportActionBar(mToolbar)
-                else -> mToolbar.setTitle(AppUtils.getAppName())
+            if (this@activityUnit.isFlutter) {
+                setSupportActionBar(mToolbar)
+            } else {
+                mToolbar.setTitle(AppUtils.getAppName())
             }
         }
         // 设置根视图触摸事件

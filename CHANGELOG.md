@@ -19,3 +19,6 @@
 * Fix some bugs.
 * Improve the function.
 * Improve sample code.
+## 0.0.10
+* Fix some bugs.
+* Improve the function.
