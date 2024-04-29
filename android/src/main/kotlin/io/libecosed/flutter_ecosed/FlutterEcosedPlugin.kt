@@ -58,6 +58,7 @@ import com.blankj.utilcode.util.PermissionUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -1929,12 +1930,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
             }
             setView(mToolbar)
-            setPositiveButton("OK") { dialog, which -> }
+            setPositiveButton(EcosedResources.POSITIVE_BUTTON_STRING) { dialog, which -> }
             mDebugDialog = create()
         }
         // 设置操作栏
         delegateUnit {
-            setSupportActionBar(mToolbar)
+            // 仅在使用Flutter的Activity时设置ActionBar,防止影响混合应用的界面.
+            when (this@activityUnit) {
+                is FlutterActivity,
+                is FlutterFragmentActivity -> setSupportActionBar(mToolbar)
+                else -> mToolbar.setTitle(AppUtils.getAppName())
+            }
         }
         // 设置根视图触摸事件
         findRootView()?.setOnTouchListener(delayHideTouchListener)
@@ -1967,13 +1973,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         )
     }
 
-
+    /**
+     * 打开对话框
+     */
     private fun openDialog() {
         if (!mDebugDialog.isShowing) {
             mDebugDialog.show()
         }
     }
 
+    /**
+     * 关闭对话框
+     */
     private fun closeDialog() {
         if (mDebugDialog.isShowing) {
             mDebugDialog.dismiss()
@@ -2287,8 +2298,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 项目名称 */
         const val PROJECT_NAME: String = "flutter_ecosed"
 
-        /** 默认开发者 */
+        /** 开发者 */
         const val DEFAULT_AUTHOR: String = "wyq09118dev"
+
+        /** 确定按钮文本 */
+        const val POSITIVE_BUTTON_STRING: String = "确定"
 
         /** 项目ASCII艺术字Base64编码 */
         const val BANNER: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
