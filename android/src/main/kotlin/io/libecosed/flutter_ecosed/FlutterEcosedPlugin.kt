@@ -1121,7 +1121,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     json.put("title", this@run.title)
                                     json.put("description", this@run.description)
                                     json.put("author", this@run.author)
-                                    return@let null
+                                    return@let json
                                 }.toString()
                             )
                             if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
