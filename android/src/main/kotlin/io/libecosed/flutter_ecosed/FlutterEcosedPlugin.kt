@@ -175,10 +175,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             AppUtils.getAppPackageName(),
             UserService().javaClass.name,
         )
-    )
-        .daemon(true)
-        .processNameSuffix("service")
-        .debuggable(mFullDebug)
+    ).daemon(true).processNameSuffix("service").debuggable(mFullDebug)
         .version(AppUtils.getAppVersionCode())
 
     /**
@@ -1078,9 +1075,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreateEngine(context: Context) {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNull or
-                        this@FlutterEcosedPlugin.mJSONList.isNull or
-                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
+                this@FlutterEcosedPlugin.mPluginList.isNull or this@FlutterEcosedPlugin.mJSONList.isNull or this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
                     debug = this@FlutterEcosedPlugin.mBaseDebug,
                     context = context,
                 ) { plugin, binding ->
@@ -1125,7 +1120,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                 }.toString()
                             )
                             if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
-                                PLUGIN_TAG, "插件${item.javaClass.name}已添加到插件列表"
+                                PLUGIN_TAG, "插件${item.javaClass.name}已添加到插件列表",
                             )
                         }
                     }
@@ -1142,9 +1137,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroyEngine() {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNotNull or
-                        this@FlutterEcosedPlugin.mJSONList.isNotNull or
-                        this@FlutterEcosedPlugin.mBinding.isNotNull -> {
+                this@FlutterEcosedPlugin.mPluginList.isNotNull or this@FlutterEcosedPlugin.mJSONList.isNotNull or this@FlutterEcosedPlugin.mBinding.isNotNull -> {
                     // 清空插件列表
                     this@FlutterEcosedPlugin.mPluginList = null
                     this@FlutterEcosedPlugin.mJSONList = null
@@ -1185,7 +1178,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 result.error(
                     errorCodeProxy = PLUGIN_TAG,
                     errorMessageProxy = "engine: onMethodCall",
-                    errorDetailsProxy = Log.getStackTraceString(e)
+                    errorDetailsProxy = Log.getStackTraceString(e),
                 )
             }
         }
@@ -1211,7 +1204,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                 result = pluginChannel.execMethodCall<T>(
                                     name = channel,
                                     method = method,
-                                    bundle = bundle
+                                    bundle = bundle,
                                 )
                                 if (this@FlutterEcosedPlugin.mBaseDebug) {
                                     Log.d(
@@ -1599,8 +1592,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 当注册的传感器的精度发生变化时调用.
          */
         override fun onAccuracyChanged(
-            sensor: Sensor?,
-            accuracy: Int
+            sensor: Sensor?, accuracy: Int
         ) = Unit
     }
 
@@ -1618,16 +1610,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> bridgeUnit(
         content: FlutterPluginProxy.() -> R,
-    ): R = content.invoke(
-        mEngineBridge.run {
-            return@run when (this@run) {
-                is FlutterPluginProxy -> this@run
-                else -> error(
-                    message = "引擎桥接未实现插件代理方法"
-                )
-            }
+    ): R = content.invoke(mEngineBridge.run {
+        return@run when (this@run) {
+            is FlutterPluginProxy -> this@run
+            else -> error(
+                message = "引擎桥接未实现插件代理方法"
+            )
         }
-    )
+    })
 
     /**
      * 引擎调用单元
@@ -1637,16 +1627,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> engineUnit(
         content: EngineWrapper.() -> R,
-    ): R = content.invoke(
-        mEcosedEngine.run {
-            return@run when (this@run) {
-                is EngineWrapper -> this@run
-                else -> error(
-                    message = "引擎未实现引擎包装器方法"
-                )
-            }
+    ): R = content.invoke(mEcosedEngine.run {
+        return@run when (this@run) {
+            is EngineWrapper -> this@run
+            else -> error(
+                message = "引擎未实现引擎包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * 生命周期调用单元
@@ -1656,16 +1644,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> lifecycleUnit(
         content: LifecycleWrapper.() -> R
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is LifecycleWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现生命周期包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is LifecycleWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现生命周期包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * 插件调用单元
@@ -1680,18 +1666,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         content: (ArrayList<EcosedPlugin>, PluginBinding) -> R,
     ): R = content.invoke(
         arrayListOf(mEngineBridge, mEcosedEngine, mServiceInvoke, mServiceDelegate),
-        PluginBinding(
-            debug = debug,
-            context = context,
-            engine = mEcosedEngine.run {
-                return@run when (this@run) {
-                    is EngineWrapper -> this@run
-                    else -> error(
-                        message = "引擎未实现引擎包装器方法"
-                    )
-                }
+        PluginBinding(debug = debug, context = context, engine = mEcosedEngine.run {
+            return@run when (this@run) {
+                is EngineWrapper -> this@run
+                else -> error(
+                    message = "引擎未实现引擎包装器方法"
+                )
             }
-        )
+        })
     )
 
     /**
@@ -1702,16 +1684,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> invokeUnit(
         content: InvokeWrapper.() -> R,
-    ): R = content.invoke(
-        mServiceInvoke.run {
-            return@run when (this@run) {
-                is InvokeWrapper -> this@run
-                else -> error(
-                    message = "服务调用插件未实现客户端包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceInvoke.run {
+        return@run when (this@run) {
+            is InvokeWrapper -> this@run
+            else -> error(
+                message = "服务调用插件未实现客户端包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * 服务调用单元
@@ -1721,16 +1701,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> serviceUnit(
         content: DelegateWrapper.() -> R,
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is DelegateWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现服务代理包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is DelegateWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现服务代理包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * 服务连接器调用单元
@@ -1740,16 +1718,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> connectUnit(
         content: ConnectWrapper.() -> R,
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is ConnectWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现连接包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is ConnectWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现连接包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * Shizuku方法调用单元
@@ -1759,16 +1735,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> shizukuUnit(
         content: ShizukuWrapper.() -> R,
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is ShizukuWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现Shizuku包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is ShizukuWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现Shizuku包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * AppCompat方法调用单元
@@ -1778,16 +1752,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> appCompatUnit(
         content: AppCompatWrapper.() -> R,
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is AppCompatWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现AppCompat包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is AppCompatWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现AppCompat包装器方法"
+            )
         }
-    )
+    })
 
 
     /**
@@ -1798,16 +1770,14 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun <R> sensorUnit(
         content: SensorWrapper.() -> R
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is SensorWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现传感器包装器方法"
-                )
-            }
+    ): R = content.invoke(mServiceDelegate.run {
+        return@run when (this@run) {
+            is SensorWrapper -> this@run
+            else -> error(
+                message = "服务代理未实现传感器包装器方法"
+            )
         }
-    )
+    })
 
     /**
      * Activity上下文调用单元
@@ -1862,8 +1832,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private inline val Activity.isFlutter: Boolean
         get() = when (this) {
-            is FlutterActivity,
-            is FlutterFragmentActivity -> true
+            is FlutterActivity, is FlutterFragmentActivity -> true
 
             else -> false
         }
@@ -1946,9 +1915,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             setTitle("Debug Menu (Native)")
             setItems(
                 arrayOf(
-                    "Launch Shizuku",
-                    "Launch microG",
-                    "Request Permissions"
+                    "Launch Shizuku", "Launch microG", "Request Permissions"
                 )
             ) { dialog, which ->
                 when (which) {
@@ -2200,7 +2167,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun show() {
         this@FlutterEcosedPlugin.isVisible = true
-        this@FlutterEcosedPlugin.hideHandler.postDelayed(showPart2Runnable, UI_ANIMATOR_DELAY.toLong())
+        this@FlutterEcosedPlugin.hideHandler.postDelayed(
+            showPart2Runnable, UI_ANIMATOR_DELAY.toLong()
+        )
     }
 
     /**
@@ -2208,7 +2177,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     private fun delayedHide() {
         this@FlutterEcosedPlugin.hideHandler.removeCallbacks(hideRunnable)
-        this@FlutterEcosedPlugin.hideHandler.postDelayed(hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong())
+        this@FlutterEcosedPlugin.hideHandler.postDelayed(
+            hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong()
+        )
     }
 
     /**
