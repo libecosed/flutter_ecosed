@@ -34,6 +34,8 @@ flutter:
         pluginClass: FlutterEcosedPlugin
       ios:
         dartPluginClass: FlutterEcosed
+      ohos:
+        dartPluginClass: FlutterEcosed
       linux:
         dartPluginClass: FlutterEcosed
       macos:

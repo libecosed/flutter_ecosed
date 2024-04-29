@@ -288,15 +288,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onDestroy() {
         super.onDestroy()
-
+        // 移除Shizuku监听
         shizukuUnit {
-            // 移除Shizuku监听
             Shizuku.removeBinderDeadListener(this@shizukuUnit)
             Shizuku.removeBinderReceivedListener(this@shizukuUnit)
             Shizuku.removeRequestPermissionResultListener(this@shizukuUnit)
         }
-
-
         // 解绑Shizuku服务
         connectUnit {
             Shizuku.unbindUserService(mUserServiceArgs, this@connectUnit, true)
