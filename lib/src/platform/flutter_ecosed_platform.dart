@@ -15,9 +15,9 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     return await withPlatform(
       android: () async => await _bridge.getPlatformPluginList(),
       fuchsia: () async => List.empty(),
-      ios: () async => List.empty(),
+      iOS: () async => List.empty(),
       linux: () async => List.empty(),
-      macos: () async => List.empty(),
+      macOS: () async => List.empty(),
       windows: () async => List.empty(),
     );
   }
@@ -28,9 +28,9 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     return await withPlatform(
       android: () async => await _bridge.openPlatformDialog(),
       fuchsia: () async => await null,
-      ios: () async => await null,
+      iOS: () async => await null,
       linux: () async => await null,
-      macos: () async => await null,
+      macOS: () async => await null,
       windows: () async => await show(),
     );
   }
@@ -40,9 +40,9 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     return await withPlatform(
       android: () async => await _bridge.closePlatformDialog(),
       fuchsia: () async => await null,
-      ios: () async => await null,
+      iOS: () async => await null,
       linux: () async => await null,
-      macos: () async => await null,
+      macOS: () async => await null,
       windows: () async => await null,
     );
   }
@@ -50,9 +50,9 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   Future<dynamic> withPlatform({
     required Future<dynamic> Function() android,
     required Future<dynamic> Function() fuchsia,
-    required Future<dynamic> Function() ios,
+    required Future<dynamic> Function() iOS,
     required Future<dynamic> Function() linux,
-    required Future<dynamic> Function() macos,
+    required Future<dynamic> Function() macOS,
     required Future<dynamic> Function() windows,
   }) async {
     if (Platform.isAndroid) {
@@ -60,11 +60,11 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     } else if (Platform.isFuchsia) {
       return await fuchsia.call();
     } else if (Platform.isIOS) {
-      return await ios.call();
+      return await iOS.call();
     } else if (Platform.isLinux) {
       return await linux.call();
     } else if (Platform.isMacOS) {
-      return await macos.call();
+      return await macOS.call();
     } else if (Platform.isWindows) {
       return await windows.call();
     } else {
