@@ -1,85 +1,100 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:win32/win32.dart';
 
 import '../bridge/native_bridge.dart';
 import 'ecosed_platform_interface.dart';
 
 final class FlutterEcosedPlatform extends EcosedPlatformInterface {
-  FlutterEcosedPlatform() {}
-
   /// 方法通道平台代码调用Android平台独占
   final NativeBridge _bridge = const NativeBridge();
 
   /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPlatformPluginList() async {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return await _bridge.getPlatformPluginList();
-      case TargetPlatform.fuchsia:
-        return List.empty();
-      case TargetPlatform.iOS:
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-        final message = TEXT(
-            'This is not really an error, but we are pretending for the sake '
-            'of this test.\n\nResource error.\nDo you want to try again?');
-        final title = TEXT('Dart MessageBox Test');
-
-        final result = MessageBox(
-            NULL,
-            message,
-            title,
-            MESSAGEBOX_STYLE.MB_ICONWARNING | // Warning
-                MESSAGEBOX_STYLE.MB_CANCELTRYCONTINUE | // Action button
-                MESSAGEBOX_STYLE.MB_DEFBUTTON2 // Second button is the default
-            );
-
-        free(message);
-        free(title);
-
-        switch (result) {
-          case MESSAGEBOX_RESULT.IDCANCEL:
-            print('Cancel pressed');
-          case MESSAGEBOX_RESULT.IDTRYAGAIN:
-            print('Try Again pressed');
-          case MESSAGEBOX_RESULT.IDCONTINUE:
-            print('Continue pressed');
-        }
-      default:
-        return List.empty();
-    }
+    return await withPlatform(
+      android: () async => await _bridge.getPlatformPluginList(),
+      fuchsia: () async => List.empty(),
+      ios: () async => List.empty(),
+      linux: () async => List.empty(),
+      macos: () async => List.empty(),
+      windows: () async => List.empty(),
+    );
   }
 
   /// 从客户端启动对话框
   @override
   Future<void> openPlatformDialog() async {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return await _bridge.openPlatformDialog();
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.iOS:
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-      default:
-        return await null;
-    }
+    return await withPlatform(
+      android: () async => await _bridge.openPlatformDialog(),
+      fuchsia: () async => await null,
+      ios: () async => await null,
+      linux: () async => await null,
+      macos: () async => await null,
+      windows: () async => await show(),
+    );
   }
 
   @override
   Future<void> closePlatformDialog() async {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return await _bridge.closePlatformDialog();
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.iOS:
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-      default:
-        return await null;
+    return await withPlatform(
+      android: () async => await _bridge.closePlatformDialog(),
+      fuchsia: () async => await null,
+      ios: () async => await null,
+      linux: () async => await null,
+      macos: () async => await null,
+      windows: () async => await null,
+    );
+  }
+
+  Future<dynamic> withPlatform({
+    required Future<dynamic> Function() android,
+    required Future<dynamic> Function() fuchsia,
+    required Future<dynamic> Function() ios,
+    required Future<dynamic> Function() linux,
+    required Future<dynamic> Function() macos,
+    required Future<dynamic> Function() windows,
+  }) async {
+    if (Platform.isAndroid) {
+      return await android.call();
+    } else if (Platform.isFuchsia) {
+      return await fuchsia.call();
+    } else if (Platform.isIOS) {
+      return await ios.call();
+    } else if (Platform.isLinux) {
+      return await linux.call();
+    } else if (Platform.isMacOS) {
+      return await macos.call();
+    } else if (Platform.isWindows) {
+      return await windows.call();
+    } else {
+      return await null;
     }
+  }
+
+  bool isMobil() {
+    return true;
+  }
+
+  bool isDesktop() {
+    return true;
+  }
+
+  Future<void> show() async {
+    final result = MessageBox(
+        NULL,
+        TEXT('Hello World!'),
+        TEXT('Dart MessageBox Test'),
+        MESSAGEBOX_STYLE.MB_ICONWARNING | // Warning
+            MESSAGEBOX_STYLE.MB_CANCELTRYCONTINUE | // Action button
+            MESSAGEBOX_STYLE.MB_DEFBUTTON2 // Second button is the default
+        );
+
+    switch (result) {
+      case MESSAGEBOX_RESULT.IDCANCEL:
+      case MESSAGEBOX_RESULT.IDTRYAGAIN:
+      case MESSAGEBOX_RESULT.IDCONTINUE:
+    }
+    return await null;
   }
 }
