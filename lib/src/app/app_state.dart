@@ -139,8 +139,6 @@ final class EcosedAppState extends State<EcosedApp>
                                                 showAboutDialog(
                                                   context: context,
                                                   applicationName: widget.title,
-                                                  applicationIcon:
-                                                      const FlutterLogo(),
                                                   applicationLegalese:
                                                       'Powered by FlutterEcosed',
                                                 );

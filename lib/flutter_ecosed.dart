@@ -7,7 +7,7 @@ export 'src/app/app.dart';
 export 'src/plugin/plugin.dart';
 
 final class FlutterEcosed {
-  FlutterEcosed();
+  const FlutterEcosed();
 
   /// 注册插件
   static void registerWith() {
