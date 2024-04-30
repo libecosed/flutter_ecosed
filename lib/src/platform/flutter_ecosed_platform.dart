@@ -73,11 +73,11 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   }
 
   bool isMobil() {
-    return true;
+    return Platform.isAndroid || Platform.isFuchsia || Platform.isIOS;
   }
 
   bool isDesktop() {
-    return true;
+    return Platform.isLinux || Platform.isMacOS || Platform.isWindows;
   }
 
   Future<void> show() async {

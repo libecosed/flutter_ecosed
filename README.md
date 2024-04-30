@@ -5,7 +5,7 @@ FlutterEcosed 是一个 Flutter 插件，也是一个高级的 Flutter 开发框
 FlutterEcosed is a Flutter plugin and an advanced Flutter development framework that provides Android platform debugging, plugin development and dashboard functions.
 
 <p align="left">
-<img src="screenshot.png" width="200">
+<img src="https://github.com/libecosed/flutter_ecosed/raw/master/screenshot.png" width="200">
 </p>
 
 
