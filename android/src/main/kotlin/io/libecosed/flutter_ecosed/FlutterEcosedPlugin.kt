@@ -1850,22 +1850,21 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private inline val Any?.isNotNull: Boolean
         get() = this@isNotNull != null
 
+    /**
+     * 判断当前Activity是否为AppCompatActivity
+     */
     private inline val Activity.isAppCompat: Boolean
         get() = this@isAppCompat is AppCompatActivity
 
+    /**
+     * 判断当前Activity是否为AppCompatActivity
+     */
     private inline val Activity.isNotAppCompat: Boolean
         get() = this@isNotAppCompat !is AppCompatActivity
 
     /**
-     * 判断Activity是否为FlutterActivity
+     * 判断Activity是否为FlutterActivity或FlutterFragmentActivity
      */
-//    private inline val Activity.isFlutter: Boolean
-//        get() = when (this@isFlutter) {
-//            is FlutterActivity, is FlutterFragmentActivity -> true
-//
-//            else -> false
-//        }
-
     private inline val Activity.isFlutter: Boolean
         get() = (this@isFlutter is FlutterActivity) or (this@isFlutter is FlutterFragmentActivity)
 
@@ -1936,7 +1935,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 this@activityUnit,
                 R.drawable.baseline_keyboard_command_key_24,
             )
-          //  subtitle = EcosedResources.PROJECT_NAME
+            //  subtitle = EcosedResources.PROJECT_NAME
             setNavigationOnClickListener { view ->
 
             }
@@ -1953,18 +1952,36 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 when (which) {
                     0 -> if (AppUtils.isAppInstalled(EcosedManifest.SHIZUKU_PACKAGE)) {
                         AppUtils.launchApp(EcosedManifest.SHIZUKU_PACKAGE)
-
                     } else {
-
+                        // 跳转安装
                     }
 
                     1 -> {
-                        val i = IntentUtils.getLaunchAppIntent(EcosedManifest.GMS_PACKAGE)
-                        if (i != null) {
-                            AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
+                        // 判断是否支持谷歌基础服务
+                        if (isSupportGMS()) {
+                            // 判断如果有启动图标直接打开 - 针对microG
+                            if (IntentUtils.getLaunchAppIntent(EcosedManifest.GMS_PACKAGE) != null) {
+                                AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
+                            } else {
+                                // 如果没有启动图标使用包名和类名启动 - 针对谷歌GMS
+                                val intent = IntentUtils.getComponentIntent(
+                                    EcosedManifest.GMS_PACKAGE,
+                                    EcosedManifest.GMS_CLASS,
+                                )
+                                if (IntentUtils.isIntentAvailable(intent)) {
+                                    try {
+                                        startActivity(intent)
+                                    } catch (e: Exception) {
+                                        // 启动失败
+                                    }
+                                } else {
+                                    // 意图不可用
+                                }
+                            }
                         } else {
-
+                            // 跳转安装microG
                         }
+
                         //gms(this@activityUnit)
 
                     }
@@ -2082,9 +2099,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断是否支持谷歌基础服务
      */
     private fun isSupportGMS(): Boolean = activityUnit {
-        val result =
-            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this@activityUnit)
-        return@activityUnit if (result == ConnectionResult.SUCCESS) true else AppUtils.isAppInstalled(
+        return@activityUnit if (
+            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+                this@activityUnit
+            ) == ConnectionResult.SUCCESS
+        ) true else AppUtils.isAppInstalled(
             EcosedManifest.GMS_PACKAGE
         )
     }
@@ -2377,6 +2396,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         /** 谷歌基础服务包名 */
         const val GMS_PACKAGE: String = "com.google.android.gms"
+
+        const val GMS_CLASS: String = "com.google.android.gms.app.settings.GoogleSettingsLink"
 
         /** 签名伪装权限 */
         const val FAKE_PACKAGE_SIGNATURE: String = "android.permission.FAKE_PACKAGE_SIGNATURE"
