@@ -1931,15 +1931,15 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private fun initUi(): Unit = activityUnit {
         // 初始化工具栏
         Toolbar(this@activityUnit).apply {
-            navigationIcon = ContextCompat.getDrawable(
+            this@apply.navigationIcon = ContextCompat.getDrawable(
                 this@activityUnit,
                 R.drawable.baseline_keyboard_command_key_24,
             )
             //  subtitle = EcosedResources.PROJECT_NAME
-            setNavigationOnClickListener { view ->
+            this@apply.setNavigationOnClickListener { view ->
 
             }
-            mToolbar = this@apply
+            this@FlutterEcosedPlugin.mToolbar = this@apply
         }
         // 初始化对话框
         AlertDialog.Builder(this@activityUnit).apply {
@@ -1960,7 +1960,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         // 判断是否支持谷歌基础服务
                         if (isSupportGMS()) {
                             // 判断如果有启动图标直接打开 - 针对microG
-                            if (IntentUtils.getLaunchAppIntent(EcosedManifest.GMS_PACKAGE) != null) {
+                            if (IntentUtils.getLaunchAppIntent(EcosedManifest.GMS_PACKAGE).isNotNull) {
                                 AppUtils.launchApp(EcosedManifest.GMS_PACKAGE)
                             } else {
                                 // 如果没有启动图标使用包名和类名启动 - 针对谷歌GMS
@@ -1993,7 +1993,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     else -> {}
                 }
             }
-            setView(mToolbar)
+            setView(this@FlutterEcosedPlugin.mToolbar)
             setPositiveButton(EcosedResources.POSITIVE_BUTTON_STRING) { dialog, which -> }
             mDebugDialog = create()
         }
