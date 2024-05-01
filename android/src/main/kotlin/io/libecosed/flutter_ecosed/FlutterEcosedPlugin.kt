@@ -1085,7 +1085,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreateEngine(context: Context) {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNull or this@FlutterEcosedPlugin.mJSONList.isNull or this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
+                this@FlutterEcosedPlugin.mPluginList.isNull or
+                        this@FlutterEcosedPlugin.mJSONList.isNull or
+                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
                     debug = this@FlutterEcosedPlugin.mBaseDebug,
                     context = context,
                 ) { plugins, binding ->
@@ -1104,21 +1106,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     this@FlutterEcosedPlugin.mPluginList = arrayListOf()
                     this@FlutterEcosedPlugin.mJSONList = arrayListOf()
                     // 添加所有插件.
-                    plugins.forEach { item ->
-                        item.apply {
+                    plugins.forEach { plugin ->
+                        plugin.apply {
                             try {
-                                onEcosedAdded(binding = binding)
+                                this@apply.onEcosedAdded(binding = binding)
                                 if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
-                                    PLUGIN_TAG, "插件${item.javaClass.name}已加载",
+                                    PLUGIN_TAG,
+                                    "插件${this@apply.javaClass.name}已加载",
                                 )
                             } catch (e: Exception) {
                                 if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
-                                    PLUGIN_TAG, "插件添加失败!", e,
+                                    PLUGIN_TAG,
+                                    "插件${this@apply.javaClass.name}添加失败!",
+                                    e,
                                 )
                             }
                         }.run {
                             this@FlutterEcosedPlugin.mPluginList?.add(
-                                element = item
+                                element = this@run
                             )
                             this@FlutterEcosedPlugin.mJSONList?.add(
                                 element = JSONObject().let { json ->
@@ -1126,11 +1131,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     json.put("title", this@run.title)
                                     json.put("description", this@run.description)
                                     json.put("author", this@run.author)
-                                    return@let json
-                                }.toString()
+                                    return@let json.toString()
+                                },
                             )
                             if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
-                                PLUGIN_TAG, "插件${item.javaClass.name}已添加到插件列表",
+                                PLUGIN_TAG,
+                                "插件${this@run.javaClass.name}已添加到插件列表",
                             )
                         }
                     }
@@ -1147,7 +1153,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroyEngine() {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNotNull or this@FlutterEcosedPlugin.mJSONList.isNotNull or this@FlutterEcosedPlugin.mBinding.isNotNull -> {
+                this@FlutterEcosedPlugin.mPluginList.isNotNull or
+                        this@FlutterEcosedPlugin.mJSONList.isNotNull or
+                        this@FlutterEcosedPlugin.mBinding.isNotNull -> {
                     // 清空插件列表
                     this@FlutterEcosedPlugin.mPluginList = null
                     this@FlutterEcosedPlugin.mJSONList = null
@@ -1165,7 +1173,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 此方法等价与MethodCallHandler的onMethodCall方法
          * 但参数传递是依赖Bundle进行的
          */
-        override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) {
+        override fun onMethodCall(
+            call: MethodCallProxy,
+            result: ResultProxy,
+        ) {
             try {
                 // 执行代码并获取执行后的返回值
                 execMethodCall<Any>(
@@ -1179,9 +1190,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     // 判断是否为空并提交数据
                     if (this@apply.isNotNull) result.success(
                         resultProxy = this@apply
-                    ) else {
-                        result.notImplemented()
-                    }
+                    ) else result.notImplemented()
                 }
             } catch (e: Exception) {
                 // 抛出异常
@@ -1207,21 +1216,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         ): T? {
             var result: T? = null
             try {
-                mPluginList?.forEach { plugin ->
+                this@FlutterEcosedPlugin.mPluginList?.forEach { plugin ->
                     plugin.getPluginChannel.let { pluginChannel ->
-                        when (pluginChannel.getChannel()) {
-                            channel -> {
-                                result = pluginChannel.execMethodCall<T>(
-                                    name = channel,
-                                    method = method,
-                                    bundle = bundle,
+                        if (pluginChannel.getChannel() == channel) {
+                            result = pluginChannel.execMethodCall<T>(
+                                name = channel,
+                                method = method,
+                                bundle = bundle,
+                            )
+                            if (this@FlutterEcosedPlugin.mBaseDebug) {
+                                Log.d(
+                                    PLUGIN_TAG,
+                                    "插件代码调用成功!\n" +
+                                            "通道名称:${channel}.\n" +
+                                            "方法名称:${method}.\n" +
+                                            "返回结果:${result}.",
                                 )
-                                if (this@FlutterEcosedPlugin.mBaseDebug) {
-                                    Log.d(
-                                        PLUGIN_TAG,
-                                        "插件代码调用成功!\n通道名称:${channel}.\n方法名称:${method}.\n返回结果:${result}."
-                                    )
-                                }
                             }
                         }
                     }
