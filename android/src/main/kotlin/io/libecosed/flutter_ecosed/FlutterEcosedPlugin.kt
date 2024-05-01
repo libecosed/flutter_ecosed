@@ -315,15 +315,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         binding: FlutterPlugin.FlutterPluginBinding
     ): Unit = bridgeUnit {
         // 初始化方法通道
-        mMethodChannel = MethodChannel(
+        this@FlutterEcosedPlugin.mMethodChannel = MethodChannel(
             binding.binaryMessenger,
             EcosedChannel.FLUTTER_CHANNEL_NAME,
         )
         // 设置方法通道回调程序
-        mMethodChannel.setMethodCallHandler(this@FlutterEcosedPlugin)
+        this@FlutterEcosedPlugin.mMethodChannel.setMethodCallHandler(
+            this@FlutterEcosedPlugin,
+        )
         // 初始化引擎
         return@bridgeUnit this@bridgeUnit.onCreateEngine(
-            context = binding.applicationContext
+            context = binding.applicationContext,
         )
     }
 
@@ -334,7 +336,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         binding: FlutterPlugin.FlutterPluginBinding
     ): Unit = bridgeUnit {
         // 清空回调程序释放内存
-        mMethodChannel.setMethodCallHandler(null)
+        this@FlutterEcosedPlugin.mMethodChannel.setMethodCallHandler(null)
         // 销毁引擎释放资源
         return@bridgeUnit this@bridgeUnit.onDestroyEngine()
     }
