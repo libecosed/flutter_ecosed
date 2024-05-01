@@ -190,11 +190,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onCreate() {
         super.onCreate()
 
-        shizukuUnit {
+        shizukuScope {
             // 添加Shizuku监听
-            Shizuku.addBinderReceivedListener(this@shizukuUnit)
-            Shizuku.addBinderDeadListener(this@shizukuUnit)
-            Shizuku.addRequestPermissionResultListener(this@shizukuUnit)
+            Shizuku.addBinderReceivedListener(this@shizukuScope)
+            Shizuku.addBinderDeadListener(this@shizukuScope)
+            Shizuku.addRequestPermissionResultListener(this@shizukuScope)
         }
 
 
@@ -260,8 +260,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onBind(intent: Intent): IBinder {
         // 通过服务调用单元调用服务内部类进行绑定
-        return serviceUnit {
-            return@serviceUnit getBinder(
+        return serviceScope {
+            return@serviceScope getBinder(
                 intent = intent
             )
         }
@@ -287,16 +287,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onDestroy() {
         super.onDestroy()
         // 移除Shizuku监听
-        shizukuUnit {
-            Shizuku.removeBinderDeadListener(this@shizukuUnit)
-            Shizuku.removeBinderReceivedListener(this@shizukuUnit)
-            Shizuku.removeRequestPermissionResultListener(this@shizukuUnit)
+        shizukuScope {
+            Shizuku.removeBinderDeadListener(this@shizukuScope)
+            Shizuku.removeBinderReceivedListener(this@shizukuScope)
+            Shizuku.removeRequestPermissionResultListener(this@shizukuScope)
         }
         // 解绑Shizuku服务
-        connectUnit {
+        connectScope {
             Shizuku.unbindUserService(
                 this@FlutterEcosedPlugin.mUserServiceArgs,
-                this@connectUnit,
+                this@connectScope,
                 true,
             )
         }
@@ -313,7 +313,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onAttachedToEngine(
         binding: FlutterPlugin.FlutterPluginBinding
-    ): Unit = bridgeUnit {
+    ): Unit = bridgeScope {
         // 初始化方法通道
         this@FlutterEcosedPlugin.mMethodChannel = MethodChannel(
             binding.binaryMessenger,
@@ -324,7 +324,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             this@FlutterEcosedPlugin,
         )
         // 初始化引擎
-        return@bridgeUnit this@bridgeUnit.onCreateEngine(
+        return@bridgeScope this@bridgeScope.onCreateEngine(
             context = binding.applicationContext,
         )
     }
@@ -334,11 +334,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onDetachedFromEngine(
         binding: FlutterPlugin.FlutterPluginBinding
-    ): Unit = bridgeUnit {
+    ): Unit = bridgeScope {
         // 清空回调程序释放内存
         this@FlutterEcosedPlugin.mMethodChannel.setMethodCallHandler(null)
         // 销毁引擎释放资源
-        return@bridgeUnit this@bridgeUnit.onDestroyEngine()
+        return@bridgeScope this@bridgeScope.onDestroyEngine()
     }
 
     /**
@@ -347,8 +347,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     override fun onMethodCall(
         call: MethodCall,
         result: MethodChannel.Result,
-    ): Unit = bridgeUnit {
-        return@bridgeUnit this@bridgeUnit.onMethodCall(
+    ): Unit = bridgeScope {
+        return@bridgeScope this@bridgeScope.onMethodCall(
             call = object : MethodCallProxy {
 
                 override val methodProxy: String
@@ -388,24 +388,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      */
     override fun onAttachedToActivity(
         binding: ActivityPluginBinding,
-    ): Unit = bridgeUnit {
+    ): Unit = bridgeScope {
         // 获取活动
-        this@bridgeUnit.onCreateActivity(
+        this@bridgeScope.onCreateActivity(
             activity = binding.activity
         )
         // 获取生命周期
-        this@bridgeUnit.onCreateLifecycle(
+        this@bridgeScope.onCreateLifecycle(
             lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
         )
         // activity回调
         binding.addActivityResultListener { requestCode, resultCode, data ->
-            return@addActivityResultListener this@bridgeUnit.onActivityResult(
+            return@addActivityResultListener this@bridgeScope.onActivityResult(
                 requestCode, resultCode, data
             )
         }
         // 请求权限回调
         binding.addRequestPermissionsResultListener { requestCode, permissions, grantResults ->
-            return@addRequestPermissionsResultListener this@bridgeUnit.onRequestPermissionsResult(
+            return@addRequestPermissionsResultListener this@bridgeScope.onRequestPermissionsResult(
                 requestCode, permissions, grantResults
             )
         }
@@ -428,9 +428,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 从Activity分离
      */
-    override fun onDetachedFromActivity(): Unit = bridgeUnit {
-        this@bridgeUnit.onDestroyActivity()
-        this@bridgeUnit.onDestroyLifecycle()
+    override fun onDetachedFromActivity(): Unit = bridgeScope {
+        this@bridgeScope.onDestroyActivity()
+        this@bridgeScope.onDestroyLifecycle()
     }
 
     /**
@@ -935,28 +935,28 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override val description: String
             get() = "FlutterEngine与EcosedEngine通信的的桥梁"
 
-        override fun onCreateActivity(activity: Activity) = engineUnit {
-            return@engineUnit this@engineUnit.onCreateActivity(activity = activity)
+        override fun onCreateActivity(activity: Activity) = engineScope {
+            return@engineScope this@engineScope.onCreateActivity(activity = activity)
         }
 
-        override fun onDestroyActivity() = engineUnit {
-            return@engineUnit this@engineUnit.onDestroyActivity()
+        override fun onDestroyActivity() = engineScope {
+            return@engineScope this@engineScope.onDestroyActivity()
         }
 
-        override fun onCreateLifecycle(lifecycle: Lifecycle) = engineUnit {
-            return@engineUnit this@engineUnit.onCreateLifecycle(lifecycle = lifecycle)
+        override fun onCreateLifecycle(lifecycle: Lifecycle) = engineScope {
+            return@engineScope this@engineScope.onCreateLifecycle(lifecycle = lifecycle)
         }
 
-        override fun onDestroyLifecycle() = engineUnit {
-            return@engineUnit this@engineUnit.onDestroyLifecycle()
+        override fun onDestroyLifecycle() = engineScope {
+            return@engineScope this@engineScope.onDestroyLifecycle()
         }
 
         override fun onActivityResult(
             requestCode: Int,
             resultCode: Int,
             data: Intent?,
-        ): Boolean = engineUnit {
-            return@engineUnit this@engineUnit.onActivityResult(
+        ): Boolean = engineScope {
+            return@engineScope this@engineScope.onActivityResult(
                 requestCode = requestCode,
                 resultCode = resultCode,
                 data = data,
@@ -967,24 +967,24 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             requestCode: Int,
             permissions: Array<out String>,
             grantResults: IntArray,
-        ): Boolean = engineUnit {
-            return@engineUnit this@engineUnit.onRequestPermissionsResult(
+        ): Boolean = engineScope {
+            return@engineScope this@engineScope.onRequestPermissionsResult(
                 requestCode = requestCode,
                 permissions = permissions,
                 grantResults = grantResults,
             )
         }
 
-        override fun onCreateEngine(context: Context) = engineUnit {
-            return@engineUnit this@engineUnit.onCreateEngine(context = context)
+        override fun onCreateEngine(context: Context) = engineScope {
+            return@engineScope this@engineScope.onCreateEngine(context = context)
         }
 
-        override fun onDestroyEngine() = engineUnit {
-            return@engineUnit this@engineUnit.onDestroyEngine()
+        override fun onDestroyEngine() = engineScope {
+            return@engineScope this@engineScope.onDestroyEngine()
         }
 
-        override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) = engineUnit {
-            return@engineUnit this@engineUnit.onMethodCall(call = call, result = result)
+        override fun onMethodCall(call: MethodCallProxy, result: ResultProxy) = engineScope {
+            return@engineScope this@engineScope.onMethodCall(call = call, result = result)
         }
     }
 
@@ -1015,13 +1015,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             this@FlutterEcosedPlugin.mActivity = null
         }
 
-        override fun onCreateLifecycle(lifecycle: Lifecycle) = lifecycleUnit {
+        override fun onCreateLifecycle(lifecycle: Lifecycle) = lifecycleScope {
             this@FlutterEcosedPlugin.mLifecycle = lifecycle
-            this@lifecycleUnit.lifecycle.addObserver(this@lifecycleUnit)
+            this@lifecycleScope.lifecycle.addObserver(this@lifecycleScope)
         }
 
-        override fun onDestroyLifecycle(): Unit = lifecycleUnit {
-            this@lifecycleUnit.lifecycle.removeObserver(this@lifecycleUnit)
+        override fun onDestroyLifecycle(): Unit = lifecycleScope {
+            this@lifecycleScope.lifecycle.removeObserver(this@lifecycleScope)
             this@FlutterEcosedPlugin.mLifecycle = null
         }
 
@@ -1087,7 +1087,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             when {
                 this@FlutterEcosedPlugin.mPluginList.isNull or
                         this@FlutterEcosedPlugin.mJSONList.isNull or
-                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginUnit(
+                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginScope(
                     debug = this@FlutterEcosedPlugin.mBaseDebug,
                     context = context,
                 ) { plugins, binding ->
@@ -1162,7 +1162,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 else -> if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
-                    PLUGIN_TAG, "请勿重复执行onDestroyEngine!",
+                    PLUGIN_TAG,
+                    "请勿重复执行onDestroyEngine!",
                 )
             }
         }
@@ -1224,15 +1225,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                 method = method,
                                 bundle = bundle,
                             )
-                            if (this@FlutterEcosedPlugin.mBaseDebug) {
-                                Log.d(
-                                    PLUGIN_TAG,
-                                    "插件代码调用成功!\n" +
-                                            "通道名称:${channel}.\n" +
-                                            "方法名称:${method}.\n" +
-                                            "返回结果:${result}.",
-                                )
-                            }
+                            if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
+                                PLUGIN_TAG,
+                                "插件代码调用成功!\n" +
+                                        "通道名称:${channel}.\n" +
+                                        "方法名称:${method}.\n" +
+                                        "返回结果:${result}.",
+                            )
                         }
                     }
                 }
@@ -1383,12 +1382,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             when (name?.className) {
                 UserService().javaClass.name -> {
-                    if ((service != null) and (service?.pingBinder() == true)) {
+                    if ((service.isNotNull) and (service?.pingBinder() == true)) {
                         this@FlutterEcosedPlugin.mIUserService =
                             IUserService.Stub.asInterface(service)
                     }
                     when {
-                        this@FlutterEcosedPlugin.mIUserService != null -> {
+                        this@FlutterEcosedPlugin.mIUserService.isNotNull -> {
                             Toast.makeText(this, "mIUserService", Toast.LENGTH_SHORT).show()
                         }
 
@@ -1404,13 +1403,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
-                    if ((service != null) and (service?.pingBinder() == true)) {
+                    if ((service.isNotNull) and (service?.pingBinder() == true)) {
                         this@FlutterEcosedPlugin.mAIDL = FlutterEcosed.Stub.asInterface(service)
                     }
                     when {
-                        this@FlutterEcosedPlugin.mAIDL != null -> {
+                        this@FlutterEcosedPlugin.mAIDL.isNotNull -> {
                             this@FlutterEcosedPlugin.mIsBind = true
-                            invokeUnit {
+                            invokeScope {
                                 onEcosedConnected()
                             }
                         }
@@ -1442,7 +1441,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     this@FlutterEcosedPlugin.mIsBind = false
                     this@FlutterEcosedPlugin.mAIDL = null
                     unbindService(this)
-                    invokeUnit {
+                    invokeScope {
                         onEcosedDisconnected()
                     }
                     if (this@FlutterEcosedPlugin.mFullDebug) {
@@ -1522,17 +1521,19 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
 
         override fun getLifecycle(): Lifecycle {
-            return mLifecycle ?: error(message = "lifecycle is null!")
+            return mLifecycle ?: error(
+                message = "lifecycle is null!"
+            )
         }
 
         /**
          * 活动创建时执行
          */
-        override fun onCreate(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onCreate(owner: LifecycleOwner): Unit = activityScope {
             super.onCreate(owner)
             // 初始化
             init {
-                delegateUnit {
+                delegateScope {
                     // 调用Delegate onCreate函数
                     onCreate(Bundle())
                 }
@@ -1541,7 +1542,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             //toggle()
 
             // 执行Delegate函数
-            if (this@activityUnit.isNotAppCompat) delegateUnit {
+            if (this@activityScope.isNotAppCompat) delegateScope {
                 onPostCreate(Bundle())
             }
         }
@@ -1549,10 +1550,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 活动启动时执行
          */
-        override fun onStart(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onStart(owner: LifecycleOwner): Unit = activityScope {
             super.onStart(owner)
             // 执行Delegate onStart函数
-            if (this@activityUnit.isNotAppCompat) delegateUnit {
+            if (this@activityScope.isNotAppCompat) delegateScope {
                 onStart()
             }
         }
@@ -1560,12 +1561,12 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 活动恢复时执行
          */
-        override fun onResume(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onResume(owner: LifecycleOwner): Unit = activityScope {
             super.onResume(owner)
             // 注册监听
             registerSensor()
             // 执行Delegate onPostResume函数
-            if (this@activityUnit.isNotAppCompat) delegateUnit {
+            if (this@activityScope.isNotAppCompat) delegateScope {
                 onPostResume()
             }
         }
@@ -1573,7 +1574,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 活动暂停时执行
          */
-        override fun onPause(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onPause(owner: LifecycleOwner): Unit = activityScope {
             super.onPause(owner)
             // 注销监听
             unregisterSensor()
@@ -1582,9 +1583,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 活动停止时执行
          */
-        override fun onStop(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onStop(owner: LifecycleOwner): Unit = activityScope {
             super.onStop(owner)
-            if (this@activityUnit.isNotAppCompat) delegateUnit {
+            if (this@activityScope.isNotAppCompat) delegateScope {
                 onStop()
             }
         }
@@ -1592,9 +1593,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 活动销毁时执行
          */
-        override fun onDestroy(owner: LifecycleOwner): Unit = activityUnit {
+        override fun onDestroy(owner: LifecycleOwner): Unit = activityScope {
             super.onDestroy(owner)
-            if (this@activityUnit.isNotAppCompat) delegateUnit {
+            if (this@activityScope.isNotAppCompat) delegateScope {
                 onDestroy()
             }
         }
@@ -1612,7 +1613,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          * 当注册的传感器的精度发生变化时调用.
          */
         override fun onAccuracyChanged(
-            sensor: Sensor?, accuracy: Int
+            sensor: Sensor?,
+            accuracy: Int,
         ) = Unit
     }
 
@@ -1628,7 +1630,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Flutter插件代理单元
      * @return content 返回值
      */
-    private fun <R> bridgeUnit(
+    private fun <R> bridgeScope(
         content: FlutterPluginProxy.() -> R,
     ): R = content.invoke(
         mEngineBridge.run {
@@ -1647,7 +1649,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 引擎包装器单元
      * @return content 返回值
      */
-    private fun <R> engineUnit(
+    private fun <R> engineScope(
         content: EngineWrapper.() -> R,
     ): R = content.invoke(
         mEcosedEngine.run {
@@ -1666,7 +1668,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 生命周期包装器
      * @return content 返回值
      */
-    private fun <R> lifecycleUnit(
+    private fun <R> lifecycleScope(
         content: LifecycleWrapper.() -> R
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1686,7 +1688,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 插件列表单元, 插件绑定器
      * @return content 返回值
      */
-    private fun <R> pluginUnit(
+    private fun <R> pluginScope(
         context: Context,
         debug: Boolean,
         content: (ArrayList<EcosedPlugin>, PluginBinding) -> R,
@@ -1711,7 +1713,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 客户端回调单元
      * @return content 返回值
      */
-    private fun <R> invokeUnit(
+    private fun <R> invokeScope(
         content: InvokeWrapper.() -> R,
     ): R = content.invoke(
         mServiceInvoke.run {
@@ -1730,7 +1732,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 服务
      * @return content 返回值
      */
-    private fun <R> serviceUnit(
+    private fun <R> serviceScope(
         content: DelegateWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1749,7 +1751,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 服务链接包装器
      * @return content 返回值
      */
-    private fun <R> connectUnit(
+    private fun <R> connectScope(
         content: ConnectWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1768,7 +1770,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content Shizuku
      * @return content 返回值
      */
-    private fun <R> shizukuUnit(
+    private fun <R> shizukuScope(
         content: ShizukuWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1787,7 +1789,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content AppCompat
      * @return content 返回值
      */
-    private fun <R> appCompatUnit(
+    private fun <R> appCompatScope(
         content: AppCompatWrapper.() -> R,
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1807,7 +1809,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 传感器包装器
      * @return content 返回值
      */
-    private fun <R> sensorUnit(
+    private fun <R> sensorScope(
         content: SensorWrapper.() -> R
     ): R = content.invoke(
         mServiceDelegate.run {
@@ -1826,7 +1828,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 内容
      * @return content 返回值
      */
-    private fun <R> activityUnit(
+    private fun <R> activityScope(
         content: Activity.() -> R,
     ): R = content.invoke(
         mActivity ?: error(
@@ -1840,7 +1842,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * @param content 委托
      * @return content 返回值
      */
-    private fun <R> delegateUnit(
+    private fun <R> delegateScope(
         content: AppCompatDelegate.() -> R
     ): R = content.invoke(mAppCompatDelegate)
 
@@ -1883,13 +1885,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 初始化
      */
-    private fun init(onCreate: () -> Unit) = activityUnit {
+    private fun init(onCreate: () -> Unit) = activityScope {
         // 初始化Delegate
         initDelegate()
         // 初始化工具栏状态
         isVisible = true
         // 判断Activity是否为AppCompatActivity
-        if (this@activityUnit.isNotAppCompat) delegateUnit {
+        if (this@activityScope.isNotAppCompat) delegateScope {
             // 为了保证接下来的Delegate调用，如果不是需要设置AppCompat主题
             initTheme()
             // 调用Delegate onCreate函数
@@ -1904,22 +1906,22 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 初始化委托
      */
-    private fun initDelegate(): Unit = activityUnit {
+    private fun initDelegate(): Unit = activityScope {
         // 初始化Delegate
-        this@FlutterEcosedPlugin.mAppCompatDelegate = if (this@activityUnit.isAppCompat) {
-            (this@activityUnit as AppCompatActivity).run {
+        this@FlutterEcosedPlugin.mAppCompatDelegate = if (this@activityScope.isAppCompat) {
+            (this@activityScope as AppCompatActivity).run {
                 return@run this@run.delegate
             }
         } else {
-            appCompatUnit {
-                return@appCompatUnit AppCompatDelegate.create(
-                    this@activityUnit,
-                    this@appCompatUnit,
+            appCompatScope {
+                return@appCompatScope AppCompatDelegate.create(
+                    this@activityScope,
+                    this@appCompatScope,
                 )
             }
         }
         // 附加Delegate基本上下文
-        if (this@activityUnit.isNotAppCompat) serviceUnit {
+        if (this@activityScope.isNotAppCompat) serviceScope {
             attachDelegateBaseContext()
         }
     }
@@ -1927,7 +1929,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 初始化主题
      */
-    private fun initTheme(): Unit = activityUnit {
+    private fun initTheme(): Unit = activityScope {
         val attributes: TypedArray = obtainStyledAttributes(
             androidx.appcompat.R.styleable.AppCompatTheme
         )
@@ -1940,11 +1942,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 初始化用户界面
      */
-    private fun initUi(): Unit = activityUnit {
+    private fun initUi(): Unit = activityScope {
         // 初始化工具栏
-        Toolbar(this@activityUnit).apply {
+        Toolbar(this@activityScope).apply {
             this@apply.navigationIcon = ContextCompat.getDrawable(
-                this@activityUnit,
+                this@activityScope,
                 R.drawable.baseline_keyboard_command_key_24,
             )
             //  subtitle = EcosedResources.PROJECT_NAME
@@ -1954,7 +1956,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             this@FlutterEcosedPlugin.mToolbar = this@apply
         }
         // 初始化对话框
-        AlertDialog.Builder(this@activityUnit).apply {
+        AlertDialog.Builder(this@activityScope).apply {
             setTitle("Debug Menu (Native)")
             setItems(
                 arrayOf(
@@ -2010,9 +2012,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             mDebugDialog = create()
         }
         // 设置操作栏
-        delegateUnit {
+        delegateScope {
             // 仅在使用Flutter的Activity时设置ActionBar,防止影响混合应用的界面.
-            if (this@activityUnit.isFlutter) {
+            if (this@activityScope.isFlutter) {
                 setSupportActionBar(mToolbar)
             } else {
                 mToolbar.setTitle(AppUtils.getAppName())
@@ -2025,16 +2027,16 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 初始化传感器
      */
-    private fun initSensor(): Unit = activityUnit {
+    private fun initSensor(): Unit = activityScope {
         mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
     }
 
     /**
      * 注册传感器
      */
-    private fun registerSensor(): Unit = sensorUnit {
+    private fun registerSensor(): Unit = sensorScope {
         mSensorManager.registerListener(
-            this@sensorUnit,
+            this@sensorScope,
             mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
             SensorManager.SENSOR_DELAY_UI,
         )
@@ -2043,9 +2045,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 注销传感器
      */
-    private fun unregisterSensor(): Unit = sensorUnit {
+    private fun unregisterSensor(): Unit = sensorScope {
         mSensorManager.unregisterListener(
-            this@sensorUnit
+            this@sensorScope
         )
     }
 
@@ -2070,8 +2072,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 获取操作栏
      */
-    private fun getActionBar(): ActionBar? = delegateUnit {
-        return@delegateUnit supportActionBar
+    private fun getActionBar(): ActionBar? = delegateScope {
+        return@delegateScope supportActionBar
     }
 
     /**
@@ -2110,10 +2112,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 判断是否支持谷歌基础服务
      */
-    private fun isSupportGMS(): Boolean = activityUnit {
-        return@activityUnit if (
+    private fun isSupportGMS(): Boolean = activityScope {
+        return@activityScope if (
             GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                this@activityUnit
+                this@activityScope
             ) == ConnectionResult.SUCCESS
         ) true else AppUtils.isAppInstalled(
             EcosedManifest.GMS_PACKAGE
@@ -2135,8 +2137,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /**
      * 获取根视图
      */
-    private fun findRootView(): View? = activityUnit {
-        return@activityUnit when (this@activityUnit) {
+    private fun findRootView(): View? = activityScope {
+        return@activityScope when (this@activityScope) {
             is FlutterActivity -> findFlutterView(
                 view = window.decorView
             )
@@ -2162,15 +2164,15 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 绑定服务
      * @param context 上下文
      */
-    private fun bindEcosed(context: Context) = connectUnit {
+    private fun bindEcosed(context: Context) = connectScope {
         try {
             if (!mIsBind) {
                 context.bindService(
                     this@FlutterEcosedPlugin.mEcosedServicesIntent,
-                    this@connectUnit,
+                    this@connectScope,
                     Context.BIND_AUTO_CREATE,
                 ).let { bind ->
-                    invokeUnit {
+                    invokeScope {
                         if (!bind) onEcosedDead()
                     }
                 }
@@ -2186,15 +2188,15 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 解绑服务
      * @param context 上下文
      */
-    private fun unbindEcosed(context: Context) = connectUnit {
+    private fun unbindEcosed(context: Context) = connectScope {
         try {
             if (this@FlutterEcosedPlugin.mIsBind) {
                 context.unbindService(
-                    this@connectUnit
+                    this@connectScope
                 ).run {
                     this@FlutterEcosedPlugin.mIsBind = false
                     this@FlutterEcosedPlugin.mAIDL = null
-                    invokeUnit {
+                    invokeScope {
                         onEcosedDisconnected()
                     }
                     if (this@FlutterEcosedPlugin.mFullDebug) {
@@ -2359,13 +2361,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 if (this@FlutterEcosedPlugin.mAIDL != null) {
                     this@FlutterEcosedPlugin.mAIDL!!.shizukuVersion
                 } else {
-                    invokeUnit {
+                    invokeScope {
                         onEcosedUnbind()
                     }
                     null
                 }
             } else {
-                invokeUnit {
+                invokeScope {
                     onEcosedUnbind()
                 }
                 null
