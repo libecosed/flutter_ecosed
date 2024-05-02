@@ -1046,10 +1046,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /**
          * 引擎初始化时执行
          */
-        override fun onEcosedAdded(binding: PluginBinding) {
+        override fun onEcosedAdded(binding: PluginBinding): Unit = run {
             super.onEcosedAdded(binding)
             // 设置来自插件的全局调试布尔值
-            this@FlutterEcosedPlugin.mFullDebug = isDebug
+            this@FlutterEcosedPlugin.mFullDebug = this@run.isDebug
         }
 
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
@@ -1060,7 +1060,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 )
 
                 EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
-                    result = execPluginMethod(
+                    result = execPluginMethod<Int>(
                         channel = EcosedChannel.INVOKE_CHANNEL_NAME,
                         method = EcosedMethod.OPEN_DIALOG_METHOD,
                         bundle = Bundle()
@@ -1068,7 +1068,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 )
 
                 EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(
-                    result = execPluginMethod(
+                    result = execPluginMethod<Int>(
                         channel = EcosedChannel.INVOKE_CHANNEL_NAME,
                         method = EcosedMethod.CLOSE_DIALOG_METHOD,
                         bundle = Bundle()
@@ -1114,11 +1114,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                                     PLUGIN_TAG,
                                     "插件${this@apply.javaClass.name}已加载",
                                 )
-                            } catch (e: Exception) {
+                            } catch (exception: Exception) {
                                 if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                                     PLUGIN_TAG,
                                     "插件${this@apply.javaClass.name}添加失败!",
-                                    e,
+                                    exception,
                                 )
                             }
                         }.run {
@@ -1144,7 +1144,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
                 else -> if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                     PLUGIN_TAG, "请勿重复执行onCreateEngine!"
-                )
+                ) else Unit
             }
         }
 
@@ -1164,7 +1164,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 else -> if (this@FlutterEcosedPlugin.mBaseDebug) Log.e(
                     PLUGIN_TAG,
                     "请勿重复执行onDestroyEngine!",
-                )
+                ) else Unit
             }
         }
 
@@ -1235,9 +1235,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                         }
                     }
                 }
-            } catch (e: Exception) {
+            } catch (exception: Exception) {
                 if (this@FlutterEcosedPlugin.mBaseDebug) {
-                    Log.e(PLUGIN_TAG, "插件代码调用失败!", e)
+                    Log.e(
+                        PLUGIN_TAG,
+                        "插件代码调用失败!",
+                        exception,
+                    )
                 }
             }
             return result
@@ -1286,15 +1290,17 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                EcosedMethod.OPEN_DIALOG_METHOD -> {
-                    openDialog()
-                    result.success(0)
-                }
+                EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
+                    result = invokeMethod {
+                        openDialog()
+                    }
+                )
 
-                EcosedMethod.CLOSE_DIALOG_METHOD -> {
-                    closeDialog()
-                    result.success(0)
-                }
+                EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(
+                    result = invokeMethod {
+                        closeDialog()
+                    }
+                )
 
                 else -> result.notImplemented()
             }
@@ -1348,12 +1354,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override val description: String
             get() = "服务功能代理, 无实际插件方法实现."
 
-        override fun attachBaseContext(base: Context?) {
+        override fun attachBaseContext(base: Context?): Unit = base?.run {
             super.attachBaseContext(base)
-            base?.let { context ->
-                this@FlutterEcosedPlugin.mAppCompatDelegateBaseContext = context
-            }
-        }
+            this@FlutterEcosedPlugin.mAppCompatDelegateBaseContext = this@run
+        } ?: Unit
 
         /**
          * 获取Binder
@@ -1882,6 +1886,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private inline val Activity.isFlutter: Boolean
         get() = (this@isFlutter is FlutterActivity) or (this@isFlutter is FlutterFragmentActivity)
 
+    private inline fun invokeMethod(block: () -> Unit): Int {
+        block.invoke()
+        return 0
+    }
     /**
      * 初始化
      */
