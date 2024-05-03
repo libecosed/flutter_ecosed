@@ -1372,8 +1372,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 override fun getOnePoem(): String = onePoem()
                 override fun isWatch(): Boolean = watch()
                 override fun isUseDynamicColors(): Boolean = dynamicColors()
-                override fun openDesktopSettings() = taskbarSettings()
-                override fun openEcosedSettings() = ecosedSettings()
+                override fun openDesktopSettings(): Unit = taskbarSettings()
+                override fun openEcosedSettings(): Unit = ecosedSettings()
             }
         }
 
@@ -1386,7 +1386,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             when (name?.className) {
                 UserService().javaClass.name -> {
-                    if ((service.isNotNull) and (service?.pingBinder() == true)) {
+                    if (service.isNotNull and (service?.pingBinder() == true)) {
                         this@FlutterEcosedPlugin.mIUserService =
                             IUserService.Stub.asInterface(service)
                     }
@@ -1407,7 +1407,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 }
 
                 this@FlutterEcosedPlugin.javaClass.name -> {
-                    if ((service.isNotNull) and (service?.pingBinder() == true)) {
+                    if (service.isNotNull and (service?.pingBinder() == true)) {
                         this@FlutterEcosedPlugin.mAIDL = FlutterEcosed.Stub.asInterface(service)
                     }
                     when {
@@ -1884,7 +1884,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断Activity是否为FlutterActivity或FlutterFragmentActivity
      */
     private inline val Activity.isFlutter: Boolean
-        get() = (this@isFlutter is FlutterActivity) or (this@isFlutter is FlutterFragmentActivity)
+        get() = (this@isFlutter is FlutterActivity) or
+                (this@isFlutter is FlutterFragmentActivity)
 
     private inline fun invokeMethod(block: () -> Unit): Int {
         block.invoke()
