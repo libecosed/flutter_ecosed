@@ -17,7 +17,8 @@ class MockFlutterEcosedPlatform
 }
 
 void main() {
-  final EcosedPlatformInterface initialPlatform = EcosedPlatformInterface.instance;
+  final EcosedPlatformInterface initialPlatform =
+      EcosedPlatformInterface.instance;
 
   test('$FlutterEcosedPlatform is the default instance', () {
     expect(initialPlatform, isInstanceOf<FlutterEcosedPlatform>());
