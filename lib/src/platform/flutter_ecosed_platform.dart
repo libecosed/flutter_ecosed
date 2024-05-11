@@ -9,7 +9,6 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   /// 方法通道平台代码调用Android平台独占
   final NativeBridge _bridge = const NativeBridge();
   
-
   /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPlatformPluginList() async {
