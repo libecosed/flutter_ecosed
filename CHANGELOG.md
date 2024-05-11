@@ -22,3 +22,7 @@
 ## 0.0.10
 * Fix some bugs.
 * Improve the function.
+## 0.0.11
+* Fix some bugs.
+* Improve the function.
+* Update dependencies.

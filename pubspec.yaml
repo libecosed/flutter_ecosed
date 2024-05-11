@@ -1,6 +1,6 @@
 name: flutter_ecosed
 description: "FlutterEcosed is a Flutter plugin and an advanced Flutter development framework that provides Android platform debugging, plugin development and dashboard functions."
-version: 0.0.10
+version: 0.0.11
 homepage: https://github.com/libecosed/flutter_ecosed
 repository: https://github.com/libecosed/flutter_ecosed
 issue_tracker: https://github.com/libecosed/flutter_ecosed/issues
@@ -26,7 +26,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
