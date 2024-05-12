@@ -3,7 +3,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'bridge_wrapper.dart';
 import 'method_channel.dart';
 
-abstract class AndroidPlatform extends PlatformInterface implements BridgeWrapper {
+abstract class AndroidPlatform extends PlatformInterface
+    implements BridgeWrapper {
   AndroidPlatform() : super(token: _token);
 
   static final Object _token = Object();
