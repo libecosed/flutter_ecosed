@@ -51,138 +51,111 @@ final class EcosedAppState extends State<EcosedApp>
                     GlobalWidgetsLocalizations.delegate,
                     GlobalCupertinoLocalizations.delegate
                   ],
-                  child: Navigator(
-                    onGenerateInitialRoutes: (navigator, initialRoute) {
-                      return [
-                        MaterialPageRoute(
-                          builder: (context) => Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Scrollbar(
-                              controller: _controller,
-                              child: ListView(
-                                controller: _controller,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        12, 12, 12, 6),
-                                    child: StateCard(
-                                      color: getEngineState() ==
-                                              EngineState.running
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primaryContainer
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .errorContainer,
-                                      leading: getEngineState() ==
-                                              EngineState.running
-                                          ? Icons.check_circle_outline
-                                          : Icons.error_outline,
-                                      title: widget.title,
-                                      subtitle: getEngineState().name,
-                                      action: () => openDialog(context),
-                                      trailing: Icons.developer_mode,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                      horizontal: 12,
-                                    ),
-                                    child: InfoCard(
-                                      appName: widget.title,
-                                      state: getEngineState().name,
-                                      platform: Theme.of(context).platform.name,
-                                      count: pluginCount().toString(),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                      horizontal: 12,
-                                    ),
-                                    child: MoreCard(
-                                      launchUrl: () => launchUrl(
-                                        Uri.parse(pubDev),
+                  child: Scrollbar(
+                    controller: _controller,
+                    child: ListView(
+                      controller: _controller,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+                          child: StateCard(
+                            color: getEngineState() == EngineState.running
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : Theme.of(context).colorScheme.errorContainer,
+                            leading: getEngineState() == EngineState.running
+                                ? Icons.check_circle_outline
+                                : Icons.error_outline,
+                            title: widget.title,
+                            subtitle: getEngineState().name,
+                            action: () => openDialog(context),
+                            trailing: Icons.developer_mode,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: InfoCard(
+                            appName: widget.title,
+                            state: getEngineState().name,
+                            platform: Theme.of(context).platform.name,
+                            count: pluginCount().toString(),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: MoreCard(
+                            launchUrl: () => launchUrl(
+                              Uri.parse(pubDev),
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          child: Divider(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+                          child: ListBody(
+                            children: getPluginDetailsList()
+                                .map(
+                                  (element) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: Builder(
+                                      builder: (context) => PluginCard(
+                                        title: element.title,
+                                        channel: element.channel,
+                                        author: element.author,
+                                        icon: element.type == PluginType.native
+                                            ? Icon(
+                                                Icons.android,
+                                                size: Theme.of(context)
+                                                    .iconTheme
+                                                    .size,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              )
+                                            : const FlutterLogo(),
+                                        description: element.description,
+                                        type: getPluginType(element),
+                                        action: isAllowPush(element)
+                                            ? element.channel != pluginChannel()
+                                                ? '打开'
+                                                : '关于'
+                                            : '无界面',
+                                        open: isAllowPush(element)
+                                            ? () {
+                                                if (element.channel !=
+                                                    pluginChannel()) {
+                                                  launchPlugin(
+                                                    context,
+                                                    element,
+                                                  );
+                                                } else {
+                                                  showAboutDialog(
+                                                    context: context,
+                                                    applicationName:
+                                                        widget.title,
+                                                    applicationLegalese:
+                                                        'Powered by FlutterEcosed',
+                                                  );
+                                                }
+                                              }
+                                            : null,
                                       ),
                                     ),
                                   ),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 24),
-                                    child: Divider(),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                                    child: ListBody(
-                                      children: getPluginDetailsList()
-                                          .map(
-                                            (element) => Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 12),
-                                              child: Builder(
-                                                builder: (context) =>
-                                                    PluginCard(
-                                                  title: element.title,
-                                                  channel: element.channel,
-                                                  author: element.author,
-                                                  icon: element.type ==
-                                                          PluginType.native
-                                                      ? Icon(
-                                                          Icons.android,
-                                                          size:
-                                                              Theme.of(context)
-                                                                  .iconTheme
-                                                                  .size,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                        )
-                                                      : const FlutterLogo(),
-                                                  description:
-                                                      element.description,
-                                                  type: getPluginType(element),
-                                                  action: isAllowPush(element)
-                                                      ? element.channel !=
-                                                              pluginChannel()
-                                                          ? '打开'
-                                                          : '关于'
-                                                      : '无界面',
-                                                  open: isAllowPush(element)
-                                                      ? () {
-                                                          if (element.channel !=
-                                                              pluginChannel()) {
-                                                            launchPlugin(
-                                                              context,
-                                                              element,
-                                                            );
-                                                          } else {
-                                                            showAboutDialog(
-                                                              context: context,
-                                                              applicationName:
-                                                                  widget.title,
-                                                              applicationLegalese:
-                                                                  'Powered by FlutterEcosed',
-                                                            );
-                                                          }
-                                                        }
-                                                      : null,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                                )
+                                .toList(),
                           ),
-                        )
-                      ];
-                    },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
