@@ -1,10 +1,10 @@
-import 'package:flutter_ecosed/src/bridge/bridge_wrapper.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../bridge/platform_interface.dart';
 import 'default_platform.dart';
 
 abstract class EcosedPlatformInterface extends PlatformInterface
-    implements BridgeWrapper {
+    implements AndroidPlatform {
   EcosedPlatformInterface() : super(token: _token);
 
   static final Object _token = Object();

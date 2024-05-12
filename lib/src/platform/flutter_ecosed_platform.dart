@@ -7,7 +7,7 @@ import 'ecosed_platform_interface.dart';
 
 final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   /// 方法通道平台代码调用Android平台独占
-  final NativeBridge _bridge = const NativeBridge();
+  final NativeBridge _bridge = NativeBridge();
   
   /// 从引擎获取原生插件JSON
   @override
