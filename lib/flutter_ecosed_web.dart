@@ -1,7 +1,7 @@
 library flutter_ecosed_web;
 
-import 'dart:html' as html show window;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:web/web.dart' as web;
 
 import 'src/platform/ecosed_platform_interface.dart';
 
@@ -19,11 +19,11 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
 
   @override
   Future<void> openPlatformDialog() async {
-    return html.window.alert('the function unsupported web');
+    return web.window.alert('the function unsupported web');
   }
 
   @override
   Future<void> closePlatformDialog() async {
-    return html.window.alert('the function unsupported web');
+    return web.window.alert('the function unsupported web');
   }
 }
