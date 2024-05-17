@@ -20,7 +20,7 @@ final class StateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Card.filled(
       color: color,
       child: Padding(
         padding: const EdgeInsets.all(24),

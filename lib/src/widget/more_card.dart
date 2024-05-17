@@ -10,7 +10,7 @@ final class MoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Card.outlined(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Row(
