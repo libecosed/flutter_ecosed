@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:device_preview/device_preview.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,28 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  runApp(const PreviewWrapper());
-}
-
-class PreviewWrapper extends StatefulWidget {
-  const PreviewWrapper({super.key});
-
-  @override
-  State<PreviewWrapper> createState() => _PreviewWrapperState();
-}
-
-class _PreviewWrapperState extends State<PreviewWrapper> {
-  @override
-  Widget build(BuildContext context) {
-    return DevicePreview(
-      builder: (context) => const MyApp(),
-      tools: const [
-        DevicePreviewAddPlugin(),
-        ...DevicePreview.defaultTools,
-      ],
-      enabled: true,
-    );
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -282,23 +260,6 @@ extension ContextExecutor on BuildContext {
   }
 }
 
-class DevicePreviewAddPlugin extends StatelessWidget {
-  const DevicePreviewAddPlugin({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ToolPanelSection(
-      title: 'Counter',
-      children: [
-        ListTile(
-          title: const Text('counter add'),
-          onTap: () => context.execPluginMethod("example_channel", Method.add),
-        )
-      ],
-    );
-  }
-}
-
 class NavigationTransition extends StatefulWidget {
   const NavigationTransition({
     super.key,
@@ -384,11 +345,9 @@ class _NavigationTransitionState extends State<NavigationTransition> {
           materialApp: (home, title) {
             return MaterialApp(
               home: home,
-              builder: DevicePreview.appBuilder,
               title: title,
               theme: ThemeData(colorScheme: light),
               darkTheme: ThemeData(colorScheme: dark),
-              locale: DevicePreview.locale(context),
               // ignore: deprecated_member_use
               useInheritedMediaQuery: true,
             );

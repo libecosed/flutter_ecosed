@@ -25,7 +25,6 @@ final class PluginCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
         child: Column(
