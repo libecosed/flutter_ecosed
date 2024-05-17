@@ -1,10 +1,3 @@
-abstract interface class BridgeWrapper {
-  /// 获取插件列表
-  Future<List?> getPlatformPluginList();
+import '../platform/ecosed_platform_interface.dart';
 
-  /// 打开对话框
-  Future<void> openPlatformDialog();
-
-  /// 关闭对话框
-  Future<void> closePlatformDialog();
-}
+abstract interface class BridgeWrapper implements EcosedPlatformInterface {}

@@ -1,10 +1,8 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../bridge/platform_interface.dart';
 import 'default_platform.dart';
 
-abstract class EcosedPlatformInterface extends PlatformInterface
-    implements AndroidPlatform {
+abstract class EcosedPlatformInterface extends PlatformInterface {
   EcosedPlatformInterface() : super(token: _token);
 
   static final Object _token = Object();
@@ -22,18 +20,15 @@ abstract class EcosedPlatformInterface extends PlatformInterface
   }
 
   /// 获取插件列表
-  @override
   Future<List?> getPlatformPluginList() async {
     throw UnimplementedError('getPlatformPluginList()方法未实现');
   }
 
   /// 打开对话框
-  @override
   Future<void> openPlatformDialog() async {
     throw UnimplementedError('openPlatformDialog()方法未实现');
   }
 
-  @override
   Future<void> closePlatformDialog() async {
     throw UnimplementedError('closePlatformDialog()方法未实现');
   }
