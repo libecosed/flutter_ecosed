@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../widget/ecosed_executor.dart';
 
 /// 通过上下文调用插件方法
-extension ContextExecutor on BuildContext {
+extension PluginExecutor on BuildContext {
   /// 调用插件方法
   Future<dynamic> execPluginMethod(String channel, String method) async {
     EcosedExecutor? executor =
