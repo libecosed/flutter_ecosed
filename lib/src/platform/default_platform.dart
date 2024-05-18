@@ -9,16 +9,14 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   }
 
   @override
-  Future<void> openPlatformDialog() async {
-    return debugPrint(
-      'openPlatformDialog: the function unsupported the platform.',
-    );
+  Future<bool?> openPlatformDialog() async {
+    debugPrint('openPlatformDialog: the function unsupported the platform.');
+    return false;
   }
 
   @override
-  Future<void> closePlatformDialog() async {
-    return debugPrint(
-      'closePlatformDialog: the function unsupported the platform.',
-    );
+  Future<bool?> closePlatformDialog() async {
+    debugPrint('closePlatformDialog: the function unsupported the platform.');
+    return false;
   }
 }

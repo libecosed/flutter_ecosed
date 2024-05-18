@@ -10,10 +10,10 @@ class MockFlutterEcosedPlatform
   Future<List?> getPlatformPluginList() => Future.value(List.empty());
 
   @override
-  Future<void> openPlatformDialog() => Future.value(null);
+  Future<bool?> openPlatformDialog() => Future.value(true);
 
   @override
-  Future<void> closePlatformDialog() => Future.value(null);
+  Future<bool?> closePlatformDialog() => Future.value(true);
 }
 
 void main() {

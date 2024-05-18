@@ -175,12 +175,12 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
   }
 
   @override
-  Future<void> openPlatformDialog() async {
+  Future<bool?> openPlatformDialog() async {
     return await EcosedPlatformInterface.instance.openPlatformDialog();
   }
 
   @override
-  Future<void> closePlatformDialog() async {
+  Future<bool?> closePlatformDialog() async {
     return await EcosedPlatformInterface.instance.closePlatformDialog();
   }
 

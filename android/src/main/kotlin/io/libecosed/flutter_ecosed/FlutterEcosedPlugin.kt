@@ -1887,10 +1887,18 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         get() = (this@isFlutter is FlutterActivity) or
                 (this@isFlutter is FlutterFragmentActivity)
 
-    private inline fun invokeMethod(block: () -> Unit): Int {
-        block.invoke()
-        return 0
+    /**
+     * 调用方法
+     */
+    private inline fun invokeMethod(block: () -> Unit): Boolean {
+        try {
+            block.invoke()
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
+
     /**
      * 初始化
      */

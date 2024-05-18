@@ -98,10 +98,6 @@ final class EcosedAppState extends State<EcosedApp>
                           padding: EdgeInsets.symmetric(horizontal: 24),
                           child: Divider(),
                         ),
-                        Center(
-                          child: Text('插件列表', style: Theme.of(context).textTheme.titleMedium,),
-                        ),
-                        
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
                           child: ListBody(

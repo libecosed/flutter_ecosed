@@ -5,6 +5,7 @@ import 'default_platform.dart';
 abstract class EcosedPlatformInterface extends PlatformInterface {
   EcosedPlatformInterface() : super(token: _token);
 
+  /// 令牌
   static final Object _token = Object();
 
   /// 实例
@@ -25,11 +26,12 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
   }
 
   /// 打开对话框
-  Future<void> openPlatformDialog() async {
+  Future<bool?> openPlatformDialog() async {
     throw UnimplementedError('openPlatformDialog()方法未实现');
   }
 
-  Future<void> closePlatformDialog() async {
+  /// 关闭对话框
+  Future<bool?> closePlatformDialog() async {
     throw UnimplementedError('closePlatformDialog()方法未实现');
   }
 }

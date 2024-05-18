@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:win32/win32.dart';
 
-import '../bridge/native_bridge.dart';
+import '../android/android_ecosed.dart';
 import 'ecosed_platform_interface.dart';
 
 final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   /// 方法通道平台代码调用Android平台独占
-  final NativeBridge _bridge = NativeBridge();
+  final AndroidEcosed _bridge = AndroidEcosed();
 
   /// 从引擎获取原生插件JSON
   @override
@@ -24,7 +24,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
 
   /// 从客户端启动对话框
   @override
-  Future<void> openPlatformDialog() async {
+  Future<bool?> openPlatformDialog() async {
     return await _withPlatform(
       android: () async => await _bridge.openPlatformDialog(),
       fuchsia: () async => await null,
@@ -52,7 +52,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   }
 
   @override
-  Future<void> closePlatformDialog() async {
+  Future<bool?> closePlatformDialog() async {
     return await _withPlatform(
       android: () async => await _bridge.closePlatformDialog(),
       fuchsia: () async => await null,

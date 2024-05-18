@@ -3,37 +3,38 @@ import 'package:flutter/services.dart';
 
 import 'platform_interface.dart';
 
-class MethodChannelAndroid extends AndroidPlatform {
+final class MethodChannelAndroidEcosed extends AndroidEcosedPlatform {
+  /// 方法通道
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
 
   /// 方法通道调用参数
-  final arguments = const {'channel': 'ecosed_engine'};
+  final _arguments = const {'channel': 'ecosed_engine'};
 
   /// 获取插件列表
   @override
   Future<List?> getPlatformPluginList() async {
     return await methodChannel.invokeListMethod<String?>(
       'getPlugins',
-      arguments,
+      _arguments,
     );
   }
 
   /// 打开对话框
   @override
-  Future<void> openPlatformDialog() async {
-    return await methodChannel.invokeMethod<void>(
+  Future<bool?> openPlatformDialog() async {
+    return await methodChannel.invokeMethod<bool?>(
       'openDialog',
-      arguments,
+      _arguments,
     );
   }
 
   /// 关闭对话框
   @override
-  Future<void> closePlatformDialog() async {
-    return await methodChannel.invokeMethod<void>(
+  Future<bool?> closePlatformDialog() async {
+    return await methodChannel.invokeMethod<bool?>(
       'closeDialog',
-      arguments,
+      _arguments,
     );
   }
 }
