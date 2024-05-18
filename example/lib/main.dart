@@ -11,6 +11,12 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
   runApp(const MyApp());
+
+  // runEcosedApp(
+  //   app: (manager) => const MyApp(),
+  //   plugins: <EcosedPlugin>[],
+  //   runApp: (app) => runApp(app),
+  // );
 }
 
 class MyApp extends StatefulWidget {
