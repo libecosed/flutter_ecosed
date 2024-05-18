@@ -126,11 +126,13 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             builder: (context, value, child) {
               return Visibility(
                 visible: value,
-                child: FloatingActionButton(
-                  onPressed: () =>
-                      context.execPluginMethod('example_channel', Method.add),
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
+                child: Builder(
+                  builder: (context) => FloatingActionButton(
+                    onPressed: () =>
+                        context.execPluginMethod('example_channel', Method.add),
+                    tooltip: 'Increment',
+                    child: const Icon(Icons.add),
+                  ),
                 ),
               );
             },
@@ -171,9 +173,6 @@ class Global {
 
   /// 页面索引
   static final ValueNotifier<int> pageIndex = ValueNotifier(0);
-
-  /// 方法执行
-  static late Executor executor;
 
   /// 计数
   static final ValueNotifier<int> counter = ValueNotifier(0);
@@ -239,27 +238,6 @@ class Method {
   static const String add = 'add';
 }
 
-/// 插件方法执行器
-class Executor {
-  const Executor({required this.exec});
-
-  /// 传入方法执行函数
-  final Future<dynamic> Function(String channel, String method) exec;
-
-  /// 调用方法
-  Future<dynamic> call(String channel, String method) async {
-    return await exec(channel, method);
-  }
-}
-
-/// 通过上下文调用插件方法
-extension ContextExecutor on BuildContext {
-  /// 调用插件方法
-  Future<dynamic> execPluginMethod(String channel, String method) async {
-    return await Global.executor(channel, method);
-  }
-}
-
 class NavigationTransition extends StatefulWidget {
   const NavigationTransition({
     super.key,
@@ -280,7 +258,7 @@ class NavigationTransition extends StatefulWidget {
   final Widget navigationBar;
   final Widget floatingActionButton;
   final PreferredSizeWidget Function(String title) appBar;
-  final Widget Function(Widget body) body;
+  final Widget Function(Widget manager) body;
 
   @override
   State<NavigationTransition> createState() => _NavigationTransitionState();
@@ -311,19 +289,16 @@ class _NavigationTransitionState extends State<NavigationTransition> {
     return DynamicColorBuilder(
       builder: (light, dark) {
         return EcosedApp(
-          home: (context, exec, body) {
-            return ExecutorBuilder(
-              exec: exec,
-              child: Row(
-                children: <Widget>[
-                  RailTransition(
-                    animation: railAnimation,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    child: widget.navigationRail,
-                  ),
-                  widget.body(body),
-                ],
-              ),
+          home: (context, manager) {
+            return Row(
+              children: <Widget>[
+                RailTransition(
+                  animation: railAnimation,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  child: widget.navigationRail,
+                ),
+                widget.body(manager),
+              ],
             );
           },
           plugins: const [ExamplePlugin()],
@@ -355,24 +330,6 @@ class _NavigationTransitionState extends State<NavigationTransition> {
         );
       },
     );
-  }
-}
-
-/// 执行器构建器
-class ExecutorBuilder extends StatelessWidget {
-  const ExecutorBuilder({
-    super.key,
-    required this.exec,
-    required this.child,
-  });
-
-  final Future<dynamic> Function(String channel, String method) exec;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    Global.executor = Executor(exec: exec);
-    return Container(child: child);
   }
 }
 

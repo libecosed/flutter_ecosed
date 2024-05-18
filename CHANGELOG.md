@@ -26,3 +26,6 @@
 * Fix some bugs.
 * Improve the function.
 * Update dependencies.
+## 0.0.12
+* Fix some bugs.
+* Improve the function.
