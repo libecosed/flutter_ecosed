@@ -10,13 +10,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  runApp(const MyApp());
-
-  // runEcosedApp(
-  //   app: (manager) => const MyApp(),
-  //   plugins: <EcosedPlugin>[],
-  //   runApp: (app) => runApp(app),
-  // );
+  runEcosedApp(
+    app: (manager) => const MyApp(),
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
+    runApp: (app) => runApp(app),
+  );
 }
 
 class MyApp extends StatefulWidget {

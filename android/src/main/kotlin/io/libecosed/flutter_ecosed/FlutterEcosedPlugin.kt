@@ -1060,7 +1060,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 )
 
                 EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
-                    result = execPluginMethod<Int>(
+                    result = execPluginMethod<Boolean>(
                         channel = EcosedChannel.INVOKE_CHANNEL_NAME,
                         method = EcosedMethod.OPEN_DIALOG_METHOD,
                         bundle = Bundle()
@@ -1068,7 +1068,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 )
 
                 EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(
-                    result = execPluginMethod<Int>(
+                    result = execPluginMethod<Boolean>(
                         channel = EcosedChannel.INVOKE_CHANNEL_NAME,
                         method = EcosedMethod.CLOSE_DIALOG_METHOD,
                         bundle = Bundle()

@@ -11,7 +11,7 @@ extension PluginExecutor on BuildContext {
     if (executor != null) {
       return await executor.exec(channel, method);
     } else {
-      throw StateError('executor builder is null');
+      throw StateError('未找到执行器!请检查是否使用runEcosedApp方法启动应用');
     }
   }
 }
