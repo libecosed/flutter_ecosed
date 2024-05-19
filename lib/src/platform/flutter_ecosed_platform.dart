@@ -7,13 +7,13 @@ import 'ecosed_platform_interface.dart';
 
 final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   /// 方法通道平台代码调用Android平台独占
-  final AndroidEcosed _bridge = AndroidEcosed();
+  final AndroidEcosed _androidEcosed = AndroidEcosed();
 
   /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPlatformPluginList() async {
     return await _withPlatform(
-      android: () async => await _bridge.getPlatformPluginList(),
+      android: () async => await _androidEcosed.getPlatformPluginList(),
       fuchsia: () async => List.empty(),
       iOS: () async => List.empty(),
       linux: () async => List.empty(),
@@ -26,7 +26,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   @override
   Future<bool?> openPlatformDialog() async {
     return await _withPlatform(
-      android: () async => await _bridge.openPlatformDialog(),
+      android: () async => await _androidEcosed.openPlatformDialog(),
       fuchsia: () async => await null,
       iOS: () async => await null,
       linux: () async => await null,
@@ -54,7 +54,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   @override
   Future<bool?> closePlatformDialog() async {
     return await _withPlatform(
-      android: () async => await _bridge.closePlatformDialog(),
+      android: () async => await _androidEcosed.closePlatformDialog(),
       fuchsia: () async => await null,
       iOS: () async => await null,
       linux: () async => await null,

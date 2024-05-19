@@ -7,7 +7,7 @@ import '../runtime/runtime.dart';
 Future<void> runEcosedApp({
   required Widget Function(Widget manager) app,
   required List<EcosedPlugin> plugins,
-  required void Function(Widget app) runApp,
+  required Future<void> Function(Widget app) runApp,
 }) async {
   return await EcosedRuntime(
     app: app,

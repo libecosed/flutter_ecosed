@@ -1,1 +1,1 @@
-enum PluginType { native, flutter, unknown }
+enum PluginType { native, flutter, runtime, unknown }

@@ -32,9 +32,7 @@ final class EcosedAppState extends State<EcosedApp>
     return EcosedMaterialApp(
       title: widget.title,
       materialApp: widget.materialApp,
-      home: EcosedBanner(
-        location: widget.location,
-        child: EcosedExecutor(
+      home: EcosedExecutor(
           exec: (channel, method) async {
             return await exec(channel, method);
           },
@@ -172,7 +170,6 @@ final class EcosedAppState extends State<EcosedApp>
             ),
           ),
         ),
-      ),
     );
   }
 }

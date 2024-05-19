@@ -1,42 +1,67 @@
 import 'package:flutter/widgets.dart';
 
+import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
+import '../values/methods.dart';
+import '../widget/ecosed_banner.dart';
 
-final class EcosedRuntime implements EcosedPlugin {
+final class EcosedRuntime extends EcosedPlatformInterface
+    implements EcosedPlugin {
   EcosedRuntime({
     required this.app,
     required this.plugins,
+    // required this.title,
+    // required this.location,
     required this.runApplication,
   });
-
   final Widget Function(Widget manager) app;
   final List<EcosedPlugin> plugins;
-  final void Function(Widget app) runApplication;
+  // final String title;
+  // final BannerLocation location;
+  final Future<void> Function(Widget app) runApplication;
+
+  final EcosedPlatformInterface _ecosed = EcosedPlatformInterface.instance;
 
   late List<EcosedPlugin> _pluginList;
 
   Future<void> call() async {
-
-    _pluginList = <EcosedPlugin>[];
-    _pluginList.add(this);
-    _pluginList.addAll(plugins);
-
+    await _init();
 
     Widget manager = const Text('');
 
-    runApplication(app(manager));
+    await runApplication(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: EcosedBanner(child: app(manager)),
+      ),
+    );
+  }
+
+  Future<void> _init() async {
+    _pluginList = <EcosedPlugin>[];
+    _pluginList.add(this);
+    _pluginList.addAll(plugins);
   }
 
   @override
   Future<dynamic> onMethodCall(String method) async {
-    return await null;
+    switch (method) {
+      case getPluginMethod:
+        return await getPlatformPluginList();
+      case openDialogMethod:
+        return await openPlatformDialog();
+      case closeDialogMethod:
+        return await closePlatformDialog();
+      default:
+        return await null;
+    }
   }
 
   @override
   String pluginAuthor() => 'wyq0918dev';
 
   @override
-  String pluginChannel() => 'ecosed_runtime';
+  String pluginChannel() => 'runtime';
 
   @override
   String pluginDescription() => 'Ecosed Runtime';
@@ -47,5 +72,20 @@ final class EcosedRuntime implements EcosedPlugin {
   @override
   Widget pluginWidget(BuildContext context) {
     return Container();
+  }
+
+  @override
+  Future<List?> getPlatformPluginList() async {
+    return await _ecosed.getPlatformPluginList();
+  }
+
+  @override
+  Future<bool?> openPlatformDialog() async {
+    return await _ecosed.openPlatformDialog();
+  }
+
+  @override
+  Future<bool?> closePlatformDialog() async {
+    return await _ecosed.closePlatformDialog();
   }
 }

@@ -144,6 +144,8 @@ base mixin EcosedEngine<T extends EcosedApp> on State<T>
         return '内置插件 - Platform';
       case PluginType.flutter:
         return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
+      case PluginType.runtime:
+        return '框架运行时';
       case PluginType.unknown:
         return '未知插件类型';
       default:

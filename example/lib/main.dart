@@ -9,11 +9,11 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() {
-  runEcosedApp(
+Future<void> main() async {
+  await runEcosedApp(
     app: (manager) => const MyApp(),
     plugins: const <EcosedPlugin>[ExamplePlugin()],
-    runApp: (app) => runApp(app),
+    runApp: (app) async => runApp(app),
   );
 }
 
