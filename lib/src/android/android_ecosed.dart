@@ -22,7 +22,7 @@ final class AndroidEcosed implements AndroidEcosedPlatform {
   Future<bool?> openPlatformDialog() async {
     return await _invokePlatform(
       invoke: () async => await _platform.openPlatformDialog(),
-      error: () async => await null,
+      error: () async => false,
     );
   }
 
@@ -31,7 +31,7 @@ final class AndroidEcosed implements AndroidEcosedPlatform {
   Future<bool?> closePlatformDialog() async {
     return await _invokePlatform(
       invoke: () async => await _platform.closePlatformDialog(),
-      error: () async => await null,
+      error: () async => false,
     );
   }
 
