@@ -9,31 +9,31 @@ final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
   EcosedRuntime({
     required this.app,
     required this.plugins,
-    required this.runApplication,
+    required this.runner,
   });
 
-  final Widget Function(Widget manager) app;
+  final WidgetBuilder app;
   final List<EcosedPlugin> plugins;
-  final Future<void> Function(Widget app) runApplication;
+  final Future<void> Function(Widget app) runner;
 
   final EcosedPlatformInterface _platform = EcosedPlatformInterface.instance;
 
   late List<EcosedPlugin> _pluginList;
 
+  /// 运行时执行入口
   Future<void> call() async {
     await _init();
 
-    Widget manager = const Text('');
-
-    await runApplication(EcosedBanner(child: app(manager)));
+    await runner(
+      EcosedBanner(
+        child: Builder(
+          builder: (context) => app(context),
+        ),
+      ),
+    );
   }
 
-  Future<void> _init() async {
-    _pluginList = <EcosedPlugin>[];
-    _pluginList.add(this);
-    _pluginList.addAll(plugins);
-  }
-
+  /// 方法调用
   @override
   Future<dynamic> onMethodCall(String method) async {
     switch (method) {
@@ -48,35 +48,50 @@ final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
     }
   }
 
+  /// 插件名称
   @override
   String pluginAuthor() => 'wyq0918dev';
 
+  /// 插件通道
   @override
   String pluginChannel() => 'runtime';
 
+  /// 插件描述
   @override
   String pluginDescription() => 'Ecosed Runtime';
 
+  /// 插件名称
   @override
   String pluginName() => 'EcosedRuntime';
 
+  /// 插件用户界面
   @override
   Widget pluginWidget(BuildContext context) {
     return Container();
   }
 
+  /// 获取插件列表
   @override
   Future<List?> getPlatformPluginList() async {
     return await _platform.getPlatformPluginList();
   }
 
+  /// 打开平台对话框
   @override
   Future<bool?> openPlatformDialog() async {
     return await _platform.openPlatformDialog();
   }
 
+  /// 关闭平台对话框
   @override
   Future<bool?> closePlatformDialog() async {
     return await _platform.closePlatformDialog();
+  }
+
+  /// 初始化运行时
+  Future<void> _init() async {
+    _pluginList = <EcosedPlugin>[];
+    _pluginList.add(this);
+    _pluginList.addAll(plugins);
   }
 }

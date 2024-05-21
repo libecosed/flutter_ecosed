@@ -11,9 +11,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
   await runEcosedApp(
-    app: (manager) => const MyApp(),
-    plugins: const <EcosedPlugin>[ExamplePlugin()],
-    runApplication: (app) async => runApp(app),
+    app: (context) => const MyApp(),
+    plugins: const [ExamplePlugin()],
+    runner: (app) async => runApp(app),
   );
 }
 
