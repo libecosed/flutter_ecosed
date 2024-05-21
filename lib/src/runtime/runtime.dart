@@ -5,8 +5,10 @@ import '../plugin/plugin.dart';
 import '../values/methods.dart';
 import '../widget/ecosed_banner.dart';
 
-final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
+final class EcosedRuntime extends StatelessWidget
+    implements EcosedPlugin, EcosedPlatformInterface {
   EcosedRuntime({
+    super.key,
     required this.app,
     required this.plugins,
     required this.runner,
@@ -17,8 +19,7 @@ final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
   final Future<void> Function(Widget app) runner;
 
   final EcosedPlatformInterface _platform = EcosedPlatformInterface.instance;
-
-  late List<EcosedPlugin> _pluginList;
+  final List<EcosedPlugin> _pluginList = [];
 
   /// 运行时执行入口
   Future<void> call() async {
@@ -66,9 +67,7 @@ final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
 
   /// 插件用户界面
   @override
-  Widget pluginWidget(BuildContext context) {
-    return Container();
-  }
+  Widget pluginWidget(BuildContext context) => this;
 
   /// 获取插件列表
   @override
@@ -90,8 +89,12 @@ final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
 
   /// 初始化运行时
   Future<void> _init() async {
-    _pluginList = <EcosedPlugin>[];
     _pluginList.add(this);
     _pluginList.addAll(plugins);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
