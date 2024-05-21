@@ -93,6 +93,7 @@ final class EcosedRuntime extends StatelessWidget
     _pluginList.addAll(plugins);
   }
 
+  /// 管理器界面
   @override
   Widget build(BuildContext context) {
     return Container();
