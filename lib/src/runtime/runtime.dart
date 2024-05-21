@@ -5,22 +5,18 @@ import '../plugin/plugin.dart';
 import '../values/methods.dart';
 import '../widget/ecosed_banner.dart';
 
-final class EcosedRuntime extends EcosedPlatformInterface
-    implements EcosedPlugin {
+final class EcosedRuntime implements EcosedPlugin, EcosedPlatformInterface {
   EcosedRuntime({
     required this.app,
     required this.plugins,
-    // required this.title,
-    // required this.location,
     required this.runApplication,
   });
+
   final Widget Function(Widget manager) app;
   final List<EcosedPlugin> plugins;
-  // final String title;
-  // final BannerLocation location;
   final Future<void> Function(Widget app) runApplication;
 
-  final EcosedPlatformInterface _ecosed = EcosedPlatformInterface.instance;
+  final EcosedPlatformInterface _platform = EcosedPlatformInterface.instance;
 
   late List<EcosedPlugin> _pluginList;
 
@@ -29,12 +25,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
     Widget manager = const Text('');
 
-    await runApplication(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: EcosedBanner(child: app(manager)),
-      ),
-    );
+    await runApplication(EcosedBanner(child: app(manager)));
   }
 
   Future<void> _init() async {
@@ -76,16 +67,16 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   @override
   Future<List?> getPlatformPluginList() async {
-    return await _ecosed.getPlatformPluginList();
+    return await _platform.getPlatformPluginList();
   }
 
   @override
   Future<bool?> openPlatformDialog() async {
-    return await _ecosed.openPlatformDialog();
+    return await _platform.openPlatformDialog();
   }
 
   @override
   Future<bool?> closePlatformDialog() async {
-    return await _ecosed.closePlatformDialog();
+    return await _platform.closePlatformDialog();
   }
 }

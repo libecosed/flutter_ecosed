@@ -16,11 +16,14 @@ final class EcosedBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!enabled) return child;
-    return Banner(
-      message: 'ECOSED',
+    return Directionality(
       textDirection: TextDirection.ltr,
-      location: kDebugMode ? location : BannerLocation.topEnd,
-      child: child,
+      child: Banner(
+        message: 'ECOSED',
+        textDirection: TextDirection.ltr,
+        location: kDebugMode ? location : BannerLocation.topEnd,
+        child: child,
+      ),
     );
   }
 }
