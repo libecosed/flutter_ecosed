@@ -29,3 +29,7 @@
 ## 0.0.12
 * Fix some bugs.
 * Improve the function.
+## 0.1.0
+* Adjust software architecture.
+* Improve the function.
+* Fix some bugs.

@@ -1,1 +1,0 @@
-enum EngineState { uninitialized, running }

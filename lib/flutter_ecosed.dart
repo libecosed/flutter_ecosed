@@ -5,8 +5,7 @@ import 'src/platform/flutter_ecosed_platform.dart';
 
 export 'src/entry/entry.dart';
 export 'src/plugin/plugin.dart';
-export 'src/executor/executor.dart';
-export 'src/app/app.dart';
+export 'src/extension/extension.dart';
 
 final class FlutterEcosed {
   const FlutterEcosed();

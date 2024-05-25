@@ -5,12 +5,10 @@ final class EcosedBanner extends StatelessWidget {
   const EcosedBanner({
     super.key,
     this.enabled = true,
-    this.location = BannerLocation.topStart,
     required this.child,
   });
 
   final bool enabled;
-  final BannerLocation location;
   final Widget child;
 
   @override
@@ -19,9 +17,9 @@ final class EcosedBanner extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Banner(
-        message: 'ECOSED',
+        message: 'EcosedApp',
         textDirection: TextDirection.ltr,
-        location: kDebugMode ? location : BannerLocation.topEnd,
+        location: kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
         child: child,
       ),
     );
