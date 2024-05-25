@@ -14,4 +14,14 @@ extension PluginExecutor on BuildContext {
       throw StateError('未找到执行器!请检查是否使用runEcosedApp方法启动应用');
     }
   }
+
+  Widget getManagerWidget() {
+    EcosedExecutor? executor =
+        dependOnInheritedWidgetOfExactType<EcosedExecutor>();
+    if (executor != null) {
+      return executor.manager;
+    } else {
+      throw StateError('未找到执行器!请检查是否使用runEcosedApp方法启动应用');
+    }
+  }
 }

@@ -35,6 +35,7 @@ final class EcosedAppState extends State<EcosedApp>
         exec: (channel, method) async {
           return await exec(channel, method);
         },
+        manager: Container(),
         child: EcosedMaterialScaffold(
           scaffold: widget.scaffold,
           title: widget.title,

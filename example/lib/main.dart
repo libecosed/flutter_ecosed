@@ -12,7 +12,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 Future<void> main() async {
   await runEcosedApp(
     app: (context) => const MyApp(),
-    plugins: const [ExamplePlugin()],
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
 }

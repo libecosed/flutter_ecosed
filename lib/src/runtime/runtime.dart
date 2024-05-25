@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_ecosed/src/widget/ecosed_executor.dart';
 
 import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
@@ -24,14 +25,7 @@ final class EcosedRuntime extends StatelessWidget
   /// 运行时执行入口
   Future<void> call() async {
     await _init();
-
-    await runner(
-      EcosedBanner(
-        child: Builder(
-          builder: (context) => app(context),
-        ),
-      ),
-    );
+    await _startup();
   }
 
   /// 方法调用
@@ -87,15 +81,35 @@ final class EcosedRuntime extends StatelessWidget
     return await _platform.closePlatformDialog();
   }
 
+  /// 管理器界面
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
   /// 初始化运行时
   Future<void> _init() async {
     _pluginList.add(this);
     _pluginList.addAll(plugins);
   }
 
-  /// 管理器界面
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _startup() async {
+    return await runner(
+      EcosedExecutor(
+        exec: (channel, method) => exec(channel, method),
+        manager: manager(),
+        child: EcosedBanner(
+          child: Builder(
+            builder: (context) => app(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> exec(String channel, String method) async {}
+
+  Widget manager() {
     return Container();
   }
 }
