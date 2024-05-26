@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 abstract interface class EcosedPlugin {
   ///插件信息
