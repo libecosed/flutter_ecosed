@@ -25,6 +25,8 @@ dependencies:
   win32: ^5.5.0
 
 dev_dependencies:
+  ffi: ^2.1.0
+  ffigen: ^11.0.0
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
@@ -35,16 +37,21 @@ flutter:
     platforms:
       android:
         dartPluginClass: FlutterEcosed
+        ffiPlugin: true
         package: io.libecosed.flutter_ecosed
         pluginClass: FlutterEcosedPlugin
       ios:
         dartPluginClass: FlutterEcosed
+        ffiPlugin: true
       linux:
         dartPluginClass: FlutterEcosed
+        ffiPlugin: true
       macos:
         dartPluginClass: FlutterEcosed
+        ffiPlugin: true
       windows:
         dartPluginClass: FlutterEcosed
+        ffiPlugin: true
       web:
         pluginClass: FlutterEcosedWeb
         fileName: flutter_ecosed_web.dart
