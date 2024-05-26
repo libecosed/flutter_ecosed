@@ -22,11 +22,13 @@ final class EcosedRuntime extends StatelessWidget
   EcosedRuntime({
     super.key,
     required this.app,
+    required this.appName,
     required this.plugins,
     required this.runner,
   });
 
   final WidgetBuilder app;
+  final String appName;
   final List<EcosedPlugin> plugins;
   final Future<void> Function(Widget app) runner;
 
@@ -76,11 +78,11 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 插件通道
   @override
-  String pluginChannel() => 'runtime';
+  String pluginChannel() => 'ecosed_runtime';
 
   /// 插件描述
   @override
-  String pluginDescription() => 'Ecosed Runtime';
+  String pluginDescription() => 'flutter_ecosed框架运行时';
 
   /// 插件名称
   @override
@@ -145,7 +147,7 @@ final class EcosedRuntime extends StatelessWidget
                 child: StateCard(
                   color: Theme.of(context).colorScheme.primaryContainer,
                   leading: Icons.check_circle_outline,
-                  title: 'widget.title',
+                  title: appName,
                   subtitle: sum(1, 1).toString(),
                   action: () => _openDialog(context),
                   trailing: Icons.developer_mode,
@@ -157,7 +159,7 @@ final class EcosedRuntime extends StatelessWidget
                   horizontal: 12,
                 ),
                 child: InfoCard(
-                  appName: 'flutter_ecosed',
+                  appName: appName,
                   state: 'getEngineState().name',
                   platform: Theme.of(context).platform.name,
                   count: _pluginCount().toString(),
@@ -215,7 +217,7 @@ final class EcosedRuntime extends StatelessWidget
                                       } else {
                                         showAboutDialog(
                                           context: context,
-                                          applicationName: 'flutter_ecosed',
+                                          applicationName: appName,
                                           applicationLegalese:
                                               'Powered by FlutterEcosed',
                                         );

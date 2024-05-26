@@ -12,7 +12,8 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 Future<void> main() async {
   await runEcosedApp(
     app: (context) => const MyApp(),
-    plugins: const <EcosedPlugin>[ExamplePlugin()],
+    appName: 'flutter_ecosed 示例程序',
+    plugins: const [ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
 }
