@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecosed/src/kernel/kernel.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -145,7 +146,7 @@ final class EcosedRuntime extends StatelessWidget
                   color: Theme.of(context).colorScheme.primaryContainer,
                   leading: Icons.check_circle_outline,
                   title: 'widget.title',
-                  subtitle: '引擎状态:\t${'getEngineState().name'}',
+                  subtitle: sum(1, 1).toString(),
                   action: () => _openDialog(context),
                   trailing: Icons.developer_mode,
                 ),
