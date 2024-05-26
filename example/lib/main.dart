@@ -11,14 +11,28 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
   await runEcosedApp(
-    app: (context) => MaterialApp(
+    app: (context) => const MyApp(),
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
+    runner: (app) async => runApp(app),
+  );
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       home: Scaffold(
         body: context.getManagerWidget(),
       ),
-    ),
-    plugins: const <EcosedPlugin>[],
-    runner: (app) async => runApp(app),
-  );
+    );
+  }
 }
 
 // class MyApp extends StatefulWidget {
@@ -341,56 +355,56 @@ Future<void> main() async {
 //   }
 // }
 
-// class ExamplePlugin implements EcosedPlugin {
-//   const ExamplePlugin();
+class ExamplePlugin implements EcosedPlugin {
+  const ExamplePlugin();
 
-//   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
-//   @override
-//   String pluginAuthor() => 'ExampleAuthor';
+  /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
+  @override
+  String pluginAuthor() => 'ExampleAuthor';
 
-//   /// “example_channel”为插件的通道,可以理解为插件的唯一标识,我们通常使用全小写英文字母加下划线的命名方式,通过[pluginChannel]方法定义.
-//   @override
-//   String pluginChannel() => 'example_channel';
+  /// “example_channel”为插件的通道,可以理解为插件的唯一标识,我们通常使用全小写英文字母加下划线的命名方式,通过[pluginChannel]方法定义.
+  @override
+  String pluginChannel() => 'example_channel';
 
-//   /// "Example description"为插件的描述,通过[pluginDescription]方法定.
-//   @override
-//   String pluginDescription() => 'Example description';
+  /// "Example description"为插件的描述,通过[pluginDescription]方法定.
+  @override
+  String pluginDescription() => 'Example description';
 
-//   /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
-//   @override
-//   String pluginName() => 'Example Plugin';
+  /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
+  @override
+  String pluginName() => 'Example Plugin';
 
-//   /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
-//   @override
-//   Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
+  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
+  @override
+  Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
 
-//   /// [onMethodCall]方法为插件的方法调用.
-//   @override
-//   Future<dynamic> onMethodCall(String method) async {
-//     switch (method) {
-//       case Method.add:
-//         return Global.counter.value++;
-//       default:
-//         return await null;
-//     }
-//   }
-// }
+  /// [onMethodCall]方法为插件的方法调用.
+  @override
+  Future<dynamic> onMethodCall(String method) async {
+    switch (method) {
+      // case Method.add:
+      //   return Global.counter.value++;
+      default:
+        return await null;
+    }
+  }
+}
 
-// class ExamplePluginPage extends StatelessWidget {
-//   const ExamplePluginPage({super.key});
+class ExamplePluginPage extends StatelessWidget {
+  const ExamplePluginPage({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Example Plugin'),
-//       ),
-//       body: const Center(
-//         child: Text('Hello, World!'),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Example Plugin'),
+      ),
+      body: const Center(
+        child: Text('Hello, World!'),
+      ),
+    );
+  }
+}
 
 // class MyHomePage extends StatelessWidget {
 //   const MyHomePage({super.key, required this.manager});
