@@ -35,12 +35,6 @@ class UserService : IUserService.Stub() {
     }
 
     /**
-     * 原生代码执行入口
-     * @param args 要传入的附加参数
-     */
-    private external fun main(args: Array<String>)
-
-    /**
      * 伴生对象
      */
     companion object {
