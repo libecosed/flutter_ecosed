@@ -10,6 +10,12 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 // import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
+  // await runEcosedApp(
+  //   app: (context) => context.getManagerWidget(),
+  //   appName: 'flutter_ecosed 示例程序',
+  //   plugins: const <EcosedPlugin>[ExamplePlugin()],
+  //   runner: (app) async => runApp(app),
+  // );
   await runEcosedApp(
     app: (context) => const MyApp(),
     appName: 'flutter_ecosed 示例程序',
@@ -30,6 +36,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Text('flutter_ecosed_example'),
+        ),
         body: context.getManagerWidget(),
       ),
     );

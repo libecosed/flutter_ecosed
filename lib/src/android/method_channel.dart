@@ -20,6 +20,11 @@ final class MethodChannelAndroidEcosed extends AndroidEcosedPlatform {
     );
   }
 
+  @override
+  Future<List?> getKernelModuleList() async {
+    return List.empty();
+  }
+
   /// 打开对话框
   @override
   Future<bool?> openPlatformDialog() async {

@@ -98,6 +98,11 @@ final class EcosedRuntime extends StatelessWidget
     return await _platform.getPlatformPluginList();
   }
 
+  @override
+  Future<List?> getKernelModuleList() async {
+    return await _platform.getPlatformPluginList();
+  }
+
   /// 打开平台对话框
   @override
   Future<bool?> openPlatformDialog() async {
@@ -113,124 +118,143 @@ final class EcosedRuntime extends StatelessWidget
   /// 管理器界面
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Localizations(
-        locale: const Locale('zh', 'CN'),
-        delegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate
-        ],
-        child: Scrollbar(
-          controller: _controller,
-          child: ListView(
-            controller: _controller,
-            children: [
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-              //   child: StateCard(
-              //     color: getEngineState() == EngineState.running
-              //         ? Theme.of(context).colorScheme.primaryContainer
-              //         : Theme.of(context).colorScheme.errorContainer,
-              //     leading: getEngineState() == EngineState.running
-              //         ? Icons.check_circle_outline
-              //         : Icons.error_outline,
-              //     title: widget.title,
-              //     subtitle: '引擎状态:\t${getEngineState().name}',
-              //     action: () => openDialog(context),
-              //     trailing: Icons.developer_mode,
-              //   ),
-              // ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                child: StateCard(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  leading: Icons.check_circle_outline,
-                  title: appName,
-                  subtitle: sum(1, 1).toString(),
-                  action: () => _openDialog(context),
-                  trailing: Icons.developer_mode,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                  horizontal: 12,
-                ),
-                child: InfoCard(
-                  appName: appName,
-                  state: 'getEngineState().name',
-                  platform: Theme.of(context).platform.name,
-                  count: _pluginCount().toString(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                  horizontal: 12,
-                ),
-                child: MoreCard(
-                  launchUrl: () => launchUrl(
-                    Uri.parse(pubDev),
+    return Theme(
+      data: ThemeData(useMaterial3: true),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Localizations(
+          locale: const Locale('zh', 'CN'),
+          delegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate
+          ],
+          child: Navigator(
+            onGenerateInitialRoutes: (navigator, name) => [
+              MaterialPageRoute(
+                builder: (context) => Scaffold(
+                  appBar: AppBar(
+                    title: const Text('管理器'),
                   ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Divider(),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                child: ListBody(
-                  children: _pluginDetailsList
-                      .map(
-                        (element) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Builder(
-                            builder: (context) => PluginCard(
-                              title: element.title,
-                              channel: element.channel,
-                              author: element.author,
-                              icon: element.type == PluginType.native
-                                  ? Icon(
-                                      Icons.android,
-                                      size: Theme.of(context).iconTheme.size,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    )
-                                  : const FlutterLogo(),
-                              description: element.description,
-                              type: _getPluginType(element),
-                              action: _isAllowPush(element)
-                                  ? element.channel != pluginChannel()
-                                      ? '打开'
-                                      : '关于'
-                                  : '无界面',
-                              open: _isAllowPush(element)
-                                  ? () {
-                                      if (element.channel != pluginChannel()) {
-                                        _launchPlugin(
-                                          context,
-                                          element,
-                                        );
-                                      } else {
-                                        showAboutDialog(
-                                          context: context,
-                                          applicationName: appName,
-                                          applicationLegalese:
-                                              'Powered by FlutterEcosed',
-                                        );
-                                      }
-                                    }
-                                  : null,
+                  body: Scrollbar(
+                    controller: _controller,
+                    child: ListView(
+                      controller: _controller,
+                      children: [
+                        // Padding(
+                        //   padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+                        //   child: StateCard(
+                        //     color: getEngineState() == EngineState.running
+                        //         ? Theme.of(context).colorScheme.primaryContainer
+                        //         : Theme.of(context).colorScheme.errorContainer,
+                        //     leading: getEngineState() == EngineState.running
+                        //         ? Icons.check_circle_outline
+                        //         : Icons.error_outline,
+                        //     title: widget.title,
+                        //     subtitle: '引擎状态:\t${getEngineState().name}',
+                        //     action: () => openDialog(context),
+                        //     trailing: Icons.developer_mode,
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+                          child: StateCard(
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            leading: Icons.check_circle_outline,
+                            title: appName,
+                            subtitle: sum(1, 1).toString(),
+                            action: () => _openDialog(context),
+                            trailing: Icons.developer_mode,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: InfoCard(
+                            appName: appName,
+                            state: 'getEngineState().name',
+                            platform: Theme.of(context).platform.name,
+                            count: _pluginCount().toString(),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          child: MoreCard(
+                            launchUrl: () => launchUrl(
+                              Uri.parse(pubDev),
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          child: Divider(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+                          child: ListBody(
+                            children: _pluginDetailsList
+                                .map(
+                                  (element) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: Builder(
+                                      builder: (context) => PluginCard(
+                                        title: element.title,
+                                        channel: element.channel,
+                                        author: element.author,
+                                        icon: element.type == PluginType.native
+                                            ? Icon(
+                                                Icons.android,
+                                                size: Theme.of(context)
+                                                    .iconTheme
+                                                    .size,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              )
+                                            : const FlutterLogo(),
+                                        description: element.description,
+                                        type: _getPluginType(element),
+                                        action: _isAllowPush(element)
+                                            ? element.channel != pluginChannel()
+                                                ? '打开'
+                                                : '关于'
+                                            : '无界面',
+                                        open: _isAllowPush(element)
+                                            ? () {
+                                                if (element.channel !=
+                                                    pluginChannel()) {
+                                                  _launchPlugin(
+                                                    context,
+                                                    element,
+                                                  );
+                                                } else {
+                                                  showAboutDialog(
+                                                    context: context,
+                                                    applicationName: appName,
+                                                    applicationLegalese:
+                                                        'Powered by FlutterEcosed',
+                                                  );
+                                                }
+                                              }
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              )
             ],
           ),
         ),

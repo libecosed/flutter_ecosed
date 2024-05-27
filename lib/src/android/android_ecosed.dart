@@ -17,6 +17,14 @@ final class AndroidEcosed implements AndroidEcosedPlatform {
     );
   }
 
+  @override
+  Future<List?> getKernelModuleList() async {
+    return await _invokePlatform(
+      invoke: () async => List.empty(),
+      error: () async => List.empty(),
+    );
+  }
+
   /// 打开对话框
   @override
   Future<bool?> openPlatformDialog() async {

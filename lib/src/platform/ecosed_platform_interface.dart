@@ -25,6 +25,10 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
     throw UnimplementedError('getPlatformPluginList()方法未实现');
   }
 
+  Future<List?> getKernelModuleList() async {
+    throw UnimplementedError('getKernelModuleList()方法未实现');
+  }
+
   /// 打开对话框
   Future<bool?> openPlatformDialog() async {
     throw UnimplementedError('openPlatformDialog()方法未实现');

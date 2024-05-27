@@ -22,6 +22,11 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     );
   }
 
+  @override
+  Future<List?> getKernelModuleList() async {
+    return List.empty();
+  }
+
   /// 从客户端启动对话框
   @override
   Future<bool?> openPlatformDialog() async {

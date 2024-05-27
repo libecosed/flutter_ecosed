@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "flutter_ecosed.h": "c",
+        "stdint.h": "c",
+        "stdio.h": "c",
+        "windows.h": "c"
+    }
+}
