@@ -36,11 +36,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('flutter_ecosed_example'),
-        ),
-        body: context.getManagerWidget(),
-      ),
+          appBar: AppBar(
+            title: Text('flutter_ecosed_example'),
+          ),
+          body: Padding(
+            padding: EdgeInsets.all(15),
+            child: Card.outlined(
+              child: context.getManagerWidget(),
+            ),
+          )),
     );
   }
 }
