@@ -9,6 +9,8 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 // import 'package:url_launcher/url_launcher.dart';
 // import 'package:webview_flutter/webview_flutter.dart';
 
+const String appName = 'flutter_ecosed 示例程序';
+
 Future<void> main() async {
   // await runEcosedApp(
   //   app: (context) => context.getManagerWidget(),
@@ -18,7 +20,7 @@ Future<void> main() async {
   // );
   await runEcosedApp(
     app: (context) => const MyApp(),
-    appName: 'flutter_ecosed 示例程序',
+    appName: appName,
     plugins: const [ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
@@ -36,15 +38,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: Text('flutter_ecosed_example'),
-          ),
-          body: Padding(
-            padding: EdgeInsets.all(15),
-            child: Card.outlined(
-              child: context.getManagerWidget(),
-            ),
-          )),
+        appBar: AppBar(
+          title: const Text(appName),
+        ),
+        body: context.getManagerWidget(),
+      ),
     );
   }
 }
@@ -409,13 +407,8 @@ class ExamplePluginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Example Plugin'),
-      ),
-      body: const Center(
-        child: Text('Hello, World!'),
-      ),
+    return const Center(
+      child: Text('Hello, World!'),
     );
   }
 }

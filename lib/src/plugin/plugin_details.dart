@@ -18,7 +18,6 @@ final class PluginDetails {
   factory PluginDetails.formJSON({
     required Map<String, dynamic> json,
     required PluginType type,
-    required bool initial,
   }) {
     return PluginDetails(
       channel: json['channel'],

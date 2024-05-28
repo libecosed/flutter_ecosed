@@ -93,11 +93,11 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 插件描述
   @override
-  String pluginDescription() => 'flutter_ecosed框架运行时';
+  String pluginDescription() => 'flutter_ecosed 框架运行时';
 
   /// 插件名称
   @override
-  String pluginName() => 'EcosedRuntime';
+  String pluginName() => 'Ecosed Runtime';
 
   /// 插件用户界面
   @override
@@ -282,19 +282,31 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 初始化运行时
   Future<void> _init() async {
-    // 添加到内置插件列表
-    _pluginList.add(this);
-    // 添加到插件详细信息列表
-    _pluginDetailsList.add(
-      PluginDetails(
-        channel: pluginChannel(),
-        title: pluginName(),
-        description: pluginDescription(),
-        author: pluginAuthor(),
-        type: PluginType.runtime,
-      ),
-    );
+    await _initRuntime();
+    await _initPlatform();
+    await _initPlugins();
+  }
 
+  Future<void> _initRuntime() async {
+    // 初始化运行时
+    for (var element in [this]) {
+      // 添加到内置插件列表
+      _pluginList.add(element);
+      // 添加到插件详细信息列表
+      _pluginDetailsList.add(
+        PluginDetails(
+          channel: element.pluginChannel(),
+          title: element.pluginName(),
+          description: element.pluginDescription(),
+          author: element.pluginAuthor(),
+          type: PluginType.runtime,
+        ),
+      );
+    }
+  }
+
+  Future<void> _initPlatform() async {
+    // 初始化平台插件
     try {
       // 遍历原生插件
       for (var element
@@ -305,7 +317,6 @@ final class EcosedRuntime extends StatelessWidget
           PluginDetails.formJSON(
             json: jsonDecode(element),
             type: PluginType.platform,
-            initial: true,
           ),
         );
       }
@@ -314,11 +325,12 @@ final class EcosedRuntime extends StatelessWidget
         PluginDetails.formJSON(
           json: jsonDecode(_unknownPlugin),
           type: PluginType.unknown,
-          initial: true,
         ),
       );
     }
+  }
 
+  Future<void> _initPlugins() async {
     if (plugins.isNotEmpty) {
       for (var element in plugins) {
         _pluginList.add(element);
@@ -613,6 +625,7 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  /// 执行插件方法
   Future<dynamic> _exec(String channel, String method) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
@@ -624,26 +637,28 @@ final class EcosedRuntime extends StatelessWidget
     return await null;
   }
 
+  /// 统计普通插件数量
   int _pluginCount() {
     var count = 0;
-    for (var element in _pluginList) {
-      if (element.pluginChannel() != pluginChannel()) {
+    for (var element in _pluginDetailsList) {
+      if (element.channel != pluginChannel()) {
         count++;
       }
     }
     return count;
   }
 
+  /// 获取插件类型
   String _getPluginType(PluginDetails details) {
     switch (details.type) {
       case PluginType.kernel:
         return '内核模块';
       case PluginType.platform:
-        return '内置插件 - Platform';
+        return '平台插件';
       case PluginType.runtime:
         return '框架运行时';
       case PluginType.flutter:
-        return '普通插件 - Flutter';
+        return '普通插件';
       case PluginType.unknown:
         return '未知插件类型';
       default:
@@ -651,25 +666,39 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  /// 插件是否可以打开
   bool _isAllowPush(PluginDetails details) {
     return details.type == PluginType.runtime ||
-        details.type == PluginType.flutter &&
-            _getPlugin(details.channel) != null;
+        details.type == PluginType.flutter && _getPlugin(details) != null;
   }
 
-  void _launchPlugin(BuildContext context, PluginDetails details) {
+  /// 打开插件
+  void _launchPlugin(
+    BuildContext context,
+    PluginDetails details,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>
-            _getPlugin(details.channel)!.pluginWidget(context),
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              details.title,
+            ),
+          ),
+          body: _getPluginWidget(
+            context,
+            details,
+          ),
+        ),
       ),
     );
   }
 
-  EcosedPlugin? _getPlugin(String channel) {
+  /// 获取插件
+  EcosedPlugin? _getPlugin(PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (element.pluginChannel() == channel) {
+        if (element.pluginChannel() == details.channel) {
           return element;
         }
       }
@@ -677,17 +706,33 @@ final class EcosedRuntime extends StatelessWidget
     return null;
   }
 
+  /// 获取管理器
   Widget _manager() {
     return Builder(
       builder: (context) {
         for (var element in _pluginDetailsList) {
-          if (element.channel == pluginChannel()) {
-            return _getPlugin(element.channel)!.pluginWidget(context);
+          if (_isRuntime(element)) {
+            return _getPluginWidget(context, element);
           }
         }
         return Container();
       },
     );
+  }
+
+  /// 获取插件界面
+  Widget _getPluginWidget(BuildContext context, PluginDetails details) {
+    for (var element in _pluginList) {
+      if (element.pluginChannel() == details.channel) {
+        return element.pluginWidget(context);
+      }
+    }
+    return Container();
+  }
+
+  /// 判断插件是否为运行时
+  bool _isRuntime(PluginDetails details) {
+    return details.channel == pluginChannel();
   }
 
   void _openDialog(BuildContext context) async {
