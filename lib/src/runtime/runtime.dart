@@ -353,7 +353,9 @@ final class EcosedRuntime extends StatelessWidget
 
   Widget _builder() {
     return EcosedInherited(
-      executor: (channel, method) => _exec(channel, method),
+      executor: (channel, method) {
+        return _exec(channel, method);
+      },
       manager: _manager(),
       child: _banner(
         enabled: true,
