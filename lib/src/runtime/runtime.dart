@@ -1,21 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/src/kernel/kernel.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../kernel/kernel.dart';
 import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
-import '../widget/ecosed_banner.dart';
 import '../widget/ecosed_inherited.dart';
-import '../widget/info_card.dart';
-import '../widget/more_card.dart';
-import '../widget/plugin_card.dart';
-import '../widget/state_card.dart';
 
 final class EcosedRuntime extends StatelessWidget
     implements EcosedPlugin, EcosedPlatformInterface {
@@ -32,6 +29,7 @@ final class EcosedRuntime extends StatelessWidget
   final List<EcosedPlugin> plugins;
   final Future<void> Function(Widget app) runner;
 
+  /// 默认空模块JSON用于占位
   static const String _unknownPlugin = '{'
       '"channel":"unknown",'
       '"title":"unknown",'
@@ -39,15 +37,28 @@ final class EcosedRuntime extends StatelessWidget
       '"author":"unknown"'
       '}';
 
-  static const String getPluginMethod = 'get_plugins';
-  static const String openDialogMethod = 'open_dialog';
-  static const String closeDialogMethod = 'close_dialog';
+  /// 获取插件方法名
+  static const String _getPluginMethod = 'get_plugins';
 
-  static const String pubDev = 'https://pub.dev/packages/flutter_ecosed';
+  /// 打开对话框方法名
+  static const String _openDialogMethod = 'open_dialog';
 
+  /// 关闭对话框方法名
+  static const String _closeDialogMethod = 'close_dialog';
+
+  /// PubDev Url
+  static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
+
+  /// 平台接口实例
   final EcosedPlatformInterface _platform = EcosedPlatformInterface.instance;
+
+  /// 插件列表
   final List<EcosedPlugin> _pluginList = [];
+
+  /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
+
+  /// 滚动控制器
   final ScrollController _controller = ScrollController();
 
   /// 运行时执行入口
@@ -61,11 +72,11 @@ final class EcosedRuntime extends StatelessWidget
   @override
   Future<dynamic> onMethodCall(String method) async {
     switch (method) {
-      case getPluginMethod:
+      case _getPluginMethod:
         return await getPlatformPluginList();
-      case openDialogMethod:
+      case _openDialogMethod:
         return await openPlatformDialog();
-      case closeDialogMethod:
+      case _closeDialogMethod:
         return await closePlatformDialog();
       default:
         return await null;
@@ -133,9 +144,6 @@ final class EcosedRuntime extends StatelessWidget
             onGenerateInitialRoutes: (navigator, name) => [
               MaterialPageRoute(
                 builder: (context) => Scaffold(
-                  appBar: AppBar(
-                    title: const Text('管理器'),
-                  ),
                   body: Scrollbar(
                     controller: _controller,
                     child: ListView(
@@ -158,7 +166,8 @@ final class EcosedRuntime extends StatelessWidget
                         // ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                          child: StateCard(
+                          child: _stateCard(
+                            context: context,
                             color:
                                 Theme.of(context).colorScheme.primaryContainer,
                             leading: Icons.check_circle_outline,
@@ -173,23 +182,14 @@ final class EcosedRuntime extends StatelessWidget
                             vertical: 6,
                             horizontal: 12,
                           ),
-                          child: InfoCard(
-                            appName: appName,
-                            state: 'getEngineState().name',
-                            platform: Theme.of(context).platform.name,
-                            count: _pluginCount().toString(),
-                          ),
+                          child: _infoCard(context: context),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             vertical: 6,
                             horizontal: 12,
                           ),
-                          child: MoreCard(
-                            launchUrl: () => launchUrl(
-                              Uri.parse(pubDev),
-                            ),
-                          ),
+                          child: _moreCard(context: context),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 24),
@@ -203,21 +203,23 @@ final class EcosedRuntime extends StatelessWidget
                                   (element) => Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
                                     child: Builder(
-                                      builder: (context) => PluginCard(
+                                      builder: (context) => _pluginCard(
+                                        context: context,
                                         title: element.title,
                                         channel: element.channel,
                                         author: element.author,
-                                        icon: element.type == PluginType.native
-                                            ? Icon(
-                                                Icons.android,
-                                                size: Theme.of(context)
-                                                    .iconTheme
-                                                    .size,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              )
-                                            : const FlutterLogo(),
+                                        icon:
+                                            element.type == PluginType.platform
+                                                ? Icon(
+                                                    Icons.android,
+                                                    size: Theme.of(context)
+                                                        .iconTheme
+                                                        .size,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  )
+                                                : const FlutterLogo(),
                                         description: element.description,
                                         type: _getPluginType(element),
                                         action: _isAllowPush(element)
@@ -262,6 +264,22 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  Widget _banner({
+    required bool enabled,
+    required Widget child,
+  }) {
+    if (!enabled) return child;
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Banner(
+        message: 'EcosedApp',
+        textDirection: TextDirection.ltr,
+        location: kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
+        child: child,
+      ),
+    );
+  }
+
   /// 初始化运行时
   Future<void> _init() async {
     // 添加到内置插件列表
@@ -274,20 +292,19 @@ final class EcosedRuntime extends StatelessWidget
         description: pluginDescription(),
         author: pluginAuthor(),
         type: PluginType.runtime,
-        initial: true,
       ),
     );
 
     try {
       // 遍历原生插件
       for (var element
-          in (await _exec(pluginChannel(), getPluginMethod) as List? ??
+          in (await _exec(pluginChannel(), _getPluginMethod) as List? ??
               [_unknownPlugin])) {
         // 添加到插件详细信息列表
         _pluginDetailsList.add(
           PluginDetails.formJSON(
             json: jsonDecode(element),
-            type: PluginType.native,
+            type: PluginType.platform,
             initial: true,
           ),
         );
@@ -312,7 +329,6 @@ final class EcosedRuntime extends StatelessWidget
             description: element.pluginDescription(),
             author: element.pluginAuthor(),
             type: PluginType.flutter,
-            initial: false,
           ),
         );
       }
@@ -327,9 +343,271 @@ final class EcosedRuntime extends StatelessWidget
     return EcosedInherited(
       executor: (channel, method) => _exec(channel, method),
       manager: _manager(),
-      child: EcosedBanner(
+      child: _banner(
+        enabled: true,
         child: Builder(
           builder: (context) => app(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _stateCard({
+    required BuildContext context,
+    required Color color,
+    required IconData leading,
+    required String title,
+    required String subtitle,
+    required VoidCallback action,
+    required IconData trailing,
+  }) {
+    return Card(
+      color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          children: [
+            Icon(
+              leading,
+              size: Theme.of(context).iconTheme.size,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: action,
+              icon: Icon(
+                trailing,
+                size: Theme.of(context).iconTheme.size,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _pluginCard({
+    required BuildContext context,
+    required String title,
+    required String channel,
+    required String author,
+    required Widget icon,
+    required String description,
+    required String type,
+    required String action,
+    required VoidCallback? open,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontFamily: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        '通道: $channel',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                        ),
+                      ),
+                      Text(
+                        '作者: $author',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  child: icon,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              description,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.bodySmall?.apply(
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              maxLines: 4,
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    type,
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                TextButton(
+                  onPressed: open,
+                  child: Text(action),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoItem({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Text>[
+        Text(
+          title,
+          textAlign: TextAlign.start,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        Text(
+          subtitle,
+          textAlign: TextAlign.start,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
+  }
+
+  Widget _infoCard({
+    required BuildContext context,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _infoItem(
+                    context: context,
+                    title: '应用名称',
+                    subtitle: appName,
+                  ),
+                  const SizedBox(height: 16),
+                  _infoItem(
+                    context: context,
+                    title: '引擎状态',
+                    subtitle: 'null',
+                  ),
+                  const SizedBox(height: 16),
+                  _infoItem(
+                    context: context,
+                    title: '当前平台',
+                    subtitle: Theme.of(context).platform.name,
+                  ),
+                  const SizedBox(height: 16),
+                  _infoItem(
+                    context: context,
+                    title: '插件数量',
+                    subtitle: _pluginCount().toString(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _moreCard({
+    required BuildContext context,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '了解 flutter_ecosed',
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    '了解如何使用 flutter_ecosed 进行开发。',
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () => launchUrl(
+                Uri.parse(_pubDev),
+              ),
+              icon: const Icon(Icons.open_in_browser),
+            )
+          ],
         ),
       ),
     );
@@ -358,12 +636,14 @@ final class EcosedRuntime extends StatelessWidget
 
   String _getPluginType(PluginDetails details) {
     switch (details.type) {
-      case PluginType.native:
+      case PluginType.kernel:
+        return '内核模块';
+      case PluginType.platform:
         return '内置插件 - Platform';
-      case PluginType.flutter:
-        return details.initial ? '内置插件 - Flutter' : '普通插件 - Flutter';
       case PluginType.runtime:
         return '框架运行时';
+      case PluginType.flutter:
+        return '普通插件 - Flutter';
       case PluginType.unknown:
         return '未知插件类型';
       default:
@@ -421,14 +701,14 @@ final class EcosedRuntime extends StatelessWidget
             TextButton(
               onPressed: () => _exec(
                 pluginChannel(),
-                openDialogMethod,
+                _openDialogMethod,
               ),
               child: const Text('open'),
             ),
             TextButton(
               onPressed: () => _exec(
                 pluginChannel(),
-                closeDialogMethod,
+                _closeDialogMethod,
               ),
               child: const Text('close'),
             )

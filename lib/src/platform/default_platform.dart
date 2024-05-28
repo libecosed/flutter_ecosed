@@ -9,6 +9,11 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   }
 
   @override
+  Future<List?> getKernelModuleList() async {
+    return List.empty();
+  }
+
+  @override
   Future<bool?> openPlatformDialog() async {
     debugPrint('openPlatformDialog: the function unsupported the platform.');
     return false;

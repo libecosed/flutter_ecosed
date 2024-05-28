@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-class EcosedInherited extends InheritedWidget {
+final class EcosedInherited extends InheritedWidget {
   const EcosedInherited({
     super.key,
     required this.executor,

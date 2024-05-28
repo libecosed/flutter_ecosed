@@ -7,7 +7,6 @@ final class PluginDetails {
     required this.description,
     required this.author,
     required this.type,
-    required this.initial,
   });
 
   final String channel;
@@ -15,7 +14,6 @@ final class PluginDetails {
   final String description;
   final String author;
   final PluginType type;
-  final bool initial;
 
   factory PluginDetails.formJSON({
     required Map<String, dynamic> json,
@@ -28,7 +26,6 @@ final class PluginDetails {
       description: json['description'],
       author: json['author'],
       type: type,
-      initial: initial,
     );
   }
 }
