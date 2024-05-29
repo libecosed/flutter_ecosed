@@ -276,6 +276,8 @@ final class EcosedRuntime extends StatelessWidget
         message: 'EcosedApp',
         textDirection: TextDirection.ltr,
         location: kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
+        layoutDirection: TextDirection.ltr,
+        color: Colors.pink,
         child: child,
       ),
     );
@@ -288,6 +290,7 @@ final class EcosedRuntime extends StatelessWidget
     await _initPlugins();
   }
 
+  /// 初始化运行时
   Future<void> _initRuntime() async {
     // 初始化运行时
     for (var element in [this]) {
@@ -306,6 +309,7 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  /// 初始化平台层插件
   Future<void> _initPlatform() async {
     // 初始化平台插件
     try {
@@ -331,6 +335,7 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  /// 初始化普通插件
   Future<void> _initPlugins() async {
     if (plugins.isNotEmpty) {
       for (var element in plugins) {
@@ -348,14 +353,16 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  /// 启动应用
   Future<void> _startup() async {
     return await runner(_builder());
   }
 
+  /// 应用构建器
   Widget _builder() {
     return EcosedInherited(
-      executor: (channel, method) {
-        return _exec(channel, method);
+      executor: (channel, method) async {
+        return await _exec(channel, method);
       },
       manager: _manager(),
       child: _banner(
