@@ -241,6 +241,7 @@ final class EcosedRuntime extends StatelessWidget
                                                     applicationName: appName,
                                                     applicationLegalese:
                                                         'Powered by FlutterEcosed',
+                                                    useRootNavigator: false,
                                                   );
                                                 }
                                               }
