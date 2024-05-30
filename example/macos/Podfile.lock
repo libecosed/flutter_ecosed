@@ -25,7 +25,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   dynamic_color: 2eaa27267de1ca20d879fbd6e01259773fb1670f
-  flutter_ecosed: 670ddb46428010caf59918493eada93007c2cbcb
+  flutter_ecosed: f21ec12f4894ad3364d2879ca9b62a8043265d74
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
 
