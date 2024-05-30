@@ -1,18 +1,23 @@
 PODS:
   - dynamic_color (0.0.2):
     - FlutterMacOS
+  - flutter_ecosed (0.0.1):
+    - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - url_launcher_macos (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
   - dynamic_color (from `Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos`)
+  - flutter_ecosed (from `Flutter/ephemeral/.symlinks/plugins/flutter_ecosed/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
 
 EXTERNAL SOURCES:
   dynamic_color:
     :path: Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos
+  flutter_ecosed:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_ecosed/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
   url_launcher_macos:
@@ -20,6 +25,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   dynamic_color: 2eaa27267de1ca20d879fbd6e01259773fb1670f
+  flutter_ecosed: 670ddb46428010caf59918493eada93007c2cbcb
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
 

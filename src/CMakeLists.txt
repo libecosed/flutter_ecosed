@@ -3,10 +3,10 @@
 # the plugin to fail to compile for some customers of the plugin.
 cmake_minimum_required(VERSION 3.10)
 
-project(flutter_ecosed_library VERSION 0.0.1 LANGUAGES C)
+project(flutter_ecosed_library VERSION 0.0.1 LANGUAGES CXX)
 
 add_library(flutter_ecosed SHARED
-  "flutter_ecosed.c"
+  "flutter_ecosed.cpp"
 )
 
 set_target_properties(flutter_ecosed PROPERTIES
