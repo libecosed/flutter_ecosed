@@ -7,12 +7,6 @@ project(flutter_ecosed_library LANGUAGES C CXX)
 
 add_library(flutter_ecosed SHARED
   "flutter_ecosed.cpp"
-  "main.cpp"
-)
-
-add_executable(
-  kernel
-  "main.cpp"
 )
 
 set_target_properties(flutter_ecosed PROPERTIES
