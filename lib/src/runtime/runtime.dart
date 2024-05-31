@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../kernel/kernel.dart';
+import '../kernel/library.dart';
 import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
@@ -63,7 +64,6 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 运行时执行入口
   Future<void> call() async {
-    WidgetsFlutterBinding.ensureInitialized();
     await _init();
     await _startup();
   }
@@ -130,7 +130,9 @@ final class EcosedRuntime extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(useMaterial3: true),
+      data: ThemeData(
+        brightness: MediaQuery.platformBrightnessOf(context),
+      ),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Localizations(
@@ -170,7 +172,7 @@ final class EcosedRuntime extends StatelessWidget
                             context: context,
                             color:
                                 Theme.of(context).colorScheme.primaryContainer,
-                            leading: Icons.check_circle_outline,
+                            leading: Icons.keyboard_command_key,
                             title: appName,
                             subtitle: sum(1, 1).toString(),
                             action: () => _openDialog(context),
@@ -208,18 +210,8 @@ final class EcosedRuntime extends StatelessWidget
                                         title: element.title,
                                         channel: element.channel,
                                         author: element.author,
-                                        icon:
-                                            element.type == PluginType.platform
-                                                ? Icon(
-                                                    Icons.android,
-                                                    size: Theme.of(context)
-                                                        .iconTheme
-                                                        .size,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  )
-                                                : const FlutterLogo(),
+                                        icon: _getPluginIcon(
+                                            context: context, details: element),
                                         description: element.description,
                                         type: _getPluginType(element),
                                         action: _isAllowPush(element)
@@ -285,6 +277,13 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 初始化运行时
   Future<void> _init() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    KernelLib.bindingInitialized();
+
+    await _initData();
+  }
+
+  Future<void> _initData() async {
     await _initRuntime();
     await _initPlatform();
     await _initPlugins();
@@ -315,7 +314,7 @@ final class EcosedRuntime extends StatelessWidget
     try {
       // 遍历原生插件
       for (var element
-          in (await _exec(pluginChannel(), _getPluginMethod) as List? ??
+          in (await _exec(pluginChannel(), _getPluginMethod, true) as List? ??
               [_unknownPlugin])) {
         // 添加到插件详细信息列表
         _pluginDetailsList.add(
@@ -362,7 +361,7 @@ final class EcosedRuntime extends StatelessWidget
   Widget _builder() {
     return EcosedInherited(
       executor: (channel, method) async {
-        return await _exec(channel, method);
+        return await _exec(channel, method, false);
       },
       manager: _manager(),
       child: _banner(
@@ -627,7 +626,11 @@ final class EcosedRuntime extends StatelessWidget
               onPressed: () => launchUrl(
                 Uri.parse(_pubDev),
               ),
-              icon: const Icon(Icons.open_in_browser),
+              icon: Icon(
+                Icons.open_in_browser,
+                size: Theme.of(context).iconTheme.size,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
             )
           ],
         ),
@@ -636,10 +639,17 @@ final class EcosedRuntime extends StatelessWidget
   }
 
   /// 执行插件方法
-  Future<dynamic> _exec(String channel, String method) async {
+  Future<dynamic> _exec(
+    String channel,
+    String method,
+    bool runtimeful,
+  ) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (element.pluginChannel() == channel) {
+        if (channel == pluginChannel() && !runtimeful) {
+          continue;
+        }
+        if (channel == element.pluginChannel()) {
           return await element.onMethodCall(method);
         }
       }
@@ -651,7 +661,7 @@ final class EcosedRuntime extends StatelessWidget
   int _pluginCount() {
     var count = 0;
     for (var element in _pluginDetailsList) {
-      if (element.channel != pluginChannel()) {
+      if (element.type == PluginType.flutter) {
         count++;
       }
     }
@@ -696,8 +706,8 @@ final class EcosedRuntime extends StatelessWidget
             ),
           ),
           body: _getPluginWidget(
-            context,
-            details,
+            context: context,
+            details: details,
           ),
         ),
       ),
@@ -722,7 +732,7 @@ final class EcosedRuntime extends StatelessWidget
       builder: (context) {
         for (var element in _pluginDetailsList) {
           if (_isRuntime(element)) {
-            return _getPluginWidget(context, element);
+            return _getPluginWidget(context: context, details: element);
           }
         }
         return Container();
@@ -731,7 +741,10 @@ final class EcosedRuntime extends StatelessWidget
   }
 
   /// 获取插件界面
-  Widget _getPluginWidget(BuildContext context, PluginDetails details) {
+  Widget _getPluginWidget({
+    required BuildContext context,
+    required PluginDetails details,
+  }) {
     for (var element in _pluginList) {
       if (element.pluginChannel() == details.channel) {
         return element.pluginWidget(context);
@@ -740,31 +753,75 @@ final class EcosedRuntime extends StatelessWidget
     return Container();
   }
 
+  Widget _getPluginIcon({
+    required BuildContext context,
+    required PluginDetails details,
+  }) {
+    switch (details.type) {
+      case PluginType.kernel:
+        return Icon(
+          Icons.developer_board,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.blueGrey,
+        );
+      case PluginType.platform:
+        return Icon(
+          Icons.android,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.green,
+        );
+      case PluginType.runtime:
+        return Icon(
+          Icons.keyboard_command_key,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.pinkAccent,
+        );
+      case PluginType.flutter:
+        return const FlutterLogo();
+      case PluginType.unknown:
+        return Icon(
+          Icons.error_outline,
+          size: Theme.of(context).iconTheme.size,
+          color: Theme.of(context).colorScheme.error,
+        );
+      default:
+        return Icon(
+          Icons.error_outline,
+          size: Theme.of(context).iconTheme.size,
+          color: Theme.of(context).colorScheme.error,
+        );
+    }
+  }
+
   /// 判断插件是否为运行时
   bool _isRuntime(PluginDetails details) {
     return details.channel == pluginChannel();
+  }
+
+  /// 最爱国的一集
+  void _fuckJapan(BuildContext context) {
+    // 判断所在地区是否为小日子
+    if (Localizations.localeOf(context) == const Locale('ja', 'JP')) {
+      // 抛出异常
+      throw StateError('南京大虐殺犠牲者30000');
+    }
   }
 
   void _openDialog(BuildContext context) async {
     // todo: Flutter内部菜单
     showDialog(
       context: context,
+      useRootNavigator: false,
       builder: (context) {
         return AlertDialog(
           title: const Text('title'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => _exec(
-                pluginChannel(),
-                _openDialogMethod,
-              ),
+              onPressed: () => _exec(pluginChannel(), _openDialogMethod, true),
               child: const Text('open'),
             ),
             TextButton(
-              onPressed: () => _exec(
-                pluginChannel(),
-                _closeDialogMethod,
-              ),
+              onPressed: () => _exec(pluginChannel(), _closeDialogMethod, true),
               child: const Text('close'),
             )
           ],

@@ -22,8 +22,15 @@ extern "C"
 {
 #endif
 
-    FFI_PLUGIN_EXPORT int sum(int a, int b);
-    FFI_PLUGIN_EXPORT int sum_long_running(int a, int b);
+    __attribute__((visibility("default")))
+    __attribute__((used))
+    FFI_PLUGIN_EXPORT int
+    sum(int a, int b);
+
+    __attribute__((visibility("default")))
+    __attribute__((used))
+    FFI_PLUGIN_EXPORT int
+    sum_long_running(int a, int b);
 
 #ifdef __cplusplus
 }
