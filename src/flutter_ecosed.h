@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include<iostream>
 #endif
 
 #if _WIN32

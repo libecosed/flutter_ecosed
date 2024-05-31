@@ -1,7 +1,9 @@
 #include "flutter_ecosed.h"
 
+using namespace std;
 int main()
 {
+  cout << sum(1, 1) << endl;
   return 0;
 }
 
