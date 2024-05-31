@@ -12,9 +12,9 @@
 #endif
 
 #if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#define FFI_PLUGIN_EXPORT __declspec(dllexport) __attribute__((visibility("default"))) __attribute__((used))
 #else
-#define FFI_PLUGIN_EXPORT
+#define FFI_PLUGIN_EXPORT __attribute__((visibility("default"))) __attribute__((used))
 #endif
 
 #ifdef __cplusplus
@@ -22,15 +22,8 @@ extern "C"
 {
 #endif
 
-    __attribute__((visibility("default")))
-    __attribute__((used))
-    FFI_PLUGIN_EXPORT int
-    sum(int a, int b);
-
-    __attribute__((visibility("default")))
-    __attribute__((used))
-    FFI_PLUGIN_EXPORT int
-    sum_long_running(int a, int b);
+    FFI_PLUGIN_EXPORT int sum(int a, int b);
+    FFI_PLUGIN_EXPORT int sum_long_running(int a, int b);
 
 #ifdef __cplusplus
 }
