@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #if _WIN32
 #include <windows.h>
@@ -22,3 +23,4 @@ typedef struct
 
 // 内核初始化
 void kernel_init();
+char kernel_module_list();

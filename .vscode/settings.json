@@ -11,6 +11,7 @@
         "locale": "cpp",
         "ostream": "cpp",
         "iostream": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "vector": "cpp"
     },
 }

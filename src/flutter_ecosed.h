@@ -9,6 +9,7 @@ extern "C"
 {
 #endif
     FFI_PLUGIN_EXPORT void init();
+    FFI_PLUGIN_EXPORT char list();
 #ifdef __cplusplus
 }
 #endif
