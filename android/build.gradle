@@ -40,9 +40,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path = "../src/CMakeLists.txt"
-            // path("src/main/cpp/CMakeLists.txt")
-            // version = "3.22.1"
+            path("../src/CMakeLists.txt")
         }
     }
     buildFeatures {
@@ -64,8 +62,8 @@ android {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("com.google.android.gms:play-services-base:18.4.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.gms:play-services-base:18.5.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.blankj:utilcodex:1.31.1")
     implementation("dev.rikka.shizuku:api:13.1.5")
     implementation("dev.rikka.shizuku:provider:13.1.5")

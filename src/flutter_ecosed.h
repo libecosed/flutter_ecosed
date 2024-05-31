@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include<iostream>
+#include <iostream>
 #endif
 
 #if _WIN32
@@ -23,9 +23,19 @@ extern "C"
 {
 #endif
 
-    FFI_PLUGIN_EXPORT int sum(int a, int b);
-    FFI_PLUGIN_EXPORT int sum_long_running(int a, int b);
+    FFI_PLUGIN_EXPORT void init();
+    // FFI_PLUGIN_EXPORT int sum(int a, int b);
+    // FFI_PLUGIN_EXPORT int sum_long_running(int a, int b);
 
 #ifdef __cplusplus
 }
 #endif
+
+
+typedef struct {
+    const char name;
+    const int age;
+} EcosedKernelModule;
+
+
+void kernel_init();

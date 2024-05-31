@@ -174,7 +174,7 @@ final class EcosedRuntime extends StatelessWidget
                                 Theme.of(context).colorScheme.primaryContainer,
                             leading: Icons.keyboard_command_key,
                             title: appName,
-                            subtitle: sum(1, 1).toString(),
+                            subtitle: 'sub_title',
                             action: () => _openDialog(context),
                             trailing: Icons.developer_mode,
                           ),

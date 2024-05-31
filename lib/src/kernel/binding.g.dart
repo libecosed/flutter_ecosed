@@ -24,33 +24,11 @@ class EcosedKernelBindings {
           lookup)
       : _lookup = lookup;
 
-  int sum(
-    int a,
-    int b,
-  ) {
-    return _sum(
-      a,
-      b,
-    );
+  void init() {
+    return _init();
   }
 
-  late final _sumPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>('sum');
-  late final _sum = _sumPtr.asFunction<int Function(int, int)>();
-
-  int sum_long_running(
-    int a,
-    int b,
-  ) {
-    return _sum_long_running(
-      a,
-      b,
-    );
-  }
-
-  late final _sum_long_runningPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>(
-          'sum_long_running');
-  late final _sum_long_running =
-      _sum_long_runningPtr.asFunction<int Function(int, int)>();
+  late final _initPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('init');
+  late final _init = _initPtr.asFunction<void Function()>();
 }
