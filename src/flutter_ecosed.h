@@ -12,9 +12,9 @@
 #endif
 
 #if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport) __attribute__((visibility("default"))) __attribute__((used))
+#define FFI_PLUGIN_EXPORT __declspec(dllexport)
 #else
-#define FFI_PLUGIN_EXPORT __attribute__((visibility("default"))) __attribute__((used))
+#define FFI_PLUGIN_EXPORT
 #endif
 
 #ifdef __cplusplus
