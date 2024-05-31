@@ -280,6 +280,7 @@ final class EcosedRuntime extends StatelessWidget
     WidgetsFlutterBinding.ensureInitialized();
     KernelLib.bindingInitialized();
 
+    init();
     await _initData();
   }
 
@@ -796,15 +797,6 @@ final class EcosedRuntime extends StatelessWidget
   /// 判断插件是否为运行时
   bool _isRuntime(PluginDetails details) {
     return details.channel == pluginChannel();
-  }
-
-  /// 最爱国的一集
-  void _fuckJapan(BuildContext context) {
-    // 判断所在地区是否为小日子
-    if (Localizations.localeOf(context) == const Locale('ja', 'JP')) {
-      // 抛出异常
-      throw StateError('南京大虐殺犠牲者30000');
-    }
   }
 
   void _openDialog(BuildContext context) async {

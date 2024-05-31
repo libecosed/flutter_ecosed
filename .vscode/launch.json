@@ -21,18 +21,5 @@
             "type": "dart",
             "flutterMode": "release"
         },
-        {
-            "name": "C/C++: g++ 生成和调试活动文件",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb",
-            "preLaunchTask": "C/C++: g++ 生成活动文件"
-        }
     ]
 }

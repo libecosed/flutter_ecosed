@@ -21,9 +21,7 @@ int main()
   cout << "kernel start." << endl;
   kernel_init();
 
-  cout << kernel_module_list() << endl;
-
-  int intArray[] = {1, 2, 3, 4, 5};
+  
   
   cout << "kernel end." << endl;
   return 0;
@@ -31,9 +29,10 @@ int main()
 
 void kernel_init()
 {
+  cout << kernel_module_list() << endl;
 }
 
 char kernel_module_list()
 {
-  return 1;
+  return 'a';
 }
