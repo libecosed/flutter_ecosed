@@ -21,8 +21,10 @@ int main()
   cout << "kernel start." << endl;
   kernel_init();
 
-  
-  
+  EcosedKernelModule list[] = {
+      {'kernel_bridge', 'KernelBridge', 'KernelBridge', 'wyq0918dev'},
+  };
+
   cout << "kernel end." << endl;
   return 0;
 }
