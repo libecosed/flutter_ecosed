@@ -286,6 +286,7 @@ final class EcosedRuntime extends StatelessWidget
 
   Future<void> _initData() async {
     await _initRuntime();
+    await _initKernel();
     await _initPlatform();
     await _initPlugins();
   }
@@ -307,6 +308,32 @@ final class EcosedRuntime extends StatelessWidget
         ),
       );
     }
+  }
+
+  Future<void> _initKernel() async {
+    try {
+      // 遍历原生插件
+      for (var element in (_plugins() ?? [_unknownPlugin])) {
+        // 添加到插件详细信息列表
+        _pluginDetailsList.add(
+          PluginDetails.formJSON(
+            json: jsonDecode(element),
+            type: PluginType.kernel,
+          ),
+        );
+      }
+    } on PlatformException {
+      // _pluginDetailsList.add(
+      //   PluginDetails.formJSON(
+      //     json: jsonDecode(_unknownPlugin),
+      //     type: PluginType.unknown,
+      //   ),
+      // );
+    }
+  }
+
+  List? _plugins() {
+    return null;
   }
 
   /// 初始化平台层插件
@@ -803,7 +830,6 @@ final class EcosedRuntime extends StatelessWidget
     // todo: Flutter内部菜单
     showDialog(
       context: context,
-      useRootNavigator: false,
       builder: (context) {
         return AlertDialog(
           title: const Text('title'),
@@ -819,6 +845,7 @@ final class EcosedRuntime extends StatelessWidget
           ],
         );
       },
+      useRootNavigator: false,
     );
   }
 }
