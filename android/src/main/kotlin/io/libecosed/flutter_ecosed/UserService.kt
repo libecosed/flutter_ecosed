@@ -33,17 +33,4 @@ class UserService : IUserService.Stub() {
     override fun poem() {
         Log.d("", "Shizuku - poem")
     }
-
-    /**
-     * 伴生对象
-     */
-    companion object {
-        /**
-         * 初始化
-         */
-        init {
-            // 加载动态链接库
-            System.loadLibrary("flutter_ecosed")
-        }
-    }
 }

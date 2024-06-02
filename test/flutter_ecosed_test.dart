@@ -10,9 +10,6 @@ class MockFlutterEcosedPlatform
   Future<List?> getPlatformPluginList() => Future.value(List.empty());
 
   @override
-  Future<List?> getKernelModuleList() => Future.value(List.empty());
-
-  @override
   Future<bool?> openPlatformDialog() => Future.value(true);
 
   @override

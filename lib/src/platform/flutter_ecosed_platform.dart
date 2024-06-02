@@ -1,17 +1,29 @@
 import 'dart:io';
 
-import '../android/android_ecosed.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 import 'ecosed_platform_interface.dart';
 
 final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   /// 方法通道平台代码调用Android平台独占
-  final AndroidEcosed _androidEcosed = AndroidEcosed();
+  @visibleForTesting
+  final methodChannel = const MethodChannel('flutter_ecosed');
+
+  /// 方法通道调用参数
+  final _arguments = const {'channel': 'ecosed_engine'};
 
   /// 从引擎获取原生插件JSON
   @override
   Future<List?> getPlatformPluginList() async {
     return await _withPlatform(
-      android: () async => await _androidEcosed.getPlatformPluginList(),
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeListMethod<String?>(
+          'getPlugins',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
       fuchsia: () async => List.empty(),
       iOS: () async => List.empty(),
       linux: () async => List.empty(),
@@ -20,16 +32,17 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     );
   }
 
-  @override
-  Future<List?> getKernelModuleList() async {
-    return List.empty();
-  }
-
   /// 从客户端启动对话框
   @override
   Future<bool?> openPlatformDialog() async {
     return await _withPlatform(
-      android: () async => await _androidEcosed.openPlatformDialog(),
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeMethod<bool?>(
+          'openDialog',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
       fuchsia: () async => await null,
       iOS: () async => await null,
       linux: () async => await null,
@@ -41,7 +54,13 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
   @override
   Future<bool?> closePlatformDialog() async {
     return await _withPlatform(
-      android: () async => await _androidEcosed.closePlatformDialog(),
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeMethod<bool?>(
+          'closeDialog',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
       fuchsia: () async => await null,
       iOS: () async => await null,
       linux: () async => await null,
@@ -73,5 +92,20 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     } else {
       return await null;
     }
+  }
+
+  /// 平台调用处理机制
+  Future<dynamic> _invokeAndroid({
+    required Future<dynamic> Function() invoke,
+    required Future<dynamic> Function() error,
+  }) async {
+    if (Platform.isAndroid) {
+      try {
+        return await invoke.call();
+      } on PlatformException {
+        return await error.call();
+      }
+    }
+    return await error.call();
   }
 }

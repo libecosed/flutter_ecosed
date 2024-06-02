@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../kernel/kernel.dart';
-import '../kernel/library.dart';
 import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
@@ -106,11 +104,6 @@ final class EcosedRuntime extends StatelessWidget
   /// 获取插件列表
   @override
   Future<List?> getPlatformPluginList() async {
-    return await _platform.getPlatformPluginList();
-  }
-
-  @override
-  Future<List?> getKernelModuleList() async {
     return await _platform.getPlatformPluginList();
   }
 
@@ -278,15 +271,7 @@ final class EcosedRuntime extends StatelessWidget
   /// 初始化运行时
   Future<void> _init() async {
     WidgetsFlutterBinding.ensureInitialized();
-    KernelLib.bindingInitialized();
-
-   // init();
-    await _initData();
-  }
-
-  Future<void> _initData() async {
     await _initRuntime();
-    await _initKernel();
     await _initPlatform();
     await _initPlugins();
   }
@@ -308,32 +293,6 @@ final class EcosedRuntime extends StatelessWidget
         ),
       );
     }
-  }
-
-  Future<void> _initKernel() async {
-    try {
-      // 遍历原生插件
-      for (var element in (_plugins() ?? [_unknownPlugin])) {
-        // 添加到插件详细信息列表
-        _pluginDetailsList.add(
-          PluginDetails.formJSON(
-            json: jsonDecode(element),
-            type: PluginType.kernel,
-          ),
-        );
-      }
-    } on PlatformException {
-      // _pluginDetailsList.add(
-      //   PluginDetails.formJSON(
-      //     json: jsonDecode(_unknownPlugin),
-      //     type: PluginType.unknown,
-      //   ),
-      // );
-    }
-  }
-
-  List? _plugins() {
-    return null;
   }
 
   /// 初始化平台层插件

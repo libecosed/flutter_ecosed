@@ -38,11 +38,6 @@ android {
     defaultConfig {
         minSdk = 24
     }
-    externalNativeBuild {
-        cmake {
-            path("../src/CMakeLists.txt")
-        }
-    }
     buildFeatures {
         aidl = true
     }

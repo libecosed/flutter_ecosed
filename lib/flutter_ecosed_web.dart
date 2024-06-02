@@ -18,11 +18,6 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
   }
 
   @override
-  Future<List?> getKernelModuleList() async {
-    return List.empty();
-  }
-
-  @override
   Future<bool?> openPlatformDialog() async {
     web.window.alert('the function unsupported web');
     return false;

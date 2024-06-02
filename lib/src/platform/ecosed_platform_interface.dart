@@ -1,6 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'default_platform.dart';
 
 abstract class EcosedPlatformInterface extends PlatformInterface {
   EcosedPlatformInterface() : super(token: _token);
@@ -25,10 +24,6 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
     throw UnimplementedError('getPlatformPluginList()方法未实现');
   }
 
-  Future<List?> getKernelModuleList() async {
-    throw UnimplementedError('getKernelModuleList()方法未实现');
-  }
-
   /// 打开对话框
   Future<bool?> openPlatformDialog() async {
     throw UnimplementedError('openPlatformDialog()方法未实现');
@@ -37,5 +32,24 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
   /// 关闭对话框
   Future<bool?> closePlatformDialog() async {
     throw UnimplementedError('closePlatformDialog()方法未实现');
+  }
+}
+
+final class DefaultPlatform extends EcosedPlatformInterface {
+  @override
+  Future<List?> getPlatformPluginList() async {
+    return List.empty();
+  }
+
+  @override
+  Future<bool?> openPlatformDialog() async {
+    debugPrint('openPlatformDialog: the function unsupported the platform.');
+    return false;
+  }
+
+  @override
+  Future<bool?> closePlatformDialog() async {
+    debugPrint('closePlatformDialog: the function unsupported the platform.');
+    return false;
   }
 }

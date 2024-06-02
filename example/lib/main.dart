@@ -13,7 +13,7 @@ Future<void> main() async {
   await runEcosedApp(
     app: (context) => const MyApp(),
     appName: Global.appName,
-    plugins: const [ExamplePlugin()],
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
 }
