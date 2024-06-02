@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -139,114 +141,68 @@ final class EcosedRuntime extends StatelessWidget
             onGenerateInitialRoutes: (navigator, name) => [
               MaterialPageRoute(
                 builder: (context) => Scaffold(
-                  body: Scrollbar(
-                    controller: _controller,
-                    child: ListView(
-                      controller: _controller,
-                      children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                        //   child: StateCard(
-                        //     color: getEngineState() == EngineState.running
-                        //         ? Theme.of(context).colorScheme.primaryContainer
-                        //         : Theme.of(context).colorScheme.errorContainer,
-                        //     leading: getEngineState() == EngineState.running
-                        //         ? Icons.check_circle_outline
-                        //         : Icons.error_outline,
-                        //     title: widget.title,
-                        //     subtitle: '引擎状态:\t${getEngineState().name}',
-                        //     action: () => openDialog(context),
-                        //     trailing: Icons.developer_mode,
-                        //   ),
-                        // ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-                          child: _stateCard(
-                            context: context,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            leading: Icons.keyboard_command_key,
-                            title: appName,
-                            subtitle: 'sub_title',
-                            action: () => _openDialog(context),
-                            trailing: Icons.developer_mode,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 6,
-                            horizontal: 12,
-                          ),
-                          child: _infoCard(context: context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 6,
-                            horizontal: 12,
-                          ),
-                          child: _moreCard(context: context),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24),
-                          child: Divider(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-                          child: ListBody(
-                            children: _pluginDetailsList
-                                .map(
-                                  (element) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: Builder(
-                                      builder: (context) => _pluginCard(
-                                        context: context,
-                                        title: element.title,
-                                        channel: element.channel,
-                                        author: element.author,
-                                        icon: _getPluginIcon(
-                                            context: context, details: element),
-                                        description: element.description,
-                                        type: _getPluginType(element),
-                                        action: _isAllowPush(element)
-                                            ? element.channel != pluginChannel()
-                                                ? '打开'
-                                                : '关于'
-                                            : '无界面',
-                                        open: _isAllowPush(element)
-                                            ? () {
-                                                if (element.channel !=
-                                                    pluginChannel()) {
-                                                  _launchPlugin(
-                                                    context,
-                                                    element,
-                                                  );
-                                                } else {
-                                                  showAboutDialog(
-                                                    context: context,
-                                                    applicationName: appName,
-                                                    applicationLegalese:
-                                                        'Powered by FlutterEcosed',
-                                                    useRootNavigator: false,
-                                                  );
-                                                }
-                                              }
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  body: _managerBody(context: context),
                 ),
               )
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _managerBody({required BuildContext context}) {
+    return Scrollbar(
+      controller: _controller,
+      child: ListView(
+        controller: _controller,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+            child: _stateCard(context: context),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 6,
+              horizontal: 12,
+            ),
+            child: _infoCard(context: context),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 6,
+              horizontal: 12,
+            ),
+            child: _moreCard(context: context),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: _pluginCardList(context: context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pluginCardList({required BuildContext context}) {
+    return ListBody(
+      children: _pluginDetailsList
+          .map(
+            (element) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Builder(
+                builder: (context) => _pluginCard(
+                  context: context,
+                  details: element,
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -362,21 +318,15 @@ final class EcosedRuntime extends StatelessWidget
 
   Widget _stateCard({
     required BuildContext context,
-    required Color color,
-    required IconData leading,
-    required String title,
-    required String subtitle,
-    required VoidCallback action,
-    required IconData trailing,
   }) {
     return Card(
-      color: color,
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Row(
           children: [
             Icon(
-              leading,
+              Icons.keyboard_command_key,
               size: Theme.of(context).iconTheme.size,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
@@ -387,13 +337,13 @@ final class EcosedRuntime extends StatelessWidget
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      appName,
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      subtitle,
+                      'sub_title',
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -402,9 +352,9 @@ final class EcosedRuntime extends StatelessWidget
               ),
             ),
             IconButton(
-              onPressed: action,
+              onPressed: () => _openDialog(context),
               icon: Icon(
-                trailing,
+                Icons.developer_mode,
                 size: Theme.of(context).iconTheme.size,
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
@@ -417,14 +367,7 @@ final class EcosedRuntime extends StatelessWidget
 
   Widget _pluginCard({
     required BuildContext context,
-    required String title,
-    required String channel,
-    required String author,
-    required Widget icon,
-    required String description,
-    required String type,
-    required String action,
-    required VoidCallback? open,
+    required PluginDetails details,
   }) {
     return Card(
       child: Padding(
@@ -440,7 +383,7 @@ final class EcosedRuntime extends StatelessWidget
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        title,
+                        details.title,
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize:
@@ -455,7 +398,7 @@ final class EcosedRuntime extends StatelessWidget
                         ),
                       ),
                       Text(
-                        '通道: $channel',
+                        '通道: ${details.channel}',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize:
@@ -466,7 +409,7 @@ final class EcosedRuntime extends StatelessWidget
                         ),
                       ),
                       Text(
-                        '作者: $author',
+                        '作者: ${details.author}',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize:
@@ -480,13 +423,13 @@ final class EcosedRuntime extends StatelessWidget
                   ),
                 ),
                 Container(
-                  child: icon,
+                  child: _getPluginIcon(context: context, details: details),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             Text(
-              description,
+              details.description,
               textAlign: TextAlign.start,
               style: Theme.of(context).textTheme.bodySmall?.apply(
                     overflow: TextOverflow.ellipsis,
@@ -499,14 +442,14 @@ final class EcosedRuntime extends StatelessWidget
               children: [
                 Expanded(
                   child: Text(
-                    type,
+                    _getPluginType(details),
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 TextButton(
-                  onPressed: open,
-                  child: Text(action),
+                  onPressed: _openPlugin(context, details),
+                  child: Text(_getPluginAction(details)),
                 ),
               ],
             ),
@@ -673,6 +616,14 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  String _getPluginAction(PluginDetails details) {
+    return _isAllowPush(details)
+        ? details.channel != pluginChannel()
+            ? '打开'
+            : '关于'
+        : '无界面';
+  }
+
   /// 插件是否可以打开
   bool _isAllowPush(PluginDetails details) {
     return (details.type == PluginType.runtime ||
@@ -807,5 +758,25 @@ final class EcosedRuntime extends StatelessWidget
       },
       useRootNavigator: false,
     );
+  }
+
+  VoidCallback? _openPlugin(BuildContext context, PluginDetails details) {
+    return _isAllowPush(details)
+        ? () {
+            if (!_isRuntime(details)) {
+              _launchPlugin(
+                context,
+                details,
+              );
+            } else {
+              showAboutDialog(
+                context: context,
+                applicationName: appName,
+                applicationLegalese: 'Powered by FlutterEcosed',
+                useRootNavigator: false,
+              );
+            }
+          }
+        : null;
   }
 }
