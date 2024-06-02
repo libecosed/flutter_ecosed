@@ -599,8 +599,6 @@ final class EcosedRuntime extends StatelessWidget
   /// 获取插件类型
   String _getPluginType(PluginDetails details) {
     switch (details.type) {
-      case PluginType.kernel:
-        return '内核模块';
       case PluginType.platform:
         return '平台插件';
       case PluginType.runtime:
@@ -695,12 +693,6 @@ final class EcosedRuntime extends StatelessWidget
     required PluginDetails details,
   }) {
     switch (details.type) {
-      case PluginType.kernel:
-        return Icon(
-          Icons.developer_board,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.blueGrey,
-        );
       case PluginType.platform:
         return Icon(
           Icons.android,

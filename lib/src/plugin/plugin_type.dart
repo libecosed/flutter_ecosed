@@ -1,7 +1,4 @@
 enum PluginType {
-  /// 内核模块
-  kernel,
-
   /// 平台插件，特指Android
   platform,
 
