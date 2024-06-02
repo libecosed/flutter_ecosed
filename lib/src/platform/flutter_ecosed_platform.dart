@@ -47,7 +47,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
       iOS: () async => await null,
       linux: () async => await null,
       macOS: () async => await null,
-      windows: () async {},
+      windows: () async => true,
     );
   }
 
