@@ -675,8 +675,9 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 插件是否可以打开
   bool _isAllowPush(PluginDetails details) {
-    return details.type == PluginType.runtime ||
-        details.type == PluginType.flutter && _getPlugin(details) != null;
+    return (details.type == PluginType.runtime ||
+            details.type == PluginType.flutter) &&
+        _getPlugin(details) != null;
   }
 
   /// 打开插件
@@ -705,7 +706,7 @@ final class EcosedRuntime extends StatelessWidget
   EcosedPlugin? _getPlugin(PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (element.pluginChannel() == details.channel) {
+        if (details.channel == element.pluginChannel()) {
           return element;
         }
       }
