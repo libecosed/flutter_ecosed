@@ -280,7 +280,7 @@ final class EcosedRuntime extends StatelessWidget
     WidgetsFlutterBinding.ensureInitialized();
     KernelLib.bindingInitialized();
 
-    init();
+   // init();
     await _initData();
   }
 
