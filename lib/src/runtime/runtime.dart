@@ -204,30 +204,17 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
-  Widget _banner({
-    required bool enabled,
-    required Widget child,
-  }) {
-    if (!enabled) return child;
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Banner(
-        message: 'EcosedApp',
-        textDirection: TextDirection.ltr,
-        location: kDebugMode ? BannerLocation.topStart : BannerLocation.topEnd,
-        layoutDirection: TextDirection.ltr,
-        color: Colors.pink,
-        child: child,
-      ),
-    );
-  }
-
   /// 初始化运行时
   Future<void> _init() async {
     WidgetsFlutterBinding.ensureInitialized();
     await _initRuntime();
     await _initPlatform();
     await _initPlugins();
+  }
+
+  /// 启动应用
+  Future<void> _startup() async {
+    return await runner(_builder());
   }
 
   /// 初始化运行时
@@ -293,11 +280,6 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
-  /// 启动应用
-  Future<void> _startup() async {
-    return await runner(_builder());
-  }
-
   /// 应用构建器
   Widget _builder() {
     return EcosedInherited(
@@ -306,14 +288,29 @@ final class EcosedRuntime extends StatelessWidget
       },
       manager: _manager(),
       child: _banner(
-        enabled: true,
-        child: Builder(
-          builder: (context) => app(context),
-        ),
+        child: Builder(builder: (context) => app(context)),
       ),
     );
   }
 
+  Widget _banner({
+    required Widget child,
+  }) {
+    if (!kDebugMode) return child;
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Banner(
+        message: 'EcosedApp',
+        textDirection: TextDirection.ltr,
+        location: BannerLocation.topStart,
+        layoutDirection: TextDirection.ltr,
+        color: Colors.pink,
+        child: child,
+      ),
+    );
+  }
+
+  /// 状态卡片
   Widget _stateCard({
     required BuildContext context,
   }) {
@@ -363,6 +360,7 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  /// 插件卡片
   Widget _pluginCard({
     required BuildContext context,
     required PluginDetails details,
@@ -457,6 +455,7 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  /// 信息项
   Widget _infoItem({
     required BuildContext context,
     required String title,
@@ -479,6 +478,7 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  /// 信息卡片
   Widget _infoCard({
     required BuildContext context,
   }) {
@@ -524,6 +524,7 @@ final class EcosedRuntime extends StatelessWidget
     );
   }
 
+  /// 了解更多卡片
   Widget _moreCard({
     required BuildContext context,
   }) {
@@ -612,6 +613,7 @@ final class EcosedRuntime extends StatelessWidget
     }
   }
 
+  /// 获取插件的动作名
   String _getPluginAction(PluginDetails details) {
     return _isAllowPush(details)
         ? details.channel != pluginChannel()
@@ -688,6 +690,7 @@ final class EcosedRuntime extends StatelessWidget
     return Container();
   }
 
+  /// 获取插件的图标
   Widget _getPluginIcon({
     required BuildContext context,
     required PluginDetails details,
@@ -727,6 +730,7 @@ final class EcosedRuntime extends StatelessWidget
     return details.channel == pluginChannel();
   }
 
+  /// 打开对话和
   void _openDialog(BuildContext context) async {
     // todo: Flutter内部菜单
     showDialog(
