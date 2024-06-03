@@ -51,6 +51,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     );
   }
 
+  /// 关闭平台对话框
   @override
   Future<bool?> closePlatformDialog() async {
     return await _withPlatform(
@@ -69,6 +70,7 @@ final class FlutterEcosedPlatform extends EcosedPlatformInterface {
     );
   }
 
+  /// 根据平台执行
   Future<dynamic> _withPlatform({
     required Future<dynamic> Function() android,
     required Future<dynamic> Function() fuchsia,
