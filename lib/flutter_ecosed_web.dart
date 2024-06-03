@@ -1,3 +1,4 @@
+/// flutter_ecosed for web.
 library flutter_ecosed_web;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';

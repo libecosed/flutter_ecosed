@@ -1,3 +1,4 @@
+/// flutter_ecosed.
 library flutter_ecosed;
 
 import 'src/platform/ecosed_platform_interface.dart';
