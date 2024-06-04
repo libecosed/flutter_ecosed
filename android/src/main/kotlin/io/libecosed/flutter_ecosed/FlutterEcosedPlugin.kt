@@ -2402,6 +2402,9 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
     }
 
+    /**
+     * 资源
+     */
     private object EcosedResources {
 
         /** 开发者 */
