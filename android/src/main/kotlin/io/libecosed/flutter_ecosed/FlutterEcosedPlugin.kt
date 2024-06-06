@@ -221,10 +221,10 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 //        }
 
 
-        // 申请签名欺骗权限
-        val fake = PermissionUtils.permission(EcosedManifest.FAKE_PACKAGE_SIGNATURE)
-        fake.callback { isAllGranted, granted, deniedForever, denied -> }
-        fake.request()
+//        // 申请签名欺骗权限
+//        val fake = PermissionUtils.permission(EcosedManifest.FAKE_PACKAGE_SIGNATURE)
+//        fake.callback { isAllGranted, granted, deniedForever, denied -> }
+//        fake.request()
 
 
         // 检查GMS
