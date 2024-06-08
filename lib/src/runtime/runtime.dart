@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,6 +11,7 @@ import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
+import '../widget/ecosed_banner.dart';
 import '../widget/ecosed_inherited.dart';
 
 final class EcosedRuntime extends EcosedPlatformInterface
@@ -48,9 +48,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
   /// PubDev Url
   static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
 
-  /// 平台接口实例
-  final EcosedPlatformInterface _platform = EcosedPlatformInterface.instance;
-
   /// 插件列表
   final List<EcosedPlugin> _pluginList = [];
 
@@ -73,13 +70,13 @@ final class EcosedRuntime extends EcosedPlatformInterface
     switch (method) {
       // 获取平台插件列表
       case _getPluginMethod:
-        return await _platform.getPlatformPluginList();
+        return await getPlatformPluginList();
       // 打开平台对话框
       case _openDialogMethod:
-        return await _platform.openPlatformDialog();
+        return await openPlatformDialog();
       // 关闭平台对话框
       case _closeDialogMethod:
-        return await _platform.closePlatformDialog();
+        return await closePlatformDialog();
       // 其他值返回空
       default:
         return await null;
@@ -334,7 +331,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
         return await _exec(channel, method, false);
       },
       manager: _manager(),
-      child: _banner(
+      child: EcosedBanner(
         child: Builder(
           builder: (context) => app(context),
         ),
@@ -356,24 +353,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
         }
         return Container();
       },
-    );
-  }
-
-  /// 角标
-  Widget _banner({
-    required Widget child,
-  }) {
-    if (!kDebugMode) return child;
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Banner(
-        message: 'EcosedApp',
-        textDirection: TextDirection.ltr,
-        location: BannerLocation.topStart,
-        layoutDirection: TextDirection.ltr,
-        color: Colors.pink,
-        child: child,
-      ),
     );
   }
 
