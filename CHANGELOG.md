@@ -34,5 +34,5 @@
 * Improve the function.
 * Fix some bugs.
 ## 0.1.1
-* Adjust software architecture.
+* Improve the function.
 * Fix some bugs.
