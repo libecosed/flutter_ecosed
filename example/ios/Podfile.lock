@@ -1,7 +1,5 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_ecosed (0.0.1):
-    - Flutter
   - integration_test (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -11,7 +9,6 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_ecosed (from `.symlinks/plugins/flutter_ecosed/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
@@ -19,8 +16,6 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_ecosed:
-    :path: ".symlinks/plugins/flutter_ecosed/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
   url_launcher_ios:
@@ -30,7 +25,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_ecosed: 3a4413a132d1facd7c346643646d69f3b90cf819
   integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
