@@ -48,26 +48,6 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
 }
 
 final class DefaultPlatform extends EcosedPlatformInterface {
-  /// 获取插件列表
-  @override
-  Future<List?> getPlatformPluginList() async {
-    return List.empty();
-  }
-
-  /// 打开对话框
-  @override
-  Future<bool?> openPlatformDialog() async {
-    debugPrint('openPlatformDialog: the function unsupported the platform.');
-    return false;
-  }
-
-  /// 关闭对话框
-  @override
-  Future<bool?> closePlatformDialog() async {
-    debugPrint('closePlatformDialog: the function unsupported the platform.');
-    return false;
-  }
-
   /// 运行应用
   @override
   Future<void> runEcosedApp({
@@ -76,6 +56,7 @@ final class DefaultPlatform extends EcosedPlatformInterface {
     required List<EcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
+    //throw FlutterError(message);
     throw UnimplementedError('');
   }
 }

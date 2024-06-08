@@ -401,7 +401,7 @@ class MyHomePage extends StatelessWidget {
                 return HomeScreen(counter: value);
               },
             ),
-            ManagerScreen(manager: context.getManagerWidget()),
+            const ManagerScreen(),
             const WebViewScreen(
               url: 'https://pub.dev/packages/flutter_ecosed',
             ),
@@ -440,13 +440,11 @@ class HomeScreen extends StatelessWidget {
 }
 
 class ManagerScreen extends StatelessWidget {
-  const ManagerScreen({super.key, required this.manager});
-
-  final Widget manager;
+  const ManagerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: manager);
+    return Container(child: context.getManagerWidget());
   }
 }
 

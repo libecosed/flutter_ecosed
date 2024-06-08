@@ -51,7 +51,7 @@ extension EcosedContext on BuildContext {
     if (inherited != null) {
       return await inherited.executor(channel, method);
     } else {
-      throw StateError('请检查是否使用runEcosedApp方法启动应用!');
+      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
     }
   }
 
@@ -62,7 +62,7 @@ extension EcosedContext on BuildContext {
     if (inherited != null) {
       return inherited.manager;
     } else {
-      throw StateError('请检查是否使用runEcosedApp方法启动应用!');
+      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
     }
   }
 }
