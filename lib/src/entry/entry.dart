@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../platform/ecosed_platform_interface.dart';
 import '../plugin/plugin.dart';
-import '../runtime/runtime.dart';
 
 /// {@tool snippet}
 /// ```dart
@@ -19,10 +19,10 @@ Future<void> runEcosedApp({
   required List<EcosedPlugin> plugins,
   required Future<void> Function(Widget app) runner,
 }) async {
-  return await EcosedRuntime(
+  return await EcosedPlatformInterface.instance.runEcosedApp(
     app: app,
     appName: appName,
     plugins: plugins,
     runner: runner,
-  )();
+  );
 }

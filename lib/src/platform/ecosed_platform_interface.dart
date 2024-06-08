@@ -1,5 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+import '../plugin/plugin.dart';
 
 abstract class EcosedPlatformInterface extends PlatformInterface {
   EcosedPlatformInterface() : super(token: _token);
@@ -33,6 +35,16 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
   Future<bool?> closePlatformDialog() async {
     throw UnimplementedError('closePlatformDialog()方法未实现');
   }
+
+  /// 运行应用
+  Future<void> runEcosedApp({
+    required WidgetBuilder app,
+    required String appName,
+    required List<EcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
+  }) async {
+    throw UnimplementedError('runEcosedApp()方法未实现');
+  }
 }
 
 final class DefaultPlatform extends EcosedPlatformInterface {
@@ -54,5 +66,16 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   Future<bool?> closePlatformDialog() async {
     debugPrint('closePlatformDialog: the function unsupported the platform.');
     return false;
+  }
+
+  /// 运行应用
+  @override
+  Future<void> runEcosedApp({
+    required WidgetBuilder app,
+    required String appName,
+    required List<EcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
+  }) async {
+    throw UnimplementedError('');
   }
 }

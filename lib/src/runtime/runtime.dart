@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,27 +14,19 @@ import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../widget/ecosed_inherited.dart';
 
-final class EcosedRuntime extends StatelessWidget
-    implements EcosedPlugin, EcosedPlatformInterface {
-  EcosedRuntime({
-    super.key,
-    required this.app,
-    required this.appName,
-    required this.plugins,
-    required this.runner,
-  });
-
+final class EcosedRuntime extends EcosedPlatformInterface
+    implements EcosedPlugin {
   /// 应用程序
-  final WidgetBuilder app;
+  late WidgetBuilder app;
 
   /// 应用名称
-  final String appName;
+  late String appName;
 
   /// 插件列表
-  final List<EcosedPlugin> plugins;
+  late List<EcosedPlugin> plugins;
 
   /// 执行器
-  final Future<void> Function(Widget app) runner;
+  late Future<void> Function(Widget app) runner;
 
   /// 默认空模块JSON用于占位
   static const String _unknownPlugin = '{'
@@ -67,13 +60,12 @@ final class EcosedRuntime extends StatelessWidget
   /// 滚动控制器
   final ScrollController _controller = ScrollController();
 
-  /// 运行时执行入口
-  Future<void> call() async {
-    // 初始化
-    await _init();
-    // 启动应用
-    await _startup();
-  }
+  /// 方法通道平台代码调用Android平台独占
+  @visibleForTesting
+  final methodChannel = const MethodChannel('flutter_ecosed');
+
+  /// 方法通道调用参数
+  final _arguments = const {'channel': 'ecosed_engine'};
 
   /// 方法调用
   @override
@@ -81,13 +73,13 @@ final class EcosedRuntime extends StatelessWidget
     switch (method) {
       // 获取平台插件列表
       case _getPluginMethod:
-        return await getPlatformPluginList();
+        return await _platform.getPlatformPluginList();
       // 打开平台对话框
       case _openDialogMethod:
-        return await openPlatformDialog();
+        return await _platform.openPlatformDialog();
       // 关闭平台对话框
       case _closeDialogMethod:
-        return await closePlatformDialog();
+        return await _platform.closePlatformDialog();
       // 其他值返回空
       default:
         return await null;
@@ -112,29 +104,7 @@ final class EcosedRuntime extends StatelessWidget
 
   /// 插件用户界面
   @override
-  Widget pluginWidget(BuildContext context) => this;
-
-  /// 获取插件列表
-  @override
-  Future<List?> getPlatformPluginList() async {
-    return await _platform.getPlatformPluginList();
-  }
-
-  /// 打开平台对话框
-  @override
-  Future<bool?> openPlatformDialog() async {
-    return await _platform.openPlatformDialog();
-  }
-
-  /// 关闭平台对话框
-  @override
-  Future<bool?> closePlatformDialog() async {
-    return await _platform.closePlatformDialog();
-  }
-
-  /// 管理器界面
-  @override
-  Widget build(BuildContext context) {
+  Widget pluginWidget(BuildContext context) {
     return Theme(
       data: ThemeData(
         brightness: MediaQuery.platformBrightnessOf(context),
@@ -160,6 +130,121 @@ final class EcosedRuntime extends StatelessWidget
         ),
       ),
     );
+  }
+
+  /// 从引擎获取原生插件JSON
+  @override
+  Future<List?> getPlatformPluginList() async {
+    return await _withPlatform(
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeListMethod<String?>(
+          'getPlugins',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
+      fuchsia: () async => List.empty(),
+      iOS: () async => List.empty(),
+      linux: () async => List.empty(),
+      macOS: () async => List.empty(),
+      windows: () async => List.empty(),
+    );
+  }
+
+  /// 从客户端启动对话框
+  @override
+  Future<bool?> openPlatformDialog() async {
+    return await _withPlatform(
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeMethod<bool?>(
+          'openDialog',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
+      fuchsia: () async => await null,
+      iOS: () async => await null,
+      linux: () async => await null,
+      macOS: () async => await null,
+      windows: () async => await null,
+    );
+  }
+
+  /// 关闭平台对话框
+  @override
+  Future<bool?> closePlatformDialog() async {
+    return await _withPlatform(
+      android: () async => await _invokeAndroid(
+        invoke: () async => await methodChannel.invokeMethod<bool?>(
+          'closeDialog',
+          _arguments,
+        ),
+        error: () async => List.empty(),
+      ),
+      fuchsia: () async => await null,
+      iOS: () async => await null,
+      linux: () async => await null,
+      macOS: () async => await null,
+      windows: () async => await null,
+    );
+  }
+
+  @override
+  Future<void> runEcosedApp({
+    required WidgetBuilder app,
+    required String appName,
+    required List<EcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
+  }) async {
+    this.app = app;
+    this.appName = appName;
+    this.plugins = plugins;
+    this.runner = runner;
+    // 初始化
+    await _init();
+    // 启动应用
+    await _startup();
+  }
+
+  /// 根据平台执行
+  Future<dynamic> _withPlatform({
+    required Future<dynamic> Function() android,
+    required Future<dynamic> Function() fuchsia,
+    required Future<dynamic> Function() iOS,
+    required Future<dynamic> Function() linux,
+    required Future<dynamic> Function() macOS,
+    required Future<dynamic> Function() windows,
+  }) async {
+    if (Platform.isAndroid) {
+      return await android.call();
+    } else if (Platform.isFuchsia) {
+      return await fuchsia.call();
+    } else if (Platform.isIOS) {
+      return await iOS.call();
+    } else if (Platform.isLinux) {
+      return await linux.call();
+    } else if (Platform.isMacOS) {
+      return await macOS.call();
+    } else if (Platform.isWindows) {
+      return await windows.call();
+    } else {
+      return await null;
+    }
+  }
+
+  /// 平台调用处理机制
+  Future<dynamic> _invokeAndroid({
+    required Future<dynamic> Function() invoke,
+    required Future<dynamic> Function() error,
+  }) async {
+    if (Platform.isAndroid) {
+      try {
+        return await invoke.call();
+      } on PlatformException {
+        return await error.call();
+      }
+    }
+    return await error.call();
   }
 
   /// 初始化运行时

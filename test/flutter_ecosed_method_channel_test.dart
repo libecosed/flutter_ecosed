@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_ecosed/src/platform/flutter_ecosed_platform.dart';
+import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  FlutterEcosedPlatform platform = FlutterEcosedPlatform();
+  EcosedRuntime runtime = EcosedRuntime();
   const MethodChannel channel = MethodChannel('flutter_ecosed');
 
   setUp(() {
@@ -24,14 +24,14 @@ void main() {
   });
 
   test('getPlatformPluginList', () async {
-    expect(await platform.getPlatformPluginList(), List.empty());
+    expect(await runtime.getPlatformPluginList(), List.empty());
   });
 
   test('openPlatformDialog', () async {
-    expect(platform.openPlatformDialog(), null);
+    expect(runtime.openPlatformDialog(), null);
   });
 
   test('closePlatformDialog', () async {
-    expect(platform.closePlatformDialog(), null);
+    expect(runtime.closePlatformDialog(), null);
   });
 }

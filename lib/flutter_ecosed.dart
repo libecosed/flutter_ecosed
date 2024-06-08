@@ -1,8 +1,9 @@
 /// flutter_ecosed.
 library flutter_ecosed;
 
+import 'package:flutter_ecosed/src/runtime/runtime.dart';
+
 import 'src/platform/ecosed_platform_interface.dart';
-import 'src/platform/flutter_ecosed_platform.dart';
 
 export 'src/entry/entry.dart';
 export 'src/plugin/plugin.dart';
@@ -13,6 +14,6 @@ final class FlutterEcosed {
 
   /// 注册插件
   static void registerWith() {
-    EcosedPlatformInterface.instance = FlutterEcosedPlatform();
+    EcosedPlatformInterface.instance = EcosedRuntime();
   }
 }
