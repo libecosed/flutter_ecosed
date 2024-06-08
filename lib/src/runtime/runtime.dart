@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../platform/ecosed_platform_interface.dart';
@@ -194,7 +195,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
     required Future<void> Function(Widget app) runner,
   }) async {
     this.app = app;
-    this.appName = appName;
+  //  this.appName = appName;
     this.plugins = plugins;
     this.runner = runner;
     // 初始化
@@ -248,6 +249,13 @@ final class EcosedRuntime extends EcosedPlatformInterface
   Future<void> _init() async {
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    appName = packageInfo.appName;
+    // String packageName = packageInfo.packageName;
+    // String version = packageInfo.version;
+    // String buildNumber = packageInfo.buildNumber;
+    
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
