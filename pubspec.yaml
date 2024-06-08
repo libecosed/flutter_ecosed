@@ -34,16 +34,16 @@ flutter:
     platforms:
       android:
         package: io.libecosed.flutter_ecosed
-        dartPluginClass: FlutterEcosed
+        dartPluginClass: FlutterEcosedPlatform
         pluginClass: FlutterEcosedPlugin
       ios:
-        dartPluginClass: FlutterEcosed
+        dartPluginClass: FlutterEcosedPlatform
       linux:
-        dartPluginClass: FlutterEcosed
+        dartPluginClass: FlutterEcosedPlatform
       macos:
-        dartPluginClass: FlutterEcosed
+        dartPluginClass: FlutterEcosedPlatform
       windows:
-        dartPluginClass: FlutterEcosed
+        dartPluginClass: FlutterEcosedPlatform
       web:
         pluginClass: FlutterEcosedWeb
         fileName: flutter_ecosed_web.dart

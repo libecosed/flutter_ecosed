@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class EcosedBanner extends StatelessWidget {
+final class EcosedBanner extends StatelessWidget {
   const EcosedBanner({
     super.key,
     required this.child,
