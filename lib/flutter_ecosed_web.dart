@@ -73,7 +73,7 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
     required String channel,
     required String method,
   }) async {
-    web.window.alert('此功能"execPluginMethod($channel, $method)"不支持Web, 将返回空.');
+    web.window.alert('此功能execPluginMethod("$channel", "$method")不支持Web, 将返回空.');
     return await null;
   }
 }
