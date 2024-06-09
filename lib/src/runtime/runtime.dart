@@ -146,6 +146,31 @@ final class EcosedRuntime extends EcosedPlatformInterface
     }
   }
 
+  /// 初始化运行时
+  Future<void> _init() async {
+    // 初始化控件绑定
+    WidgetsFlutterBinding.ensureInitialized();
+    // 获取包信息
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    _appName = packageInfo.appName;
+    // String packageName = packageInfo.packageName;
+    // String version = packageInfo.version;
+    // String buildNumber = packageInfo.buildNumber;
+
+    // 初始化运行时
+    await _initRuntime();
+    // 初始化平台层插件
+    await _initPlatform();
+    // 初始化普通插件
+    await _initPlugins();
+  }
+
+  /// 启动应用
+  Future<void> _startup() async {
+    return await _runner(_builder());
+  }
+
   /// 从引擎获取原生插件JSON
   Future<List?> _getPlatformPluginList() async {
     return await _withPlatform(
@@ -239,30 +264,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
       }
     }
     return await error.call();
-  }
-
-  /// 初始化运行时
-  Future<void> _init() async {
-    // 初始化控件绑定
-    WidgetsFlutterBinding.ensureInitialized();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-    _appName = packageInfo.appName;
-    // String packageName = packageInfo.packageName;
-    // String version = packageInfo.version;
-    // String buildNumber = packageInfo.buildNumber;
-
-    // 初始化运行时
-    await _initRuntime();
-    // 初始化平台层插件
-    await _initPlatform();
-    // 初始化普通插件
-    await _initPlugins();
-  }
-
-  /// 启动应用
-  Future<void> _startup() async {
-    return await _runner(_builder());
   }
 
   /// 初始化运行时
