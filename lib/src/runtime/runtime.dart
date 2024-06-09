@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,6 +30,9 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 应用名称
   late String _appName;
+
+  /// 应用版本
+  late String _appVersion;
 
   /// 插件列表
   final List<EcosedPlugin> _pluginList = [];
@@ -62,9 +66,10 @@ final class EcosedRuntime extends EcosedPlatformInterface
   /// 关闭对话框方法名
   static const String _closeDialogMethod = 'close_dialog';
 
-  /// PubDev Url
+  /// PubDev 统一资源定位符
   static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
 
+  /// 启动应用
   @override
   Future<void> runEcosedApp({
     required WidgetBuilder app,
@@ -151,13 +156,11 @@ final class EcosedRuntime extends EcosedPlatformInterface
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
     // 获取包信息
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-    _appName = packageInfo.appName;
-    // String packageName = packageInfo.packageName;
-    // String version = packageInfo.version;
-    // String buildNumber = packageInfo.buildNumber;
-
+    PackageInfo info = await PackageInfo.fromPlatform();
+    // 获取应用名称
+    _appName = info.appName;
+    // 获取应用版本
+    _appVersion = "${info.version}\t(${info.buildNumber})";
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
@@ -168,6 +171,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 启动应用
   Future<void> _startup() async {
+    // 通过构建器运行应用
     return await _runner(_builder());
   }
 
@@ -302,6 +306,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
         );
       }
     } on PlatformException {
+      // 平台错误添加未知插件占位
       _pluginDetailsList.add(
         PluginDetails.formJSON(
           json: jsonDecode(_unknownPlugin),
@@ -429,7 +434,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'sub_title',
+                      '版本:\t$_appVersion',
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -473,8 +478,8 @@ final class EcosedRuntime extends EcosedPlatformInterface
                   const SizedBox(height: 16),
                   _infoItem(
                     context: context,
-                    title: '引擎状态',
-                    subtitle: 'null',
+                    title: '应用版本',
+                    subtitle: _appVersion,
                   ),
                   const SizedBox(height: 16),
                   _infoItem(
@@ -754,20 +759,31 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 打开对话和
   void _openDialog(BuildContext context) async {
-    // todo: Flutter内部菜单
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('title'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => _exec(pluginChannel(), _openDialogMethod, true),
-              child: const Text('open'),
+        return SimpleDialog(
+          title: const Text('Debug Menu (Flutter)'),
+          children: <SimpleDialogOption>[
+            SimpleDialogOption(
+              child: ListTile(
+                title: const Text('Native Debug Menu'),
+                enabled: Theme.of(context).platform == TargetPlatform.android,
+                onTap: () => _exec(pluginChannel(), _openDialogMethod, true),
+              ),
             ),
-            TextButton(
-              onPressed: () => _exec(pluginChannel(), _closeDialogMethod, true),
-              child: const Text('close'),
+            SimpleDialogOption(
+              child: ListTile(
+                title: const Text('Native Debug Menu - close'),
+                enabled: Theme.of(context).platform == TargetPlatform.android,
+                onTap: () => _exec(pluginChannel(), _closeDialogMethod, true),
+              ),
+            ),
+            SimpleDialogOption(
+              child: ListTile(
+                title: const Text('close'),
+                onTap: () => Navigator.of(context).pop(),
+              ),
             )
           ],
         );
@@ -859,6 +875,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
               showAboutDialog(
                 context: context,
                 applicationName: _appName,
+                applicationVersion: _appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',
                 useRootNavigator: false,
               );
