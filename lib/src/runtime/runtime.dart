@@ -19,16 +19,16 @@ import '../widget/ecosed_inherited.dart';
 final class EcosedRuntime extends EcosedPlatformInterface
     implements EcosedPlugin {
   /// 应用程序
-  late WidgetBuilder app;
-
-  /// 应用名称
-  late String appName;
+  late WidgetBuilder _app;
 
   /// 插件列表
-  late List<EcosedPlugin> plugins;
+  late List<EcosedPlugin> _plugins;
 
   /// 执行器
-  late Future<void> Function(Widget app) runner;
+  late Future<void> Function(Widget app) _runner;
+
+  /// 应用名称
+  late String _appName;
 
   /// 插件列表
   final List<EcosedPlugin> _pluginList = [];
@@ -40,8 +40,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   final ScrollController _controller = ScrollController();
 
   /// 方法通道平台代码调用Android平台独占
-  @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_ecosed');
+  final _methodChannel = const MethodChannel('flutter_ecosed');
 
   /// 方法通道调用参数
   final _arguments = const {'channel': 'ecosed_engine'};
@@ -66,23 +65,20 @@ final class EcosedRuntime extends EcosedPlatformInterface
   /// PubDev Url
   static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
 
-  /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String method) async {
-    switch (method) {
-      // 获取平台插件列表
-      case _getPluginMethod:
-        return await _getPlatformPluginList();
-      // 打开平台对话框
-      case _openDialogMethod:
-        return await _openPlatformDialog();
-      // 关闭平台对话框
-      case _closeDialogMethod:
-        return await _closePlatformDialog();
-      // 其他值返回空
-      default:
-        return await null;
-    }
+  Future<void> runEcosedApp({
+    required WidgetBuilder app,
+    required List<EcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
+  }) async {
+    // 赋值
+    _app = app;
+    _plugins = plugins;
+    _runner = runner;
+    // 初始化
+    await _init();
+    // 启动应用
+    await _startup();
   }
 
   /// 插件名称
@@ -131,11 +127,30 @@ final class EcosedRuntime extends EcosedPlatformInterface
     );
   }
 
+  /// 方法调用
+  @override
+  Future<dynamic> onMethodCall(String method) async {
+    switch (method) {
+      // 获取平台插件列表
+      case _getPluginMethod:
+        return await _getPlatformPluginList();
+      // 打开平台对话框
+      case _openDialogMethod:
+        return await _openPlatformDialog();
+      // 关闭平台对话框
+      case _closeDialogMethod:
+        return await _closePlatformDialog();
+      // 其他值返回空
+      default:
+        return await null;
+    }
+  }
+
   /// 从引擎获取原生插件JSON
   Future<List?> _getPlatformPluginList() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
-        invoke: () async => await methodChannel.invokeListMethod<String?>(
+        invoke: () async => await _methodChannel.invokeListMethod<String?>(
           'getPlugins',
           _arguments,
         ),
@@ -153,7 +168,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   Future<bool?> _openPlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
-        invoke: () async => await methodChannel.invokeMethod<bool?>(
+        invoke: () async => await _methodChannel.invokeMethod<bool?>(
           'openDialog',
           _arguments,
         ),
@@ -171,7 +186,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   Future<bool?> _closePlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
-        invoke: () async => await methodChannel.invokeMethod<bool?>(
+        invoke: () async => await _methodChannel.invokeMethod<bool?>(
           'closeDialog',
           _arguments,
         ),
@@ -183,22 +198,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
       macOS: () async => await null,
       windows: () async => await null,
     );
-  }
-
-  @override
-  Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
-    required Future<void> Function(Widget app) runner,
-  }) async {
-    // 赋值
-    this.app = app;
-    this.plugins = plugins;
-    this.runner = runner;
-    // 初始化
-    await _init();
-    // 启动应用
-    await _startup();
   }
 
   /// 根据平台执行
@@ -248,7 +247,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
     WidgetsFlutterBinding.ensureInitialized();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-    appName = packageInfo.appName;
+    _appName = packageInfo.appName;
     // String packageName = packageInfo.packageName;
     // String version = packageInfo.version;
     // String buildNumber = packageInfo.buildNumber;
@@ -263,7 +262,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 启动应用
   Future<void> _startup() async {
-    return await runner(_builder());
+    return await _runner(_builder());
   }
 
   /// 初始化运行时
@@ -313,8 +312,8 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 初始化普通插件
   Future<void> _initPlugins() async {
-    if (plugins.isNotEmpty) {
-      for (var element in plugins) {
+    if (_plugins.isNotEmpty) {
+      for (var element in _plugins) {
         _pluginList.add(element);
         _pluginDetailsList.add(
           PluginDetails(
@@ -338,7 +337,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
       manager: _manager(),
       child: EcosedBanner(
         child: Builder(
-          builder: (context) => app(context),
+          builder: (context) => _app(context),
         ),
       ),
     );
@@ -423,7 +422,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      appName,
+                      _appName,
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -468,7 +467,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
                   _infoItem(
                     context: context,
                     title: '应用名称',
-                    subtitle: appName,
+                    subtitle: _appName,
                   ),
                   const SizedBox(height: 16),
                   _infoItem(
@@ -858,7 +857,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
               // 运行时打开关于对话框
               showAboutDialog(
                 context: context,
-                applicationName: appName,
+                applicationName: _appName,
                 applicationLegalese: 'Powered by FlutterEcosed',
                 useRootNavigator: false,
               );
