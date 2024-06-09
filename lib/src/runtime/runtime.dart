@@ -34,19 +34,19 @@ final class EcosedRuntime extends EcosedPlatformInterface
   late String _appVersion;
 
   /// 插件列表
-  final List<EcosedPlugin> _pluginList = [];
+  late List<EcosedPlugin> _pluginList;
 
   /// 插件详细信息列表
-  final List<PluginDetails> _pluginDetailsList = [];
+  late List<PluginDetails> _pluginDetailsList;
 
   /// 滚动控制器
-  final ScrollController _controller = ScrollController();
+  late ScrollController _scrollController;
 
   /// 方法通道平台代码调用Android平台独占
-  final _methodChannel = const MethodChannel('flutter_ecosed');
+  final MethodChannel _methodChannel = const MethodChannel('flutter_ecosed');
 
   /// 方法通道调用参数
-  final _arguments = const {'channel': 'ecosed_engine'};
+  final Map<String, String> _arguments = const {'channel': 'ecosed_engine'};
 
   /// 默认空模块JSON用于占位
   static const String _unknownPlugin = '{'
@@ -154,14 +154,20 @@ final class EcosedRuntime extends EcosedPlatformInterface
   Future<void> _init() async {
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
+    // 初始化滚动控制器
+    _scrollController = ScrollController();
     // 获取包信息
     PackageInfo info = await PackageInfo.fromPlatform();
     // 获取应用名称
     _appName = info.appName.isNotEmpty ? info.appName : "";
     // 获取应用版本
-    var name = info.version.isNotEmpty ? info.version : "";
-    var code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
+    String name = info.version.isNotEmpty ? info.version : "";
+    String code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
     _appVersion = "$name\t$code";
+    // 初始化插件列表
+    _pluginList = [];
+    // 初始化插件详细信息列表
+    _pluginDetailsList = [];
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
@@ -372,9 +378,9 @@ final class EcosedRuntime extends EcosedPlatformInterface
     required BuildContext context,
   }) {
     return Scrollbar(
-      controller: _controller,
+      controller: _scrollController,
       child: ListView(
-        controller: _controller,
+        controller: _scrollController,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
