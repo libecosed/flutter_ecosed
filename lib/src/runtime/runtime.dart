@@ -8,13 +8,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../platform/ecosed_platform_interface.dart';
+import '../platform/platform_interface.dart';
 import '../plugin/plugin.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../widget/ecosed_banner.dart';
 import '../widget/ecosed_inherited.dart';
 
+/// 运行时
 final class EcosedRuntime extends EcosedPlatformInterface
     implements EcosedPlugin {
   /// 应用程序
@@ -71,13 +72,13 @@ final class EcosedRuntime extends EcosedPlatformInterface
     switch (method) {
       // 获取平台插件列表
       case _getPluginMethod:
-        return await getPlatformPluginList();
+        return await _getPlatformPluginList();
       // 打开平台对话框
       case _openDialogMethod:
-        return await openPlatformDialog();
+        return await _openPlatformDialog();
       // 关闭平台对话框
       case _closeDialogMethod:
-        return await closePlatformDialog();
+        return await _closePlatformDialog();
       // 其他值返回空
       default:
         return await null;
@@ -131,7 +132,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 从引擎获取原生插件JSON
-  Future<List?> getPlatformPluginList() async {
+  Future<List?> _getPlatformPluginList() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
         invoke: () async => await methodChannel.invokeListMethod<String?>(
@@ -149,7 +150,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 从客户端启动对话框
-  Future<bool?> openPlatformDialog() async {
+  Future<bool?> _openPlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
         invoke: () async => await methodChannel.invokeMethod<bool?>(
@@ -167,7 +168,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 关闭平台对话框
-  Future<bool?> closePlatformDialog() async {
+  Future<bool?> _closePlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
         invoke: () async => await methodChannel.invokeMethod<bool?>(
@@ -187,12 +188,11 @@ final class EcosedRuntime extends EcosedPlatformInterface
   @override
   Future<void> runEcosedApp({
     required WidgetBuilder app,
-    required String appName,
     required List<EcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
+    // 赋值
     this.app = app;
-    //  this.appName = appName;
     this.plugins = plugins;
     this.runner = runner;
     // 初始化

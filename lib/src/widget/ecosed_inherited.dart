@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+/// 遗传接口
 final class EcosedInherited extends InheritedWidget {
   const EcosedInherited({
     super.key,

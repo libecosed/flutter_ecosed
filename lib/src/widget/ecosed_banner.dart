@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// 角标横幅
 final class EcosedBanner extends StatelessWidget {
   const EcosedBanner({
     super.key,

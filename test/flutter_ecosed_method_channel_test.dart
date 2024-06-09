@@ -23,15 +23,15 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  test('getPlatformPluginList', () async {
-    expect(await runtime.getPlatformPluginList(), List.empty());
-  });
+  // test('getPlatformPluginList', () async {
+  //   expect(await runtime.getPlatformPluginList(), List.empty());
+  // });
 
-  test('openPlatformDialog', () async {
-    expect(runtime.openPlatformDialog(), null);
-  });
+  // test('openPlatformDialog', () async {
+  //   expect(runtime.openPlatformDialog(), null);
+  // });
 
-  test('closePlatformDialog', () async {
-    expect(runtime.closePlatformDialog(), null);
-  });
+  // test('closePlatformDialog', () async {
+  //   expect(runtime.closePlatformDialog(), null);
+  // });
 }

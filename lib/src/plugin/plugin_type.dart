@@ -1,3 +1,4 @@
+/// 插件类型
 enum PluginType {
   /// 平台插件，特指Android
   platform,

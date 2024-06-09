@@ -1,5 +1,5 @@
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_ecosed/src/platform/ecosed_platform_interface.dart';
+import 'package:flutter_ecosed/src/platform/platform_interface.dart';
 import 'package:flutter_ecosed/src/plugin/plugin.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,7 +11,6 @@ class MockFlutterEcosedPlatform
   @override
   Future<void> runEcosedApp({
     required WidgetBuilder app,
-    required String appName,
     required List<EcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {}

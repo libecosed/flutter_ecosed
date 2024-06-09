@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+/// 实现插件的接口
 abstract interface class EcosedPlugin {
   ///插件信息
   String pluginChannel();
