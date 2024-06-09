@@ -21,21 +21,6 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
     _instance = instance;
   }
 
-  /// 获取插件列表
-  Future<List?> getPlatformPluginList() async {
-    throw UnimplementedError('getPlatformPluginList()方法未实现');
-  }
-
-  /// 打开对话框
-  Future<bool?> openPlatformDialog() async {
-    throw UnimplementedError('openPlatformDialog()方法未实现');
-  }
-
-  /// 关闭对话框
-  Future<bool?> closePlatformDialog() async {
-    throw UnimplementedError('closePlatformDialog()方法未实现');
-  }
-
   /// 运行应用
   Future<void> runEcosedApp({
     required WidgetBuilder app,

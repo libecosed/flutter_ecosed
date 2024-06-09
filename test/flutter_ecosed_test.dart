@@ -9,14 +9,6 @@ class MockFlutterEcosedPlatform
     with MockPlatformInterfaceMixin
     implements EcosedPlatformInterface {
   @override
-  Future<List?> getPlatformPluginList() => Future.value(List.empty());
-
-  @override
-  Future<bool?> openPlatformDialog() => Future.value(true);
-
-  @override
-  Future<bool?> closePlatformDialog() => Future.value(true);
-  @override
   Future<void> runEcosedApp({
     required WidgetBuilder app,
     required String appName,
@@ -33,22 +25,22 @@ void main() {
     expect(initialPlatform, isInstanceOf<EcosedRuntime>());
   });
 
-  test('getPlatformPluginList', () async {
-    MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    EcosedPlatformInterface.instance = fakePlatform;
-    expect(await EcosedPlatformInterface.instance.getPlatformPluginList(),
-        List.empty());
-  });
+  // test('getPlatformPluginList', () async {
+  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
+  //   EcosedPlatformInterface.instance = fakePlatform;
+  //   expect(await EcosedPlatformInterface.instance.getPlatformPluginList(),
+  //       List.empty());
+  // });
 
-  test('openPlatformDialog', () async {
-    MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    EcosedPlatformInterface.instance = fakePlatform;
-    expect(EcosedPlatformInterface.instance.openPlatformDialog(), null);
-  });
+  // test('openPlatformDialog', () async {
+  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
+  //   EcosedPlatformInterface.instance = fakePlatform;
+  //   expect(EcosedPlatformInterface.instance.openPlatformDialog(), null);
+  // });
 
-  test('closePlatformDialog', () async {
-    MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    EcosedPlatformInterface.instance = fakePlatform;
-    expect(EcosedPlatformInterface.instance.closePlatformDialog(), null);
-  });
+  // test('closePlatformDialog', () async {
+  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
+  //   EcosedPlatformInterface.instance = fakePlatform;
+  //   expect(EcosedPlatformInterface.instance.closePlatformDialog(), null);
+  // });
 }

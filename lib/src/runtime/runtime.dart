@@ -29,6 +29,22 @@ final class EcosedRuntime extends EcosedPlatformInterface
   /// 执行器
   late Future<void> Function(Widget app) runner;
 
+  /// 插件列表
+  final List<EcosedPlugin> _pluginList = [];
+
+  /// 插件详细信息列表
+  final List<PluginDetails> _pluginDetailsList = [];
+
+  /// 滚动控制器
+  final ScrollController _controller = ScrollController();
+
+  /// 方法通道平台代码调用Android平台独占
+  @visibleForTesting
+  final methodChannel = const MethodChannel('flutter_ecosed');
+
+  /// 方法通道调用参数
+  final _arguments = const {'channel': 'ecosed_engine'};
+
   /// 默认空模块JSON用于占位
   static const String _unknownPlugin = '{'
       '"channel":"unknown",'
@@ -48,22 +64,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// PubDev Url
   static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
-
-  /// 插件列表
-  final List<EcosedPlugin> _pluginList = [];
-
-  /// 插件详细信息列表
-  final List<PluginDetails> _pluginDetailsList = [];
-
-  /// 滚动控制器
-  final ScrollController _controller = ScrollController();
-
-  /// 方法通道平台代码调用Android平台独占
-  @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_ecosed');
-
-  /// 方法通道调用参数
-  final _arguments = const {'channel': 'ecosed_engine'};
 
   /// 方法调用
   @override
@@ -131,7 +131,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 从引擎获取原生插件JSON
-  @override
   Future<List?> getPlatformPluginList() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
@@ -150,7 +149,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 从客户端启动对话框
-  @override
   Future<bool?> openPlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
@@ -169,7 +167,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
   }
 
   /// 关闭平台对话框
-  @override
   Future<bool?> closePlatformDialog() async {
     return await _withPlatform(
       android: () async => await _invokeAndroid(
@@ -195,7 +192,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
     required Future<void> Function(Widget app) runner,
   }) async {
     this.app = app;
-  //  this.appName = appName;
+    //  this.appName = appName;
     this.plugins = plugins;
     this.runner = runner;
     // 初始化
@@ -255,7 +252,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
     // String packageName = packageInfo.packageName;
     // String version = packageInfo.version;
     // String buildNumber = packageInfo.buildNumber;
-    
+
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
