@@ -159,10 +159,11 @@ final class EcosedRuntime extends EcosedPlatformInterface
     // 获取应用名称
     _appName = info.appName;
     // 获取应用版本
-    _appVersion = "${info.version}\t(${info.buildNumber})";
+    _appVersion =
+        "${info.version}\t${info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : ""}";
     // 初始化运行时
     await _initRuntime();
-    // 初始化平台层插件
+    // 初始化平台层插件F
     await _initPlatform();
     // 初始化普通插件
     await _initPlugins();
