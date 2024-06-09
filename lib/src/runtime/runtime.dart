@@ -95,7 +95,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 插件描述
   @override
-  String pluginDescription() => 'flutter_ecosed 框架运行时';
+  String pluginDescription() => 'FlutterEcosed框架运行时';
 
   /// 插件名称
   @override
@@ -159,8 +159,9 @@ final class EcosedRuntime extends EcosedPlatformInterface
     // 获取应用名称
     _appName = info.appName.isNotEmpty ? info.appName : "";
     // 获取应用版本
-    _appVersion =
-        "${info.version.isNotEmpty ? info.version : ""}\t${info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : ""}";
+    var name = info.version.isNotEmpty ? info.version : "";
+    var code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
+    _appVersion = "$name\t$code";
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
@@ -768,8 +769,12 @@ final class EcosedRuntime extends EcosedPlatformInterface
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text('打开原生调试菜单'),
-                leading: const FlutterLogo(),
+                title: const Text('打开平台调试菜单'),
+                leading: Icon(
+                  Icons.android,
+                  size: Theme.of(context).iconTheme.size,
+                  color: Colors.green,
+                ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
                 enabled: Theme.of(context).platform == TargetPlatform.android,
                 onTap: () => _exec(pluginChannel(), _openDialogMethod, true),
@@ -778,8 +783,12 @@ final class EcosedRuntime extends EcosedPlatformInterface
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text('关闭原生调试菜单'),
-                leading: const FlutterLogo(),
+                title: const Text('关闭平台调试菜单'),
+                leading: Icon(
+                  Icons.android,
+                  size: Theme.of(context).iconTheme.size,
+                  color: Colors.green,
+                ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
                 enabled: Theme.of(context).platform == TargetPlatform.android,
                 onTap: () => _exec(pluginChannel(), _closeDialogMethod, true),
