@@ -1,4 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/platform/platform_interface.dart';
 import 'package:flutter_ecosed/src/plugin/plugin.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
@@ -24,22 +24,16 @@ void main() {
     expect(initialPlatform, isInstanceOf<EcosedRuntime>());
   });
 
-  // test('getPlatformPluginList', () async {
-  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-  //   EcosedPlatformInterface.instance = fakePlatform;
-  //   expect(await EcosedPlatformInterface.instance.getPlatformPluginList(),
-  //       List.empty());
-  // });
-
-  // test('openPlatformDialog', () async {
-  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-  //   EcosedPlatformInterface.instance = fakePlatform;
-  //   expect(EcosedPlatformInterface.instance.openPlatformDialog(), null);
-  // });
-
-  // test('closePlatformDialog', () async {
-  //   MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-  //   EcosedPlatformInterface.instance = fakePlatform;
-  //   expect(EcosedPlatformInterface.instance.closePlatformDialog(), null);
-  // });
+  test('runEcosedApp', () async {
+    MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
+    EcosedPlatformInterface.instance = fakePlatform;
+    expect(
+      EcosedPlatformInterface.instance.runEcosedApp(
+        app: (context) => Container(),
+        plugins: const <EcosedPlugin>[],
+        runner: (app) async => runApp(app),
+      ),
+      Future.value(),
+    );
+  });
 }

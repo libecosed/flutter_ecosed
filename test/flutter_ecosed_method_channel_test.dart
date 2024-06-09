@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecosed/src/plugin/plugin.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,15 +25,14 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  // test('getPlatformPluginList', () async {
-  //   expect(await runtime.getPlatformPluginList(), List.empty());
-  // });
-
-  // test('openPlatformDialog', () async {
-  //   expect(runtime.openPlatformDialog(), null);
-  // });
-
-  // test('closePlatformDialog', () async {
-  //   expect(runtime.closePlatformDialog(), null);
-  // });
+  test('runEcosedApp', () async {
+    expect(
+      runtime.runEcosedApp(
+        app: (context) => Container(),
+        plugins: const <EcosedPlugin>[],
+        runner: (app) async => runApp(app),
+      ),
+      List.empty(),
+    );
+  });
 }
