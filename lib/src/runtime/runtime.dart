@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -100,7 +99,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 插件名称
   @override
-  String pluginName() => 'Ecosed Runtime';
+  String pluginName() => 'EcosedRuntime';
 
   /// 插件用户界面
   @override
@@ -763,25 +762,35 @@ final class EcosedRuntime extends EcosedPlatformInterface
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('Debug Menu (Flutter)'),
+          title: const Text('调试菜单 (Flutter)'),
           children: <SimpleDialogOption>[
             SimpleDialogOption(
+              padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text('Native Debug Menu'),
+                title: const Text('打开原生调试菜单'),
+                leading: const FlutterLogo(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
                 enabled: Theme.of(context).platform == TargetPlatform.android,
                 onTap: () => _exec(pluginChannel(), _openDialogMethod, true),
               ),
             ),
             SimpleDialogOption(
+              padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text('Native Debug Menu - close'),
+                title: const Text('关闭原生调试菜单'),
+                leading: const FlutterLogo(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
                 enabled: Theme.of(context).platform == TargetPlatform.android,
                 onTap: () => _exec(pluginChannel(), _closeDialogMethod, true),
               ),
             ),
             SimpleDialogOption(
+              padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text('close'),
+                title: const Text('关闭'),
+                leading: const FlutterLogo(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+                enabled: true,
                 onTap: () => Navigator.of(context).pop(),
               ),
             )
