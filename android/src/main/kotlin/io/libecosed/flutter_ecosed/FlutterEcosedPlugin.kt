@@ -2408,7 +2408,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private object EcosedResources {
 
         /** 开发者 */
-        const val DEFAULT_AUTHOR: String = "wyq09118dev"
+        const val DEFAULT_AUTHOR: String = "wyq0918dev"
 
         /** 确定按钮文本 */
         const val POSITIVE_BUTTON_STRING: String = "确定"
