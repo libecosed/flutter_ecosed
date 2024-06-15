@@ -114,8 +114,6 @@ final class EcosedRuntime extends EcosedPlatformInterface
           locale: const Locale('zh', 'CN'),
           delegates: const [
             GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate
           ],
           child: Navigator(
             onGenerateInitialRoutes: (navigator, name) => [
@@ -133,7 +131,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String method) async {
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       // 获取平台插件列表
       case _getPluginMethod:
@@ -344,8 +342,8 @@ final class EcosedRuntime extends EcosedPlatformInterface
   /// 应用构建器
   Widget _builder() {
     return EcosedInherited(
-      executor: (channel, method) async {
-        return await _exec(channel, method, false);
+      executor: (channel, method, [dynamic arguments]) async {
+        return await _exec(channel, method, false, arguments);
       },
       manager: _manager(),
       child: EcosedBanner(
@@ -695,15 +693,16 @@ final class EcosedRuntime extends EcosedPlatformInterface
   Future<dynamic> _exec(
     String channel,
     String method,
-    bool runtimeful,
-  ) async {
+    bool runtimeful, [
+    dynamic arguments,
+  ]) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (pluginChannel() == channel && !runtimeful) {
           continue;
         }
         if (element.pluginChannel() == channel) {
-          return await element.onMethodCall(method);
+          return await element.onMethodCall(method, arguments);
         }
       }
     }

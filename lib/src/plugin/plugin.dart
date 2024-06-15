@@ -18,5 +18,5 @@ abstract interface class EcosedPlugin {
   Widget pluginWidget(BuildContext context);
 
   ///方法调用
-  Future<dynamic> onMethodCall(String method);
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]);
 }

@@ -355,7 +355,7 @@ class ExamplePlugin implements EcosedPlugin {
 
   /// [onMethodCall]方法为插件的方法调用.
   @override
-  Future<dynamic> onMethodCall(String method) async {
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       case Method.add:
         return Global.counter.value++;

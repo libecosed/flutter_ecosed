@@ -6,7 +6,7 @@ import 'src/runtime/runtime.dart';
 
 export 'src/entry/entry.dart';
 export 'src/plugin/plugin.dart';
-export 'src/entry/invoke.dart';
+export 'src/invoke/invoke.dart';
 
 /// 平台插件注册
 final class FlutterEcosedPlatform {

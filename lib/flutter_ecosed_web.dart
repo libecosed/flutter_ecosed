@@ -1,6 +1,7 @@
 /// flutter_ecosed for web.
 library flutter_ecosed_web;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -31,10 +32,9 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
       plugins: plugins,
       runner: runner(
         EcosedInherited(
-          executor: (channel, method) async => exec(
-            channel: channel,
-            method: method,
-          ),
+          executor: (channel, method, [dynamic arguments]) async {
+            return await exec(channel, method, arguments);
+          },
           manager: Directionality(
             textDirection: TextDirection.ltr,
             child: Localizations(
@@ -64,16 +64,23 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
     required List<EcosedPlugin> plugins,
     required Future<void> runner,
   }) async {
-    debugPrint('此应用正在Web浏览器中运行, ${plugins.length}个插件将不会被加载.');
+    if (!kReleaseMode && kIsWeb) {
+      debugPrint('此应用正在Web浏览器中运行, ${plugins.length}个插件将不会被加载.');
+    }
     return await runner;
   }
 
   /// 执行方法
-  Future<dynamic> exec({
-    required String channel,
-    required String method,
-  }) async {
-    web.window.alert('此功能execPluginMethod("$channel", "$method")不支持Web, 将返回空.');
+  Future<dynamic> exec(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    if (!kReleaseMode && kIsWeb) {
+      web.window.alert(
+        '此功能execPluginMethod("$channel", "$method", "$arguments")不支持Web, 将返回空.',
+      );
+    }
     return await null;
   }
 }

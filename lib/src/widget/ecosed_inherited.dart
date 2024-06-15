@@ -9,7 +9,14 @@ final class EcosedInherited extends InheritedWidget {
     required super.child,
   });
 
-  final Future<dynamic> Function(String channel, String method) executor;
+  /// 执行插件方法
+  final Future<dynamic> Function(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) executor;
+
+  /// 管理器界面
   final Widget manager;
 
   @override

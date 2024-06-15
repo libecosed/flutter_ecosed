@@ -1524,16 +1524,8 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             return mAppCompatDelegate.drawerToggleDelegate
         }
 
-//        override fun getLifecycle(): Lifecycle {
-//            return mLifecycle ?: error(
-//                message = "lifecycle is null!"
-//            )
-//        }
-
         override val lifecycle: Lifecycle
-            get() = mLifecycle ?: error(
-                message = "lifecycle is null!"
-            )
+            get() = mLifecycle ?: error(message = "lifecycle is null!")
 
         /**
          * 活动创建时执行

@@ -12,11 +12,15 @@ extension EcosedInvoke on BuildContext {
   /// context.execPluginMethod('example_plugin', 'hello');
   /// ```
   /// {@end-tool}
-  Future<dynamic> execPluginMethod(String channel, String method) async {
+  Future<dynamic> execPluginMethod(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
     EcosedInherited? inherited =
         dependOnInheritedWidgetOfExactType<EcosedInherited>();
     if (inherited != null) {
-      return await inherited.executor(channel, method);
+      return await inherited.executor(channel, method, arguments);
     } else {
       throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
     }
