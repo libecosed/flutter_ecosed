@@ -2,7 +2,7 @@
 library flutter_ecosed_web;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart' as web;
@@ -28,31 +28,28 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
     required List<EcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    return await tip(
+    await output(
       plugins: plugins,
-      runner: runner(
-        EcosedInherited(
-          executor: (channel, method, [dynamic arguments]) async {
-            return await exec(channel, method, arguments);
-          },
-          manager: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Localizations(
-              locale: const Locale('zh', 'CN'),
-              delegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate
-              ],
-              child: const Center(
-                child: Text('此功能不支持Web.'),
-              ),
+      runner: (app) async => runner(app),
+      child: EcosedInherited(
+        executor: (channel, method, [dynamic arguments]) async {
+          return await exec(channel, method, arguments);
+        },
+        manager: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Localizations(
+            locale: const Locale('zh', 'CN'),
+            delegates: const [
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            child: const Center(
+              child: Text('此功能不支持Web.'),
             ),
           ),
-          child: EcosedBanner(
-            child: Builder(
-              builder: (context) => app(context),
-            ),
+        ),
+        child: EcosedBanner(
+          child: Builder(
+            builder: (context) => app(context),
           ),
         ),
       ),
@@ -60,14 +57,18 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
   }
 
   /// 显示提示
-  Future<void> tip({
+  Future<void> output({
     required List<EcosedPlugin> plugins,
-    required Future<void> runner,
+    required Future<void> Function(Widget app) runner,
+    required Widget child,
   }) async {
     if (!kReleaseMode && kIsWeb) {
-      debugPrint('此应用正在Web浏览器中运行, ${plugins.length}个插件将不会被加载.');
+      // 打印提示信息
+      debugPrint(
+        '此应用正在Web浏览器中运行, ${plugins.length}个插件将不会被加载.',
+      );
     }
-    return await runner;
+    return await runner(child);
   }
 
   /// 执行方法
@@ -77,8 +78,9 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
     dynamic arguments,
   ]) async {
     if (!kReleaseMode && kIsWeb) {
+      // 弹出对话框
       web.window.alert(
-        '此功能execPluginMethod("$channel", "$method", "$arguments")不支持Web, 将返回空.',
+        '此功能execPluginMethod("$channel", "$method", "$arguments");不支持Web, 将返回空.',
       );
     }
     return await null;
