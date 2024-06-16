@@ -453,12 +453,14 @@ class ExamplePlugin implements EcosedPlugin {
   @override
   Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
 
-  /// [onMethodCall]方法为插件的方法调用.
+  /// [onMethodCall]方法为插件的方法调用,[arguments]是调用时传递的参数.
   @override
   Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       case Method.add:
         return Global.counter.value++;
+      case 'method_name':
+        return arguments['argument_name'];
       default:
         return await null;
     }
