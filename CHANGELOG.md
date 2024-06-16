@@ -41,3 +41,4 @@
 ## 0.1.2
 * Fix some bugs.
 * Improve the function.
+* Update dependencies.
