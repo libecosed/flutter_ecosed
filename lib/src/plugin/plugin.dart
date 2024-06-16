@@ -33,7 +33,9 @@ import 'package:flutter/widgets.dart';
 ///     }
 ///   }
 /// }
-///
+/// ```
+/// 插件界面
+/// ```dart
 /// class ExamplePluginPage extends StatelessWidget {
 ///   const ExamplePluginPage({super.key});
 ///

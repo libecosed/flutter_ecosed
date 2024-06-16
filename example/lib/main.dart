@@ -459,8 +459,6 @@ class ExamplePlugin implements EcosedPlugin {
     switch (method) {
       case Method.add:
         return Global.counter.value++;
-      case 'method_name':
-        return arguments['argument_name'];
       default:
         return await null;
     }
