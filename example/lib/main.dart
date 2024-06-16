@@ -1,14 +1,16 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
+import 'package:flutter_boost/flutter_boost.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
+  CustomFlutterBinding();
   await runEcosedApp(
     app: (context) => const MyApp(),
     plugins: const [ExamplePlugin()],
@@ -16,147 +18,245 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+final class CustomFlutterBinding extends WidgetsFlutterBinding
+    with BoostFlutterBinding {}
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+  static Map<String, FlutterBoostRouteFactory> routerMap = {
+    '/': (settings, uniqueId) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => const HomeScreen(),
+      );
+    },
+    '/manager': (settings, uniqueId) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => const ManagerScreen(),
+      );
+    },
+  };
 
-class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  late final AnimationController controller;
-  late final CurvedAnimation railAnimation;
-  bool controllerInitialized = false;
-  SizeSelected windowSize = SizeSelected.compact;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: Duration(milliseconds: Global.transitionLength.toInt() * 2),
-      value: 0,
-      vsync: this,
-    );
-    railAnimation = CurvedAnimation(
-      parent: controller,
-      curve: const Interval(0.5, 1.0),
-    );
+  Route<dynamic>? routeFactory(RouteSettings settings, String? uniqueId) {
+    FlutterBoostRouteFactory? func = routerMap[settings.name];
+    if (func == null) return null;
+    return func(settings, uniqueId);
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final double width = MediaQuery.of(context).size.width;
-    final AnimationStatus status = controller.status;
-    switch (width) {
-      case < Global.compactWidthBreakpoint:
-        windowSize = SizeSelected.compact;
-        if (status != AnimationStatus.reverse &&
-            status != AnimationStatus.dismissed) {
-          controller.reverse();
-        }
-      case < Global.mediumWidthBreakpoint:
-        windowSize = SizeSelected.medium;
-        if (status != AnimationStatus.forward &&
-            status != AnimationStatus.completed) {
-          controller.forward();
-        }
-      default:
-        windowSize = SizeSelected.expanded;
-        if (status != AnimationStatus.forward &&
-            status != AnimationStatus.completed) {
-          controller.forward();
-        }
-    }
-    if (!controllerInitialized) {
-      controllerInitialized = true;
-      controller.value = width > Global.mediumWidthBreakpoint ? 1 : 0;
-    }
-  }
-
-  /// Widget的构建入口
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        return NavigationTransition(
-          scaffoldKey: scaffoldKey,
-          animationController: controller,
-          railAnimation: railAnimation,
-          appBar: (title) => AppBar(
-            title: Text(title),
-          ),
-          body: const Expanded(
-            child: MyHomePage(),
-          ),
-          navigationRail: ValueListenableBuilder(
-            valueListenable: Global.pageIndex,
-            builder: (context, value, child) {
-              return NavigationRail(
-                extended: windowSize == SizeSelected.expanded,
-                destinations: Global.navRailDestinations,
-                selectedIndex: value,
-                onDestinationSelected: (index) {
-                  Global.pageIndex.value = index;
-                  Global.showFab.value = Global.pageIndex.value == 0;
-                },
-              );
-            },
-          ),
-          navigationBar: ValueListenableBuilder(
-            valueListenable: Global.pageIndex,
-            builder: (context, value, child) {
-              return NavigationBar(
-                selectedIndex: value,
-                destinations: Global.appBarDestinations,
-                onDestinationSelected: (index) {
-                  Global.pageIndex.value = index;
-                  Global.showFab.value = Global.pageIndex.value == 0;
-                },
-              );
-            },
-          ),
-          floatingActionButton: ValueListenableBuilder(
-            valueListenable: Global.showFab,
-            builder: (context, value, child) {
-              return Visibility(
-                visible: value,
-                child: Builder(
-                  builder: (context) => FloatingActionButton(
-                    onPressed: () =>
-                        context.execPluginMethod('example_channel', Method.add),
-                    tooltip: 'Increment',
-                    child: const Icon(Icons.add),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
+  Widget appBuilder(Widget home) {
+    return MaterialApp(
+      home: home,
+      builder: (_, __) {
+        return home;
       },
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterBoostApp(
+      routeFactory,
+      appBuilder: appBuilder,
+    );
+  }
 }
 
-/// 主页布局类型枚举
-enum SizeSelected {
-  ///折叠
-  compact,
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-  /// 中等
-  medium,
-
-  /// 展开
-  expanded,
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
 }
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('flutter_ecosed 示例应用'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ValueListenableBuilder(
+              valueListenable: Global.counter,
+              builder: (context, value, child) {
+                return Text(
+                  '点击次数:$value',
+                  style: Theme.of(context).textTheme.titleMedium,
+                );
+              },
+            ),
+            MaterialButton(
+              onPressed: () => BoostNavigator.instance.push('/manager'),
+              child: const Text('打开管理器'),
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            context.execPluginMethod('example_channel', Method.add),
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class ManagerScreen extends StatelessWidget {
+  const ManagerScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: context.getManagerWidget());
+  }
+}
+
+// class MyApp extends StatefulWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   State<MyApp> createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+//   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+//   late final AnimationController controller;
+//   late final CurvedAnimation railAnimation;
+//   bool controllerInitialized = false;
+//   SizeSelected windowSize = SizeSelected.compact;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller = AnimationController(
+//       duration: Duration(milliseconds: Global.transitionLength.toInt() * 2),
+//       value: 0,
+//       vsync: this,
+//     );
+//     railAnimation = CurvedAnimation(
+//       parent: controller,
+//       curve: const Interval(0.5, 1.0),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     controller.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+//     final double width = MediaQuery.of(context).size.width;
+//     final AnimationStatus status = controller.status;
+//     switch (width) {
+//       case < Global.compactWidthBreakpoint:
+//         windowSize = SizeSelected.compact;
+//         if (status != AnimationStatus.reverse &&
+//             status != AnimationStatus.dismissed) {
+//           controller.reverse();
+//         }
+//       case < Global.mediumWidthBreakpoint:
+//         windowSize = SizeSelected.medium;
+//         if (status != AnimationStatus.forward &&
+//             status != AnimationStatus.completed) {
+//           controller.forward();
+//         }
+//       default:
+//         windowSize = SizeSelected.expanded;
+//         if (status != AnimationStatus.forward &&
+//             status != AnimationStatus.completed) {
+//           controller.forward();
+//         }
+//     }
+//     if (!controllerInitialized) {
+//       controllerInitialized = true;
+//       controller.value = width > Global.mediumWidthBreakpoint ? 1 : 0;
+//     }
+//   }
+
+//   /// Widget的构建入口
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedBuilder(
+//       animation: controller,
+//       builder: (context, child) {
+//         return NavigationTransition(
+//           scaffoldKey: scaffoldKey,
+//           animationController: controller,
+//           railAnimation: railAnimation,
+//           appBar: (title) => AppBar(
+//             title: Text(title),
+//           ),
+//           body: const Expanded(
+//             child: MyHomePage(),
+//           ),
+//           navigationRail: ValueListenableBuilder(
+//             valueListenable: Global.pageIndex,
+//             builder: (context, value, child) {
+//               return NavigationRail(
+//                 extended: windowSize == SizeSelected.expanded,
+//                 destinations: Global.navRailDestinations,
+//                 selectedIndex: value,
+//                 onDestinationSelected: (index) {
+//                   Global.pageIndex.value = index;
+//                   Global.showFab.value = Global.pageIndex.value == 0;
+//                 },
+//               );
+//             },
+//           ),
+//           navigationBar: ValueListenableBuilder(
+//             valueListenable: Global.pageIndex,
+//             builder: (context, value, child) {
+//               return NavigationBar(
+//                 selectedIndex: value,
+//                 destinations: Global.appBarDestinations,
+//                 onDestinationSelected: (index) {
+//                   Global.pageIndex.value = index;
+//                   Global.showFab.value = Global.pageIndex.value == 0;
+//                 },
+//               );
+//             },
+//           ),
+//           floatingActionButton: ValueListenableBuilder(
+//             valueListenable: Global.showFab,
+//             builder: (context, value, child) {
+//               return Visibility(
+//                 visible: value,
+//                 child: Builder(
+// builder: (context) => FloatingActionButton(
+//   onPressed: () =>
+//       context.execPluginMethod('example_channel', Method.add),
+//   tooltip: 'Increment',
+//   child: const Icon(Icons.add),
+// ),
+//                 ),
+//               );
+//             },
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
+// /// 主页布局类型枚举
+// enum SizeSelected {
+//   ///折叠
+//   compact,
+
+//   /// 中等
+//   medium,
+
+//   /// 展开
+//   expanded,
+// }
 
 /// Global全局类
 class Global {
@@ -165,74 +265,74 @@ class Global {
   /// 应用名称
   static const String appName = 'flutter_ecosed 示例应用';
 
-  /// compact阈值
-  static const double compactWidthBreakpoint = 600;
+//   /// compact阈值
+//   static const double compactWidthBreakpoint = 600;
 
-  /// medium阈值
-  static const double mediumWidthBreakpoint = 840;
+//   /// medium阈值
+//   static const double mediumWidthBreakpoint = 840;
 
-  /// 大小切换动画速率
-  static const double transitionLength = 500;
+//   /// 大小切换动画速率
+//   static const double transitionLength = 500;
 
-  /// 页面索引
-  static final ValueNotifier<int> pageIndex = ValueNotifier(0);
+//   /// 页面索引
+//   static final ValueNotifier<int> pageIndex = ValueNotifier(0);
 
-  /// 计数
+//   /// 计数
   static final ValueNotifier<int> counter = ValueNotifier(0);
 
-  /// 是否显示FAB
-  static final ValueNotifier<bool> showFab = ValueNotifier(true);
+//   /// 是否显示FAB
+//   static final ValueNotifier<bool> showFab = ValueNotifier(true);
 
-  /// 导航栏目的地
-  static const List<NavigationDestination> appBarDestinations = [
-    NavigationDestination(
-      icon: Icon(Icons.home_outlined),
-      selectedIcon: Icon(Icons.home),
-      label: '主页',
-      tooltip: '主页',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.dashboard_outlined),
-      selectedIcon: Icon(Icons.dashboard),
-      label: '管理器',
-      tooltip: 'flutter_ecosed管理器页面',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.publish_outlined),
-      selectedIcon: Icon(Icons.publish),
-      label: 'Pub包',
-      tooltip: 'Pub包发布页面',
-      enabled: true,
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.code_outlined),
-      selectedIcon: Icon(Icons.code),
-      label: 'GitHub',
-      tooltip: 'GitHub源码存储仓库',
-      enabled: true,
-    ),
-  ];
+//   /// 导航栏目的地
+//   static const List<NavigationDestination> appBarDestinations = [
+//     NavigationDestination(
+//       icon: Icon(Icons.home_outlined),
+//       selectedIcon: Icon(Icons.home),
+//       label: '主页',
+//       tooltip: '主页',
+//       enabled: true,
+//     ),
+//     NavigationDestination(
+//       icon: Icon(Icons.dashboard_outlined),
+//       selectedIcon: Icon(Icons.dashboard),
+//       label: '管理器',
+//       tooltip: 'flutter_ecosed管理器页面',
+//       enabled: true,
+//     ),
+//     NavigationDestination(
+//       icon: Icon(Icons.publish_outlined),
+//       selectedIcon: Icon(Icons.publish),
+//       label: 'Pub包',
+//       tooltip: 'Pub包发布页面',
+//       enabled: true,
+//     ),
+//     NavigationDestination(
+//       icon: Icon(Icons.code_outlined),
+//       selectedIcon: Icon(Icons.code),
+//       label: 'GitHub',
+//       tooltip: 'GitHub源码存储仓库',
+//       enabled: true,
+//     ),
+//   ];
 
-  /// 纵向导航栏目的地
-  static final List<NavigationRailDestination> navRailDestinations =
-      appBarDestinations
-          .map(
-            (destination) => NavigationRailDestination(
-              icon: Tooltip(
-                message: destination.label,
-                child: destination.icon,
-              ),
-              selectedIcon: Tooltip(
-                message: destination.label,
-                child: destination.selectedIcon,
-              ),
-              label: Text(destination.label),
-              disabled: false,
-            ),
-          )
-          .toList();
+//   /// 纵向导航栏目的地
+//   static final List<NavigationRailDestination> navRailDestinations =
+//       appBarDestinations
+//           .map(
+//             (destination) => NavigationRailDestination(
+//               icon: Tooltip(
+//                 message: destination.label,
+//                 child: destination.icon,
+//               ),
+//               selectedIcon: Tooltip(
+//                 message: destination.label,
+//                 child: destination.selectedIcon,
+//               ),
+//               label: Text(destination.label),
+//               disabled: false,
+//             ),
+//           )
+//           .toList();
 }
 
 /// 调用方法
@@ -241,94 +341,94 @@ class Method {
   static const String add = 'add';
 }
 
-class NavigationTransition extends StatefulWidget {
-  const NavigationTransition({
-    super.key,
-    required this.scaffoldKey,
-    required this.animationController,
-    required this.railAnimation,
-    required this.navigationRail,
-    required this.navigationBar,
-    required this.appBar,
-    required this.body,
-    required this.floatingActionButton,
-  });
+// class NavigationTransition extends StatefulWidget {
+//   const NavigationTransition({
+//     super.key,
+//     required this.scaffoldKey,
+//     required this.animationController,
+//     required this.railAnimation,
+//     required this.navigationRail,
+//     required this.navigationBar,
+//     required this.appBar,
+//     required this.body,
+//     required this.floatingActionButton,
+//   });
 
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  final AnimationController animationController;
-  final CurvedAnimation railAnimation;
-  final Widget navigationRail;
-  final Widget navigationBar;
-  final Widget floatingActionButton;
-  final PreferredSizeWidget Function(String title) appBar;
-  final Widget body;
+//   final GlobalKey<ScaffoldState> scaffoldKey;
+//   final AnimationController animationController;
+//   final CurvedAnimation railAnimation;
+//   final Widget navigationRail;
+//   final Widget navigationBar;
+//   final Widget floatingActionButton;
+//   final PreferredSizeWidget Function(String title) appBar;
+//   final Widget body;
 
-  @override
-  State<NavigationTransition> createState() => _NavigationTransitionState();
-}
+//   @override
+//   State<NavigationTransition> createState() => _NavigationTransitionState();
+// }
 
-class _NavigationTransitionState extends State<NavigationTransition> {
-  late final AnimationController controller;
-  late final CurvedAnimation railAnimation;
-  late final ReverseAnimation barAnimation;
-  bool controllerInitialized = false;
-  bool showDivider = false;
+// class _NavigationTransitionState extends State<NavigationTransition> {
+//   late final AnimationController controller;
+//   late final CurvedAnimation railAnimation;
+//   late final ReverseAnimation barAnimation;
+//   bool controllerInitialized = false;
+//   bool showDivider = false;
 
-  @override
-  void initState() {
-    super.initState();
-    controller = widget.animationController;
-    railAnimation = widget.railAnimation;
-    barAnimation = ReverseAnimation(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.0, 0.5),
-      ),
-    );
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller = widget.animationController;
+//     railAnimation = widget.railAnimation;
+//     barAnimation = ReverseAnimation(
+//       CurvedAnimation(
+//         parent: controller,
+//         curve: const Interval(0.0, 0.5),
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        key: widget.scaffoldKey,
-        appBar: widget.appBar(Global.appName),
-        body: Row(
-          children: <Widget>[
-            RailTransition(
-              animation: railAnimation,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              child: widget.navigationRail,
-            ),
-            widget.body,
-          ],
-        ),
-        bottomNavigationBar: BarTransition(
-          animation: barAnimation,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          child: widget.navigationBar,
-        ),
-        floatingActionButton: widget.floatingActionButton,
-      ),
-      title: Global.appName,
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-          },
-        ),
-      ),
-      darkTheme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-          },
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         key: widget.scaffoldKey,
+//         appBar: widget.appBar(Global.appName),
+//         body: Row(
+//           children: <Widget>[
+//             RailTransition(
+//               animation: railAnimation,
+//               backgroundColor: Theme.of(context).colorScheme.surface,
+//               child: widget.navigationRail,
+//             ),
+//             widget.body,
+//           ],
+//         ),
+//         bottomNavigationBar: BarTransition(
+//           animation: barAnimation,
+//           backgroundColor: Theme.of(context).colorScheme.surface,
+//           child: widget.navigationBar,
+//         ),
+//         floatingActionButton: widget.floatingActionButton,
+//       ),
+//       title: Global.appName,
+//       themeMode: ThemeMode.system,
+//       theme: ThemeData(
+//         pageTransitionsTheme: const PageTransitionsTheme(
+//           builders: {
+//             TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+//           },
+//         ),
+//       ),
+//       darkTheme: ThemeData(
+//         pageTransitionsTheme: const PageTransitionsTheme(
+//           builders: {
+//             TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class ExamplePlugin implements EcosedPlugin {
   const ExamplePlugin();
@@ -376,265 +476,265 @@ class ExamplePluginPage extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+// class MyHomePage extends StatelessWidget {
+//   const MyHomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: Global.pageIndex,
-      builder: (context, value, child) {
-        return IndexedStack(
-          index: value,
-          children: <Widget>[
-            ValueListenableBuilder(
-              valueListenable: Global.counter,
-              builder: (context, value, child) {
-                return HomeScreen(counter: value);
-              },
-            ),
-            const ManagerScreen(),
-            const WebViewScreen(
-              url: 'https://pub.dev/packages/flutter_ecosed',
-            ),
-            const WebViewScreen(
-              url: 'https://github.com/libecosed/flutter_ecosed',
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder(
+//       valueListenable: Global.pageIndex,
+//       builder: (context, value, child) {
+//         return IndexedStack(
+//           index: value,
+//           children: <Widget>[
+//             ValueListenableBuilder(
+//               valueListenable: Global.counter,
+//               builder: (context, value, child) {
+//                 return HomeScreen(counter: value);
+//               },
+//             ),
+//             const ManagerScreen(),
+//             const WebViewScreen(
+//               url: 'https://pub.dev/packages/flutter_ecosed',
+//             ),
+//             const WebViewScreen(
+//               url: 'https://github.com/libecosed/flutter_ecosed',
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.counter});
+// class HomeScreen extends StatelessWidget {
+//   const HomeScreen({super.key, required this.counter});
 
-  final int counter;
+//   final int counter;
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            'You have pushed the button this many times:',
-          ),
-          Text(
-            '$counter',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           const Text(
+//             'You have pushed the button this many times:',
+//           ),
+//           Text(
+//             '$counter',
+//             style: Theme.of(context).textTheme.titleMedium,
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
-class ManagerScreen extends StatelessWidget {
-  const ManagerScreen({super.key});
+// class ManagerScreen extends StatelessWidget {
+//   const ManagerScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(child: context.getManagerWidget());
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(child: context.getManagerWidget());
+//   }
+// }
 
-class WebViewScreen extends StatelessWidget {
-  const WebViewScreen({super.key, required this.url});
+// class WebViewScreen extends StatelessWidget {
+//   const WebViewScreen({super.key, required this.url});
 
-  final String url;
+//   final String url;
 
-  bool canShowWebView() {
-    if (kIsWeb) return false;
-    if (Platform.isAndroid || Platform.isIOS) return true;
-    return false;
-  }
+//   bool canShowWebView() {
+//     if (kIsWeb) return false;
+//     if (Platform.isAndroid || Platform.isIOS) return true;
+//     return false;
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return canShowWebView()
-        ? Focus(
-            onKeyEvent: (node, event) {
-              if (!kIsWeb) {
-                if ({
-                  LogicalKeyboardKey.arrowLeft,
-                  LogicalKeyboardKey.arrowRight,
-                  LogicalKeyboardKey.arrowUp,
-                  LogicalKeyboardKey.arrowDown,
-                  LogicalKeyboardKey.tab
-                }.contains(event.logicalKey)) {
-                  return KeyEventResult.skipRemainingHandlers;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: GestureDetector(
-              onSecondaryTap: () {},
-              child: WebViewWidget(
-                controller: WebViewController()
-                  ..loadRequest(
-                    Uri.parse(url),
-                  )
-                  ..setJavaScriptMode(
-                    JavaScriptMode.unrestricted,
-                  ),
-              ),
-            ),
-          )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
-                ),
-                TextButton(
-                  onPressed: () => launchUrl(
-                    Uri.parse(url),
-                  ),
-                  child: const Text('通过浏览器打开'),
-                ),
-              ],
-            ),
-          );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return canShowWebView()
+//         ? Focus(
+//             onKeyEvent: (node, event) {
+//               if (!kIsWeb) {
+//                 if ({
+//                   LogicalKeyboardKey.arrowLeft,
+//                   LogicalKeyboardKey.arrowRight,
+//                   LogicalKeyboardKey.arrowUp,
+//                   LogicalKeyboardKey.arrowDown,
+//                   LogicalKeyboardKey.tab
+//                 }.contains(event.logicalKey)) {
+//                   return KeyEventResult.skipRemainingHandlers;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onSecondaryTap: () {},
+//               child: WebViewWidget(
+//                 controller: WebViewController()
+//                   ..loadRequest(
+//                     Uri.parse(url),
+//                   )
+//                   ..setJavaScriptMode(
+//                     JavaScriptMode.unrestricted,
+//                   ),
+//               ),
+//             ),
+//           )
+//         : Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text(
+//                   '当前操作系统${Theme.of(context).platform.name}不支持WebView组件,请通过浏览器打开.',
+//                 ),
+//                 TextButton(
+//                   onPressed: () => launchUrl(
+//                     Uri.parse(url),
+//                   ),
+//                   child: const Text('通过浏览器打开'),
+//                 ),
+//               ],
+//             ),
+//           );
+//   }
+// }
 
-/// 左侧垂直导航切换动画
-class RailTransition extends StatefulWidget {
-  const RailTransition({
-    super.key,
-    required this.animation,
-    required this.backgroundColor,
-    required this.child,
-  });
+// /// 左侧垂直导航切换动画
+// class RailTransition extends StatefulWidget {
+//   const RailTransition({
+//     super.key,
+//     required this.animation,
+//     required this.backgroundColor,
+//     required this.child,
+//   });
 
-  final Animation<double> animation;
-  final Widget child;
-  final Color backgroundColor;
+//   final Animation<double> animation;
+//   final Widget child;
+//   final Color backgroundColor;
 
-  @override
-  State<RailTransition> createState() => _RailTransition();
-}
+//   @override
+//   State<RailTransition> createState() => _RailTransition();
+// }
 
-class _RailTransition extends State<RailTransition> {
-  late Animation<Offset> offsetAnimation;
-  late Animation<double> widthAnimation;
+// class _RailTransition extends State<RailTransition> {
+//   late Animation<Offset> offsetAnimation;
+//   late Animation<double> widthAnimation;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final bool ltr = Directionality.of(context) == TextDirection.ltr;
-    widthAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(SizeAnimation(widget.animation));
-    offsetAnimation = Tween<Offset>(
-      begin: ltr ? const Offset(-1, 0) : const Offset(1, 0),
-      end: Offset.zero,
-    ).animate(OffsetAnimation(widget.animation));
-  }
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+//     final bool ltr = Directionality.of(context) == TextDirection.ltr;
+//     widthAnimation = Tween<double>(
+//       begin: 0,
+//       end: 1,
+//     ).animate(SizeAnimation(widget.animation));
+//     offsetAnimation = Tween<Offset>(
+//       begin: ltr ? const Offset(-1, 0) : const Offset(1, 0),
+//       end: Offset.zero,
+//     ).animate(OffsetAnimation(widget.animation));
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ClipRect(
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: widget.backgroundColor),
-        child: Align(
-          alignment: Alignment.topLeft,
-          widthFactor: widthAnimation.value,
-          child: FractionalTranslation(
-            translation: offsetAnimation.value,
-            child: widget.child,
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipRect(
+//       child: DecoratedBox(
+//         decoration: BoxDecoration(color: widget.backgroundColor),
+//         child: Align(
+//           alignment: Alignment.topLeft,
+//           widthFactor: widthAnimation.value,
+//           child: FractionalTranslation(
+//             translation: offsetAnimation.value,
+//             child: widget.child,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-///底部导航切换动画
-class BarTransition extends StatefulWidget {
-  const BarTransition(
-      {super.key,
-      required this.animation,
-      required this.backgroundColor,
-      required this.child});
+// ///底部导航切换动画
+// class BarTransition extends StatefulWidget {
+//   const BarTransition(
+//       {super.key,
+//       required this.animation,
+//       required this.backgroundColor,
+//       required this.child});
 
-  final Animation<double> animation;
-  final Color backgroundColor;
-  final Widget child;
+//   final Animation<double> animation;
+//   final Color backgroundColor;
+//   final Widget child;
 
-  @override
-  State<BarTransition> createState() => _BarTransition();
-}
+//   @override
+//   State<BarTransition> createState() => _BarTransition();
+// }
 
-class _BarTransition extends State<BarTransition> {
-  late final Animation<Offset> offsetAnimation;
-  late final Animation<double> heightAnimation;
+// class _BarTransition extends State<BarTransition> {
+//   late final Animation<Offset> offsetAnimation;
+//   late final Animation<double> heightAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(OffsetAnimation(widget.animation));
-    heightAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(SizeAnimation(widget.animation));
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     offsetAnimation = Tween<Offset>(
+//       begin: const Offset(0, 1),
+//       end: Offset.zero,
+//     ).animate(OffsetAnimation(widget.animation));
+//     heightAnimation = Tween<double>(
+//       begin: 0,
+//       end: 1,
+//     ).animate(SizeAnimation(widget.animation));
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ClipRect(
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: widget.backgroundColor),
-        child: Align(
-          alignment: Alignment.topLeft,
-          heightFactor: heightAnimation.value,
-          child: FractionalTranslation(
-            translation: offsetAnimation.value,
-            child: widget.child,
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipRect(
+//       child: DecoratedBox(
+//         decoration: BoxDecoration(color: widget.backgroundColor),
+//         child: Align(
+//           alignment: Alignment.topLeft,
+//           heightFactor: heightAnimation.value,
+//           child: FractionalTranslation(
+//             translation: offsetAnimation.value,
+//             child: widget.child,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class SizeAnimation extends CurvedAnimation {
-  SizeAnimation(Animation<double> parent)
-      : super(
-          parent: parent,
-          curve: const Interval(
-            0.2,
-            0.8,
-            curve: Curves.easeInOutCubicEmphasized,
-          ),
-          reverseCurve: Interval(
-            0,
-            0.2,
-            curve: Curves.easeInOutCubicEmphasized.flipped,
-          ),
-        );
-}
+// class SizeAnimation extends CurvedAnimation {
+//   SizeAnimation(Animation<double> parent)
+//       : super(
+//           parent: parent,
+//           curve: const Interval(
+//             0.2,
+//             0.8,
+//             curve: Curves.easeInOutCubicEmphasized,
+//           ),
+//           reverseCurve: Interval(
+//             0,
+//             0.2,
+//             curve: Curves.easeInOutCubicEmphasized.flipped,
+//           ),
+//         );
+// }
 
-class OffsetAnimation extends CurvedAnimation {
-  OffsetAnimation(Animation<double> parent)
-      : super(
-          parent: parent,
-          curve: const Interval(
-            0.4,
-            1.0,
-            curve: Curves.easeInOutCubicEmphasized,
-          ),
-          reverseCurve: Interval(
-            0,
-            0.2,
-            curve: Curves.easeInOutCubicEmphasized.flipped,
-          ),
-        );
-}
+// class OffsetAnimation extends CurvedAnimation {
+//   OffsetAnimation(Animation<double> parent)
+//       : super(
+//           parent: parent,
+//           curve: const Interval(
+//             0.4,
+//             1.0,
+//             curve: Curves.easeInOutCubicEmphasized,
+//           ),
+//           reverseCurve: Interval(
+//             0,
+//             0.2,
+//             curve: Curves.easeInOutCubicEmphasized.flipped,
+//           ),
+//         );
+// }

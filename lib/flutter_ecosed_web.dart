@@ -40,7 +40,9 @@ final class FlutterEcosedWeb extends EcosedPlatformInterface {
           child: Localizations(
             locale: const Locale('zh', 'CN'),
             delegates: const [
+              GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
             child: const Center(
               child: Text('此功能不支持Web.'),

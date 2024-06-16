@@ -117,6 +117,8 @@ final class EcosedRuntime extends EcosedPlatformInterface
           locale: const Locale('zh', 'CN'),
           delegates: const [
             GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
           child: Navigator(
             onGenerateInitialRoutes: (navigator, name) => [

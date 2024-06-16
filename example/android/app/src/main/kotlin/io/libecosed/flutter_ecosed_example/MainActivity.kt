@@ -1,5 +1,10 @@
 package io.libecosed.flutter_ecosed_example
 
-import io.flutter.embedding.android.FlutterActivity
+import com.idlefish.flutterboost.containers.FlutterBoostActivity
 
-class MainActivity : FlutterActivity()
+class MainActivity : FlutterBoostActivity() {
+
+    override fun getUrl(): String {
+        return "/"
+    }
+}

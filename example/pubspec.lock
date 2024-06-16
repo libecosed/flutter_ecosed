@@ -41,6 +41,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -70,6 +86,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_boost:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "5.0.2"
+      resolved-ref: "622e243416a04aae74845fc42444c5cd09eb15b0"
+      url: "https://github.com/alibaba/flutter_boost.git"
+    source: git
+    version: "5.0.2"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -251,6 +276,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -456,6 +489,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.1"
+  xterm:
+    dependency: transitive
+    description:
+      name: xterm
+      sha256: "168dfedca77cba33fdb6f52e2cd001e9fde216e398e89335c19b524bb22da3a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
+  zmodem:
+    dependency: transitive
+    description:
+      name: zmodem
+      sha256: "3b7e5b29f3a7d8aee472029b05165a68438eff2f3f7766edf13daba1e297adbf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.6"
 sdks:
   dart: ">=3.4.1 <4.0.0"
   flutter: ">=3.22.0"
