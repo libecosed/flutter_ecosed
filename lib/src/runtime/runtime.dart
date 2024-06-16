@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:xterm/xterm.dart';
 
 import '../platform/platform_interface.dart';
 import '../plugin/plugin.dart';
@@ -34,13 +35,15 @@ final class EcosedRuntime extends EcosedPlatformInterface
   late String _appVersion;
 
   /// 插件列表
-  late List<EcosedPlugin> _pluginList;
+  final List<EcosedPlugin> _pluginList = [];
 
   /// 插件详细信息列表
-  late List<PluginDetails> _pluginDetailsList;
+  final List<PluginDetails> _pluginDetailsList = [];
 
   /// 滚动控制器
   late ScrollController _scrollController;
+
+  final Terminal _terminal = Terminal();
 
   /// 方法通道平台代码调用Android平台独占
   final MethodChannel _methodChannel = const MethodChannel('flutter_ecosed');
@@ -131,7 +134,7 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
+  Future<dynamic> onMethodCall(String method, [dynamic _]) async {
     switch (method) {
       // 获取平台插件列表
       case _getPluginMethod:
@@ -150,22 +153,12 @@ final class EcosedRuntime extends EcosedPlatformInterface
 
   /// 初始化运行时
   Future<void> _init() async {
-    // 初始化控件绑定
-    WidgetsFlutterBinding.ensureInitialized();
-    // 初始化滚动控制器
-    _scrollController = ScrollController();
-    // 获取包信息
-    PackageInfo info = await PackageInfo.fromPlatform();
-    // 获取应用名称
-    _appName = info.appName.isNotEmpty ? info.appName : "";
-    // 获取应用版本
-    String name = info.version.isNotEmpty ? info.version : "";
-    String code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
-    _appVersion = "$name\t$code";
-    // 初始化插件列表
-    _pluginList = [];
-    // 初始化插件详细信息列表
-    _pluginDetailsList = [];
+    // 初始化Flutter相关
+    await _initFlutter();
+    // 初始化包信息
+    await _initPackage();
+    // 初始化Shell
+    await _initShell();
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
@@ -273,6 +266,31 @@ final class EcosedRuntime extends EcosedPlatformInterface
       }
     }
     return await error.call();
+  }
+
+  /// 初始化Flutter相关组件
+  Future<void> _initFlutter() async {
+    // 初始化控件绑定
+    WidgetsFlutterBinding.ensureInitialized();
+    // 初始化滚动控制器
+    _scrollController = ScrollController();
+  }
+
+  /// 初始化包信息
+  Future<void> _initPackage() async {
+    // 获取包信息
+    PackageInfo info = await PackageInfo.fromPlatform();
+    // 获取应用名称
+    _appName = info.appName.isNotEmpty ? info.appName : "";
+    // 获取应用版本
+    String name = info.version.isNotEmpty ? info.version : "";
+    String code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
+    _appVersion = "$name\t$code";
+  }
+
+  /// 初始化Shell
+  Future<void> _initShell() async {
+    _terminal.write('hello world!');
   }
 
   /// 初始化运行时
