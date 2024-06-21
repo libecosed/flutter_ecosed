@@ -6,38 +6,48 @@ import '../service/service_mixin.dart';
 final class EcosedLibKernel with VMServiceWrapper {
   EcosedLibKernel();
 
-  final EcosedKernelModule module = EcosedKernelModule();
 }
 
-base class EcosedKernelModule implements EcosedPlugin {
-  // 内核模块列表
-  final List<EcosedKernelModule> moduleList = [
-    KernelBridge(),
-  ];
-
+abstract class EcosedKernelModule implements EcosedPlugin {
   @override
-  Future<dynamic> onMethodCall(String method, [arguments]) async {
-    return await null;
+  Future onMethodCall(String method, [arguments]) {
+    // TODO: implement onMethodCall
+    throw UnimplementedError();
   }
 
   @override
-  String pluginAuthor() => '';
+  String pluginAuthor() {
+    // TODO: implement pluginAuthor
+    throw UnimplementedError();
+  }
 
   @override
-  String pluginChannel() => '';
+  String pluginChannel() {
+    // TODO: implement pluginChannel
+    throw UnimplementedError();
+  }
 
   @override
-  String pluginDescription() => '';
+  String pluginDescription() {
+    // TODO: implement pluginDescription
+    throw UnimplementedError();
+  }
 
   @override
-  String pluginName() => '';
+  String pluginName() {
+    // TODO: implement pluginName
+    throw UnimplementedError();
+  }
 
   @override
   Widget pluginWidget(BuildContext context) {
-    return Container();
+    // TODO: implement pluginWidget
+    throw UnimplementedError();
   }
 }
 
-final class KernelBridge extends EcosedKernelModule {}
+class KernelBridge extends EcosedKernelModule {}
 
-final class FileSystem extends EcosedKernelModule {}
+class SystemCall extends EcosedKernelModule {}
+
+class FileSystem extends EcosedKernelModule {}

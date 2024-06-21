@@ -4,13 +4,11 @@ import 'dart:async';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'package:flutter_boost/flutter_boost.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
 // import 'package:url_launcher/url_launcher.dart';
 // import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
-  CustomFlutterBinding();
   await runEcosedApp(
     app: (context) => const MyApp(),
     plugins: const [ExamplePlugin()],
@@ -18,47 +16,18 @@ Future<void> main() async {
   );
 }
 
-final class CustomFlutterBinding extends WidgetsFlutterBinding
-    with BoostFlutterBinding {}
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static Map<String, FlutterBoostRouteFactory> routerMap = {
-    '/': (settings, uniqueId) {
-      return MaterialPageRoute(
-        settings: settings,
-        builder: (_) => const HomeScreen(),
-      );
-    },
-    '/manager': (settings, uniqueId) {
-      return MaterialPageRoute(
-        settings: settings,
-        builder: (_) => const ManagerScreen(),
-      );
-    },
-  };
-
-  Route<dynamic>? routeFactory(RouteSettings settings, String? uniqueId) {
-    FlutterBoostRouteFactory? func = routerMap[settings.name];
-    if (func == null) return null;
-    return func(settings, uniqueId);
-  }
-
-  Widget appBuilder(Widget home) {
-    return MaterialApp(
-      home: home,
-      builder: (_, __) {
-        return home;
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FlutterBoostApp(
-      routeFactory,
-      appBuilder: appBuilder,
+    return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/manager': (context) => context.getManagerWidget(),
+      },
+      title: Global.appName,
     );
   }
 }
@@ -91,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             MaterialButton(
-              onPressed: () => BoostNavigator.instance.push('/manager'),
+              onPressed: () => Navigator.of(context).pushNamed('/manager'),
               child: const Text('打开管理器'),
             )
           ],

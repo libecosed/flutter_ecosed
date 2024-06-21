@@ -23,7 +23,6 @@ dependencies:
   url_launcher: ^6.3.0
   web: ^0.5.1
   package_info_plus: ^8.0.0
-  xterm: ^4.0.0
 
 dev_dependencies:
   flutter_test:
