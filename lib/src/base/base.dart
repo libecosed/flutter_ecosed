@@ -4,8 +4,7 @@ import 'package:flutter_ecosed/src/kernel/kernel.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../platform/platform_interface.dart';
-import '../inherited/inherited.dart';
-import '../plugin/plugin.dart';
+import '../widget/inherited.dart';
 import '../widget/banner.dart';
 
 abstract base class EcosedBase extends EcosedPlatformInterface

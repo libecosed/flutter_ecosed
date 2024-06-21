@@ -3,6 +3,7 @@ library flutter_ecosed_web;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart' as web;
 
@@ -16,7 +17,7 @@ final class FlutterEcosedWeb extends EcosedBase {
 
   /// 注册插件
   static void registerWith(Registrar registrar) {
-    EcosedPlatformInterface.instance = FlutterEcosedWeb();
+    EcosedPlatformInterface.instance = EcosedRuntime();
   }
 
   /// 启动应用

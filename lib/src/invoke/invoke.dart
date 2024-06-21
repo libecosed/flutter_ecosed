@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../inherited/inherited.dart';
+import '../widget/inherited.dart';
 
 /// 调用框架功能的接口
 extension EcosedInvoke on BuildContext {
