@@ -13,23 +13,17 @@ abstract base class EcosedBase extends EcosedPlatformInterface
   @override
   String pluginAuthor() => 'wyq0918dev';
 
+  /// 插件通道
   @override
-  String pluginChannel() {
-    // TODO: implement pluginChannel
-    throw UnimplementedError();
-  }
+  String pluginChannel() => 'ecosed_runtime';
 
+  /// 插件描述
   @override
-  String pluginDescription() {
-    // TODO: implement pluginDescription
-    throw UnimplementedError();
-  }
+  String pluginDescription() => 'FlutterEcosed框架运行时';
 
+  /// 插件名称
   @override
-  String pluginName() {
-    // TODO: implement pluginName
-    throw UnimplementedError();
-  }
+  String pluginName() => 'EcosedRuntime';
 
   /// 插件界面
   @override

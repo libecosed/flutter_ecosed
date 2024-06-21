@@ -718,13 +718,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
-  // await runEcosedApp(
-  //   app: (context) => const MyApp(),
-  //   plugins: const [ExamplePlugin()],
-  //   runner: (app) async => runApp(app),
-  // );
-
-  runApp(const MyApp());
+  await runEcosedApp(
+    app: (context) => const MyApp(),
+    plugins: const [ExamplePlugin()],
+    runner: (app) async => runApp(app),
+  );
 }
 
 class MyApp extends StatefulWidget {

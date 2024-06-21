@@ -105,18 +105,6 @@ final class EcosedRuntime extends EcosedBase {
     return await _exec(channel, method, false, arguments);
   }
 
-  /// 插件通道
-  @override
-  String pluginChannel() => 'ecosed_runtime';
-
-  /// 插件描述
-  @override
-  String pluginDescription() => 'FlutterEcosed框架运行时';
-
-  /// 插件名称
-  @override
-  String pluginName() => 'EcosedRuntime';
-
   /// 方法调用
   @override
   Future<dynamic> onMethodCall(String method, [dynamic _]) async {
