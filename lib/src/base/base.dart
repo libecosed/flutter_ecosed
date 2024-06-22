@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/kernel/kernel.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '../kernel/kernel.dart';
 import '../platform/platform_interface.dart';
+import '../plugin/plugin.dart';
 import '../widget/inherited.dart';
 import '../widget/banner.dart';
 
 abstract base class EcosedBase extends EcosedPlatformInterface
-    implements EcosedKernelModule {
+    implements EcosedPlugin, EcosedKernelModule {
   /// 插件作者
   @override
   String pluginAuthor() => 'wyq0918dev';
@@ -54,19 +55,30 @@ abstract base class EcosedBase extends EcosedPlatformInterface
   }
 
   @override
-  Future<dynamic> onMethodCall(String method, [arguments]) async {}
+  Future<dynamic> onMethodCall(String _, [dynamic __]) async {
+    return await null;
+  }
 
   Widget build(BuildContext context);
 
   Widget buildManager(BuildContext context) => pluginWidget(context);
 
-  Future<dynamic> exec(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]);
+  /// 执行方法
+  Future<dynamic> exec(String channel, String method, [dynamic arguments]);
 
-  Widget builder(WidgetBuilder app) {
+  /// 使用运行器运行
+  Future<void> runWithRunner({
+    required Future<void> Function(Widget app) runner,
+    required WidgetBuilder app,
+  }) async {
+    if (!kReleaseMode && kIsWeb) {
+      // 打印提示信息
+      debugPrint('此应用正在Web浏览器中运行, 资源受限.');
+    }
+    return await runner(_builder(app));
+  }
+
+  Widget _builder(WidgetBuilder app) {
     return EcosedInherited(
       executor: (channel, method, [dynamic arguments]) async {
         return await exec(channel, method, arguments);
@@ -84,17 +96,5 @@ abstract base class EcosedBase extends EcosedPlatformInterface
         ),
       ),
     );
-  }
-
-  /// 显示提示
-  Future<void> runWithRunner({
-    required Future<void> Function(Widget app) runner,
-    required Widget child,
-  }) async {
-    if (!kReleaseMode && kIsWeb) {
-      // 打印提示信息
-      debugPrint('此应用正在Web浏览器中运行, 资源受限.');
-    }
-    return await runner(child);
   }
 }

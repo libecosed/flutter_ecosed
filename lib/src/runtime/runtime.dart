@@ -97,7 +97,7 @@ final class EcosedRuntime extends EcosedBase {
         );
       }
     }
-    return Container();
+    return super.buildManager(context);
   }
 
   @override
@@ -143,7 +143,7 @@ final class EcosedRuntime extends EcosedBase {
     // 通过构建器运行应用
     return await super.runWithRunner(
       runner: _runner,
-      child: super.builder(_app),
+      app: _app,
     );
   }
 

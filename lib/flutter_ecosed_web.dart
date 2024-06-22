@@ -17,7 +17,7 @@ final class FlutterEcosedWeb extends EcosedBase {
 
   /// 注册插件
   static void registerWith(Registrar registrar) {
-    EcosedPlatformInterface.instance = EcosedRuntime();
+    EcosedPlatformInterface.instance = FlutterEcosedWeb();
   }
 
   /// 启动应用
@@ -29,7 +29,7 @@ final class FlutterEcosedWeb extends EcosedBase {
   }) async {
     await super.runWithRunner(
       runner: runner,
-      child: super.builder(app),
+      app: app,
     );
   }
 

@@ -39,6 +39,7 @@
 * Fix some bugs.
 * Update dependencies.
 ## 0.1.2
-* Fix some bugs.
+* Adjust software architecture.
 * Improve the function.
+* Fix some bugs.
 * Update dependencies.

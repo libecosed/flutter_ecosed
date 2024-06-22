@@ -1056,7 +1056,7 @@ class ExamplePlugin implements EcosedPlugin {
 
   /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
   @override
-  String pluginName() => 'Example Plugin';
+  String pluginName() => 'ExamplePlugin';
 
   /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
   @override
