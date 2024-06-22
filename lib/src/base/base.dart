@@ -54,13 +54,14 @@ abstract base class EcosedBase extends EcosedPlatformInterface
     );
   }
 
+  /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String _, [dynamic __]) async {
-    return await null;
-  }
+  Future<dynamic> onMethodCall(String _, [dynamic __]) async => await null;
 
+  /// 管理器布局
   Widget build(BuildContext context);
 
+  /// 获取管理器
   Widget buildManager(BuildContext context) => pluginWidget(context);
 
   /// 执行方法
@@ -68,33 +69,30 @@ abstract base class EcosedBase extends EcosedPlatformInterface
 
   /// 使用运行器运行
   Future<void> runWithRunner({
-    required Future<void> Function(Widget app) runner,
     required WidgetBuilder app,
+    required List<EcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
   }) async {
-    if (!kReleaseMode && kIsWeb) {
-      // 打印提示信息
-      debugPrint('此应用正在Web浏览器中运行, 资源受限.');
-    }
-    return await runner(_builder(app));
+    return await runner(_builder(app)).then((_) {
+      if (!kReleaseMode && kIsWeb) {
+        // 打印提示信息
+        debugPrint('此应用正在Web浏览器中运行, 资源受限.');
+      }
+    });
   }
 
+  /// 构建器
   Widget _builder(WidgetBuilder app) {
     return EcosedInherited(
       executor: (channel, method, [dynamic arguments]) async {
         return await exec(channel, method, arguments);
       },
-      manager: Builder(
-        builder: (context) {
-          return buildManager(context);
-        },
-      ),
-      child: EcosedBanner(
-        child: Builder(
-          builder: (context) {
-            return app(context);
-          },
-        ),
-      ),
+      manager: Builder(builder: (context) {
+        return buildManager(context);
+      }),
+      child: EcosedBanner(child: Builder(builder: (context) {
+        return app(context);
+      })),
     );
   }
 }

@@ -3,9 +3,8 @@ library flutter_ecosed_web;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:web/web.dart' as web;
+import 'package:web/web.dart' show window;
 
 import 'src/base/base.dart';
 import 'src/platform/platform_interface.dart';
@@ -28,8 +27,9 @@ final class FlutterEcosedWeb extends EcosedBase {
     required Future<void> Function(Widget app) runner,
   }) async {
     await super.runWithRunner(
-      runner: runner,
       app: app,
+      plugins: plugins,
+      runner: runner,
     );
   }
 
@@ -42,8 +42,8 @@ final class FlutterEcosedWeb extends EcosedBase {
   ]) async {
     if (!kReleaseMode && kIsWeb) {
       // 弹出对话框
-      web.window.alert(
-        '此功能execPluginMethod("$channel", "$method", "$arguments");不支持Web, 将返回空.',
+      window.alert(
+        '方法execPluginMethod("$channel", "$method", "$arguments")无法在Web浏览器中执行, 将返回null.',
       );
     }
     return await null;
