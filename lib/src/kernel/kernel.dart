@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../plugin/plugin.dart';
 import '../service/service_mixin.dart';
 
-final class EcosedLibKernel with VMServiceWrapper {
+final class EcosedLibKernel extends EcosedKernelModule with VMServiceWrapper {
   EcosedLibKernel();
 }
 
@@ -31,9 +31,7 @@ abstract class EcosedKernelModule implements EcosedPlugin {
   }
 }
 
-class KernelBridge extends EcosedKernelModule {
-  
-}
+class KernelBridge extends EcosedKernelModule {}
 
 class SystemCall extends EcosedKernelModule {}
 
