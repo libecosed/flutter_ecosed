@@ -3,6 +3,9 @@ enum PluginType {
   /// 框架运行时
   runtime,
 
+  /// 运行时基础绑定
+  base,
+
   /// 库操作系统内核
   kernel,
 

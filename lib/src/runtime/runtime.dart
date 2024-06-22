@@ -258,7 +258,7 @@ final class EcosedRuntime extends EcosedBase {
           title: element.pluginName(),
           description: element.pluginDescription(),
           author: element.pluginAuthor(),
-          type: element == this ? PluginType.runtime : PluginType.kernel,
+          type: element == this ? PluginType.runtime : PluginType.base,
         ),
       );
     }
@@ -824,17 +824,23 @@ final class EcosedRuntime extends EcosedBase {
           size: Theme.of(context).iconTheme.size,
           color: Colors.pinkAccent,
         );
-      case PluginType.kernel:
+      case PluginType.base:
         return Icon(
-          Icons.developer_board,
+          Icons.keyboard_command_key,
           size: Theme.of(context).iconTheme.size,
-          color: Colors.blueGrey,
+          color: Colors.pinkAccent,
         );
       case PluginType.platform:
         return Icon(
           Icons.android,
           size: Theme.of(context).iconTheme.size,
           color: Colors.green,
+        );
+      case PluginType.kernel:
+        return Icon(
+          Icons.developer_board,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.blueGrey,
         );
       case PluginType.flutter:
         return const FlutterLogo();
@@ -859,12 +865,15 @@ final class EcosedRuntime extends EcosedBase {
       // 框架运行时
       case PluginType.runtime:
         return '框架运行时';
-      // 内核模块
-      case PluginType.kernel:
-        return '内核模块';
+      // 运行时内核绑定
+      case PluginType.base:
+        return '运行时内核绑定';
       // 平台插件
       case PluginType.platform:
         return '平台插件';
+      // 内核模块
+      case PluginType.kernel:
+        return '内核模块';
       // 普通插件
       case PluginType.flutter:
         return '普通插件';
