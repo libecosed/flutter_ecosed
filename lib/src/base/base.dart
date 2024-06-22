@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../kernel/kernel.dart';
@@ -8,7 +9,7 @@ import '../plugin/plugin.dart';
 import '../widget/inherited.dart';
 import '../widget/banner.dart';
 
-abstract base class EcosedBase extends EcosedPlatformInterface
+base class EcosedBase extends EcosedPlatformInterface
     implements EcosedPlugin, EcosedKernelModule {
   /// 插件作者
   @override
@@ -16,15 +17,15 @@ abstract base class EcosedBase extends EcosedPlatformInterface
 
   /// 插件通道
   @override
-  String pluginChannel() => 'ecosed_runtime';
+  String pluginChannel() => 'ecosed_base';
 
   /// 插件描述
   @override
-  String pluginDescription() => 'FlutterEcosed框架运行时';
+  String pluginDescription() => '运行时内核绑定层';
 
   /// 插件名称
   @override
-  String pluginName() => 'EcosedRuntime';
+  String pluginName() => 'EcosedBase';
 
   /// 插件界面
   @override
@@ -56,16 +57,30 @@ abstract base class EcosedBase extends EcosedPlatformInterface
 
   /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String _, [dynamic __]) async => await null;
+  Future<dynamic> onMethodCall(
+    String _, [
+    dynamic __,
+  ]) async {
+    return await null;
+  }
+
+  /// 获取绑定层
+  EcosedPlugin get get => EcosedBase();
 
   /// 管理器布局
-  Widget build(BuildContext context);
+  Widget build(BuildContext context) => Container();
 
   /// 获取管理器
   Widget buildManager(BuildContext context) => pluginWidget(context);
 
   /// 执行方法
-  Future<dynamic> exec(String channel, String method, [dynamic arguments]);
+  Future<dynamic> exec(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await null;
+  }
 
   /// 使用运行器运行
   Future<void> runWithRunner({

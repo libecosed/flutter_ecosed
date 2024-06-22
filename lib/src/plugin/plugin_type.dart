@@ -1,10 +1,13 @@
 /// 插件类型
 enum PluginType {
-  /// 平台插件，特指Android
-  platform,
-
   /// 框架运行时
   runtime,
+
+  /// 库操作系统内核
+  kernel,
+
+  /// 平台插件，特指Android
+  platform,
 
   /// 普通插件
   flutter,

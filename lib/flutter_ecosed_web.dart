@@ -33,6 +33,18 @@ final class FlutterEcosedWeb extends EcosedBase {
     );
   }
 
+  /// 插件通道
+  @override
+  String pluginChannel() => '';
+
+  /// 插件描述
+  @override
+  String pluginDescription() => '';
+
+  /// 插件名称
+  @override
+  String pluginName() => '';
+
   /// 执行方法
   @override
   Future<dynamic> exec(

@@ -82,6 +82,18 @@ final class EcosedRuntime extends EcosedBase {
     await _startup();
   }
 
+  /// 插件通道
+  @override
+  String pluginChannel() => 'ecosed_runtime';
+
+  /// 插件描述
+  @override
+  String pluginDescription() => 'FlutterEcosed框架运行时';
+
+  /// 插件名称
+  @override
+  String pluginName() => 'EcosedRuntime';
+
   @override
   Widget build(BuildContext context) {
     return _managerBody(context: context);
@@ -236,7 +248,7 @@ final class EcosedRuntime extends EcosedBase {
   /// 初始化运行时
   Future<void> _initRuntime() async {
     // 初始化运行时
-    for (var element in [this]) {
+    for (var element in [this, super.get]) {
       // 添加到内置插件列表
       _pluginList.add(element);
       // 添加到插件详细信息列表
@@ -246,7 +258,7 @@ final class EcosedRuntime extends EcosedBase {
           title: element.pluginName(),
           description: element.pluginDescription(),
           author: element.pluginAuthor(),
-          type: PluginType.runtime,
+          type: element == this ? PluginType.runtime : PluginType.kernel,
         ),
       );
     }
@@ -664,12 +676,14 @@ final class EcosedRuntime extends EcosedBase {
   Future<dynamic> _exec(
     String channel,
     String method,
-    bool runtimeful, [
+    bool internal, [
     dynamic arguments,
   ]) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (pluginChannel() == channel && !runtimeful) {
+        if (pluginChannel() == channel &&
+            super.pluginChannel() == channel &&
+            !internal) {
           continue;
         }
         if (element.pluginChannel() == channel) {
@@ -804,17 +818,23 @@ final class EcosedRuntime extends EcosedBase {
     required PluginDetails details,
   }) {
     switch (details.type) {
-      case PluginType.platform:
-        return Icon(
-          Icons.android,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.green,
-        );
       case PluginType.runtime:
         return Icon(
           Icons.keyboard_command_key,
           size: Theme.of(context).iconTheme.size,
           color: Colors.pinkAccent,
+        );
+      case PluginType.kernel:
+        return Icon(
+          Icons.developer_board,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.blueGrey,
+        );
+      case PluginType.platform:
+        return Icon(
+          Icons.android,
+          size: Theme.of(context).iconTheme.size,
+          color: Colors.green,
         );
       case PluginType.flutter:
         return const FlutterLogo();
@@ -836,12 +856,15 @@ final class EcosedRuntime extends EcosedBase {
   /// 获取插件类型
   String _getPluginType(PluginDetails details) {
     switch (details.type) {
-      // 平台插件
-      case PluginType.platform:
-        return '平台插件';
       // 框架运行时
       case PluginType.runtime:
         return '框架运行时';
+      // 内核模块
+      case PluginType.kernel:
+        return '内核模块';
+      // 平台插件
+      case PluginType.platform:
+        return '平台插件';
       // 普通插件
       case PluginType.flutter:
         return '普通插件';
