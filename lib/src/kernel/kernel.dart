@@ -31,8 +31,8 @@ abstract class EcosedKernelModule implements EcosedPlugin {
   }
 }
 
-class KernelBridge extends EcosedKernelModule {}
+final class KernelBridge extends EcosedKernelModule {}
 
-class SystemCall extends EcosedKernelModule {}
+final class SystemCall extends EcosedKernelModule {}
 
-class FileSystem extends EcosedKernelModule {}
+final class FileSystem extends EcosedKernelModule {}

@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import '../platform/platform_interface.dart';
 import '../plugin/plugin.dart';
 
+/// 启动应用
+///
 /// {@tool snippet}
 ///
 /// 启动应用

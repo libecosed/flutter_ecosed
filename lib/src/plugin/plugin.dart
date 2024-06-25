@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+/// 实现插件的接口
+///
 /// {@tool snippet}
 ///
 /// 实现插件的接口
