@@ -5,7 +5,6 @@ import 'src/platform/platform_entry.dart';
 import 'src/platform/platform_interface.dart';
 
 export 'src/export/export.dart';
-export 'src/plugin/plugin_base.dart';
 
 /// 平台插件注册
 final class EcosedPlatformRegister {
