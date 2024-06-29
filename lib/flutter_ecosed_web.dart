@@ -1,4 +1,4 @@
-/// flutter_ecosed for web.
+/// Web插件注册
 library flutter_ecosed_web;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
