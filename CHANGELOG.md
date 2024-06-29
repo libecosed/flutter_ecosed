@@ -46,3 +46,5 @@
 ## 0.1.3
 * Fix some bugs.
 * Improve the function.
+## 0.2.0-dev.0
+* develop channel publish testing.
