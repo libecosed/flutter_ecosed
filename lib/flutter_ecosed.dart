@@ -8,13 +8,38 @@ import 'src/platform/platform_interface.dart';
 import 'src/plugin/plugin_base.dart';
 
 /// 平台插件注册
+/// 插件注册由Flutter接管,无需手动注册.
 final class EcosedPlatformRegister {
   const EcosedPlatformRegister();
 
   /// 注册插件
+  /// 插件注册由Flutter接管,无需手动注册.
   static void registerWith() {
     EcosedPlatformInterface.instance = EcosedPlatformEntry();
   }
+}
+
+/// 启动应用
+///
+/// {@tool snippet}
+/// ```dart
+/// await runEcosedApp(
+///   app: const MyApp(),
+///   plugins: const [ExamplePlugin()],
+///   runner: (app) async => runApp(app),
+/// );
+/// ```
+/// {@end-tool}
+Future<void> runEcosedApp({
+  required Widget app,
+  required List<EcosedPlugin> plugins,
+  required Future<void> Function(Widget app) runner,
+}) async {
+  return await EcosedPlatformInterface.instance.runEcosedApp(
+    app: app,
+    plugins: plugins,
+    runner: runner,
+  );
 }
 
 /// 实现插件的接口
@@ -64,29 +89,6 @@ final class EcosedPlatformRegister {
 /// ```
 /// {@end-tool}
 abstract interface class EcosedPlugin extends BaseEcosedPlugin {}
-
-/// 启动应用
-///
-/// {@tool snippet}
-/// ```dart
-/// await runEcosedApp(
-///   app: const MyApp(),
-///   plugins: const [ExamplePlugin()],
-///   runner: (app) async => runApp(app),
-/// );
-/// ```
-/// {@end-tool}
-Future<void> runEcosedApp({
-  required Widget app,
-  required List<EcosedPlugin> plugins,
-  required Future<void> Function(Widget app) runner,
-}) async {
-  return await EcosedPlatformInterface.instance.runEcosedApp(
-    app: app,
-    plugins: plugins,
-    runner: runner,
-  );
-}
 
 /// 调用插件方法
 ///
