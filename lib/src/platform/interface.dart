@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../plugin/plugin.dart';
+import '../plugin/plugin_base.dart';
 import 'default.dart';
 
 /// 实现平台接口的抽象类
@@ -25,8 +25,8 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
 
   /// 运行应用
   Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     throw UnimplementedError('未实现runEcosedApp()方法');
@@ -34,7 +34,6 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
 
   /// 执行方法
   Future<dynamic> execPluginMethod(
-    BuildContext context,
     String channel,
     String method, [
     dynamic arguments,
@@ -43,7 +42,7 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
   }
 
   /// 获取管理器
-  Widget getManagerWidget(BuildContext context) {
+  Widget getManagerWidget() {
     throw UnimplementedError('未实现getManagerWidget()方法');
   }
 }

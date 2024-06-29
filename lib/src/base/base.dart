@@ -1,16 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../kernel/kernel.dart';
 import '../platform/interface.dart';
-import '../plugin/plugin.dart';
-import '../widget/inherited.dart';
+import '../plugin/plugin_base.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase
-    implements EcosedPlatformInterface, EcosedPlugin, EcosedKernelModule {
+    implements EcosedPlatformInterface, BaseEcosedPlugin, EcosedKernelModule {
   /// 插件作者
   @override
   String pluginAuthor() => 'wyq0918dev';
@@ -65,7 +63,7 @@ base class EcosedBase
   }
 
   /// 获取绑定层
-  EcosedPlugin get get => EcosedBase();
+  BaseEcosedPlugin get get => EcosedBase();
 
   /// 管理器布局
   Widget build(BuildContext context) => Container();
@@ -84,11 +82,11 @@ base class EcosedBase
 
   /// 使用运行器运行
   Future<void> runWithRunner({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    return await runner(_builder(app)).then((_) {
+    return await runner(EcosedBanner(child: app)).then((_) {
       if (!kReleaseMode && kIsWeb) {
         // 打印提示信息
         debugPrint('此应用正在Web浏览器中运行, 资源受限.');
@@ -96,54 +94,26 @@ base class EcosedBase
     });
   }
 
-  /// 构建器
-  Widget _builder(WidgetBuilder app) {
-    return EcosedInherited(
-      executor: (channel, method, [dynamic arguments]) async {
-        return await exec(channel, method, arguments);
-      },
-      manager: Builder(builder: (context) {
-        return buildManager(context);
-      }),
-      child: EcosedBanner(child: Builder(builder: (context) {
-        return app(context);
-      })),
-    );
-  }
-
   @override
   Future<void> execPluginMethod(
-    BuildContext context,
     String channel,
     String method, [
     dynamic arguments,
   ]) async {
-    EcosedInherited? inherited =
-        context.dependOnInheritedWidgetOfExactType<EcosedInherited>();
-    if (inherited != null) {
-      return await inherited.executor(channel, method, arguments);
-    } else {
-      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
-    }
+    return await exec(channel, method, arguments);
   }
 
   @override
-  Widget getManagerWidget(BuildContext context) {
-    EcosedInherited? inherited =
-        context.dependOnInheritedWidgetOfExactType<EcosedInherited>();
-    if (inherited != null) {
-      return inherited.manager;
-    } else {
-      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
-    }
+  Widget getManagerWidget() {
+    return Builder(builder: (context) => buildManager(context));
   }
 
   @override
-  Future<void> runEcosedApp(
-      {required WidgetBuilder app,
-      required List<EcosedPlugin> plugins,
-      required Future<void> Function(Widget app) runner}) {
-    // TODO: implement runEcosedApp
+  Future<void> runEcosedApp({
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
+    required Future<void> Function(Widget app) runner,
+  }) async {
     throw UnimplementedError();
   }
 }

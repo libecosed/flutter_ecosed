@@ -9,17 +9,17 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
-import '../plugin/plugin.dart';
+import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
   /// 应用程序
-  late WidgetBuilder _app;
+  late Widget _app;
 
   /// 插件列表
-  late List<EcosedPlugin> _plugins;
+  late List<BaseEcosedPlugin> _plugins;
 
   /// 执行器
   late Future<void> Function(Widget app) _runner;
@@ -31,7 +31,7 @@ final class EcosedRuntime extends EcosedBase {
   late String _appVersion;
 
   /// 插件列表
-  final List<EcosedPlugin> _pluginList = [];
+  final List<BaseEcosedPlugin> _pluginList = [];
 
   /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
@@ -68,8 +68,8 @@ final class EcosedRuntime extends EcosedBase {
   /// 启动应用
   @override
   Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     // 赋值
@@ -737,7 +737,7 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 获取插件
-  EcosedPlugin? _getPlugin(PluginDetails details) {
+  BaseEcosedPlugin? _getPlugin(PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel() == details.channel) {

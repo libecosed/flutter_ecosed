@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../platform/interface.dart';
-import '../plugin/plugin.dart';
+import '../plugin/plugin_base.dart';
 import 'runtime.dart';
 
 base mixin RuntimeMixin on EcosedPlatformInterface {
@@ -9,8 +9,8 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
 
   @override
   Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     return await _runtime.runEcosedApp(
@@ -22,13 +22,11 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
 
   @override
   Future<void> execPluginMethod(
-    BuildContext context,
     String channel,
     String method, [
     dynamic arguments,
   ]) async {
     return await _runtime.execPluginMethod(
-      context,
       channel,
       method,
       arguments,
@@ -36,7 +34,7 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
   }
 
   @override
-  Widget getManagerWidget(BuildContext context) {
-    return _runtime.getManagerWidget(context);
+  Widget getManagerWidget() {
+    return _runtime.getManagerWidget();
   }
 }

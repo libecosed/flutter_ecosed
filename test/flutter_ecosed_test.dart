@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/platform/interface.dart';
-import 'package:flutter_ecosed/src/plugin/plugin.dart';
+import 'package:flutter_ecosed/src/plugin/plugin_base.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -10,14 +10,13 @@ final class MockFlutterEcosedPlatform
     implements EcosedPlatformInterface {
   @override
   Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {}
 
   @override
   Future<void> execPluginMethod(
-    BuildContext context,
     String channel,
     String method, [
     dynamic arguments,
@@ -26,7 +25,7 @@ final class MockFlutterEcosedPlatform
   }
 
   @override
-  Widget getManagerWidget(BuildContext context) {
+  Widget getManagerWidget() {
     throw UnimplementedError();
   }
 }
@@ -44,8 +43,8 @@ void main() {
     EcosedPlatformInterface.instance = fakePlatform;
     expect(
       EcosedPlatformInterface.instance.runEcosedApp(
-        app: (context) => Container(),
-        plugins: const <EcosedPlugin>[],
+        app: Container(),
+        plugins: const <BaseEcosedPlugin>[],
         runner: (app) async => runApp(app),
       ),
       Future.value(),

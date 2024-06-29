@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../plugin/plugin.dart';
+import '../plugin/plugin_base.dart';
 import '../service/service_mixin.dart';
 
 final class EcosedLibKernel extends EcosedKernelModule with VMServiceWrapper {
   EcosedLibKernel();
 }
 
-abstract class EcosedKernelModule implements EcosedPlugin {
+abstract class EcosedKernelModule implements BaseEcosedPlugin {
   @override
   String pluginAuthor() => 'wyq0918dev';
 

@@ -48,3 +48,7 @@
 * Improve the function.
 ## 0.2.0-dev.0
 * develop channel publish testing.
+## 0.2.0-dev.1
+* Adjust software architecture.
+* Improve the function.
+* Fix some bugs.

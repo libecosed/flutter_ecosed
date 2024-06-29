@@ -10,7 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
   await runEcosedApp(
-    app: (context) => const MyApp(),
+    app: const MyApp(),
     plugins: const [ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 child: Builder(
                   builder: (context) => FloatingActionButton(
                     onPressed: () =>
-                        context.execPluginMethod('example_channel', Method.add),
+                        execPluginMethod('example_channel', Method.add),
                     tooltip: 'Increment',
                     child: const Icon(Icons.add),
                   ),
@@ -436,7 +436,7 @@ class ManagerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: context.getManagerWidget());
+    return Container(child: getManagerWidget());
   }
 }
 

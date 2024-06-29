@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 
-import '../plugin/plugin.dart';
+import '../plugin/plugin_base.dart';
 import 'interface.dart';
 
 /// 无法正确加载平台时的实现
@@ -13,8 +13,8 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   /// 运行应用 - 抛出未知平台异常
   @override
   Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
+    required Widget app,
+    required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     // 抛出异常
@@ -23,7 +23,6 @@ final class DefaultPlatform extends EcosedPlatformInterface {
 
   @override
   Future<void> execPluginMethod(
-    BuildContext context,
     String channel,
     String method, [
     dynamic arguments,
@@ -33,7 +32,7 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   }
 
   @override
-  Widget getManagerWidget(BuildContext context) {
+  Widget getManagerWidget() {
     // 抛出异常
     throw FlutterError('不支持当前平台$_platform');
   }
