@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../platform/interface.dart';
+import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
 
 /// 实现插件的接口

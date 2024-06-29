@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../platform/interface.dart';
+import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
 import 'runtime.dart';
 
@@ -21,7 +21,7 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
   }
 
   @override
-  Future<void> execPluginMethod(
+  Future<dynamic> execPluginMethod(
     String channel,
     String method, [
     dynamic arguments,

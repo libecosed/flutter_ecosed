@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 
 import '../plugin/plugin_base.dart';
-import 'interface.dart';
+import 'platform_interface.dart';
 
 /// 无法正确加载平台时的实现
 final class DefaultPlatform extends EcosedPlatformInterface {
@@ -22,7 +22,7 @@ final class DefaultPlatform extends EcosedPlatformInterface {
   }
 
   @override
-  Future<void> execPluginMethod(
+  Future<dynamic> execPluginMethod(
     String channel,
     String method, [
     dynamic arguments,

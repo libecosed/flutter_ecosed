@@ -3,8 +3,8 @@ library flutter_ecosed_web;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'src/platform/entry.dart';
-import 'src/platform/interface.dart';
+import 'src/platform/platform_entry.dart';
+import 'src/platform/platform_interface.dart';
 
 /// Web插件注册
 final class EcosedWebRegister {

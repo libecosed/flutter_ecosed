@@ -1,8 +1,8 @@
 /// flutter_ecosed.
 library flutter_ecosed;
 
-import 'src/platform/entry.dart';
-import 'src/platform/interface.dart';
+import 'src/platform/platform_entry.dart';
+import 'src/platform/platform_interface.dart';
 
 export 'src/export/export.dart';
 export 'src/plugin/plugin_base.dart';

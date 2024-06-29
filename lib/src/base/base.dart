@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../kernel/kernel.dart';
-import '../platform/interface.dart';
+import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
 import '../widget/banner.dart';
 
@@ -95,7 +95,7 @@ base class EcosedBase
   }
 
   @override
-  Future<void> execPluginMethod(
+  Future<dynamic> execPluginMethod(
     String channel,
     String method, [
     dynamic arguments,
