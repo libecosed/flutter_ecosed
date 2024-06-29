@@ -1,12 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../plugin/plugin.dart';
+import 'default.dart';
 
 /// 实现平台接口的抽象类
-base class EcosedPlatformInterface extends PlatformInterface {
+abstract class EcosedPlatformInterface extends PlatformInterface {
   EcosedPlatformInterface() : super(token: _token);
 
   /// 令牌
@@ -32,20 +31,19 @@ base class EcosedPlatformInterface extends PlatformInterface {
   }) async {
     throw UnimplementedError('未实现runEcosedApp()方法');
   }
-}
 
-/// 无法正确加载平台时的实现
-final class DefaultPlatform extends EcosedPlatformInterface {
-  /// 运行应用 - 抛出未知平台异常
-  @override
-  Future<void> runEcosedApp({
-    required WidgetBuilder app,
-    required List<EcosedPlugin> plugins,
-    required Future<void> Function(Widget app) runner,
-  }) async {
-    // 获取当前操作系统名称
-    String platform = Platform.operatingSystem;
-    // 抛出异常
-    throw FlutterError('不支持当前平台$platform');
+  /// 执行方法
+  Future<dynamic> execPluginMethod(
+    BuildContext context,
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    throw UnimplementedError('未实现execPluginMethod()方法');
+  }
+
+  /// 获取管理器
+  Widget getManagerWidget(BuildContext context) {
+    throw UnimplementedError('未实现getManagerWidget()方法');
   }
 }

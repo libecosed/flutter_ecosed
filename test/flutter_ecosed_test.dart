@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/platform/platform_interface.dart';
+import 'package:flutter_ecosed/src/platform/interface.dart';
 import 'package:flutter_ecosed/src/plugin/plugin.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-final class MockFlutterEcosedPlatform extends EcosedPlatformInterface
-    with MockPlatformInterfaceMixin {
+final class MockFlutterEcosedPlatform
+    with MockPlatformInterfaceMixin
+    implements EcosedPlatformInterface {
   @override
   Future<void> runEcosedApp({
     required WidgetBuilder app,
     required List<EcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {}
+
+  @override
+  Future<void> execPluginMethod(
+    BuildContext context,
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Widget getManagerWidget(BuildContext context) {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

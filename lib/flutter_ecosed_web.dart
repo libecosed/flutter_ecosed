@@ -7,16 +7,16 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart' show window;
 
 import 'src/base/base.dart';
-import 'src/platform/platform_interface.dart';
+import 'src/platform/interface.dart';
 import 'src/plugin/plugin.dart';
 
 /// Web插件注册
-final class FlutterEcosedWeb extends EcosedBase {
-  FlutterEcosedWeb();
+final class EcosedWebRegister extends EcosedBase {
+  EcosedWebRegister();
 
   /// 注册插件
   static void registerWith(Registrar registrar) {
-    EcosedPlatformInterface.instance = FlutterEcosedWeb();
+    EcosedPlatformInterface.instance = EcosedWebRegister();
   }
 
   /// 启动应用

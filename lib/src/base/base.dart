@@ -4,13 +4,13 @@ import 'package:flutter_ecosed/flutter_ecosed.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../kernel/kernel.dart';
-import '../platform/platform_interface.dart';
+import '../platform/interface.dart';
 import '../plugin/plugin.dart';
 import '../widget/inherited.dart';
 import '../widget/banner.dart';
 
-base class EcosedBase extends EcosedPlatformInterface
-    implements EcosedPlugin, EcosedKernelModule {
+base class EcosedBase
+    implements EcosedPlatformInterface, EcosedPlugin, EcosedKernelModule {
   /// 插件作者
   @override
   String pluginAuthor() => 'wyq0918dev';
@@ -109,5 +109,41 @@ base class EcosedBase extends EcosedPlatformInterface
         return app(context);
       })),
     );
+  }
+
+  @override
+  Future<void> execPluginMethod(
+    BuildContext context,
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    EcosedInherited? inherited =
+        context.dependOnInheritedWidgetOfExactType<EcosedInherited>();
+    if (inherited != null) {
+      return await inherited.executor(channel, method, arguments);
+    } else {
+      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
+    }
+  }
+
+  @override
+  Widget getManagerWidget(BuildContext context) {
+    EcosedInherited? inherited =
+        context.dependOnInheritedWidgetOfExactType<EcosedInherited>();
+    if (inherited != null) {
+      return inherited.manager;
+    } else {
+      throw FlutterError('请检查是否使用runEcosedApp方法启动应用!');
+    }
+  }
+
+  @override
+  Future<void> runEcosedApp(
+      {required WidgetBuilder app,
+      required List<EcosedPlugin> plugins,
+      required Future<void> Function(Widget app) runner}) {
+    // TODO: implement runEcosedApp
+    throw UnimplementedError();
   }
 }

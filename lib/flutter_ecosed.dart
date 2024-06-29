@@ -1,19 +1,18 @@
 /// flutter_ecosed.
 library flutter_ecosed;
 
-import 'src/platform/platform_interface.dart';
-import 'src/runtime/runtime.dart';
+import 'src/platform/entry.dart';
+import 'src/platform/interface.dart';
 
-export 'src/entry/entry.dart';
+export 'src/export/export.dart';
 export 'src/plugin/plugin.dart';
-export 'src/invoke/invoke.dart';
 
 /// 平台插件注册
-final class FlutterEcosedPlatform {
-  const FlutterEcosedPlatform();
+final class EcosedPlatformRegister {
+  const EcosedPlatformRegister();
 
   /// 注册插件
   static void registerWith() {
-    EcosedPlatformInterface.instance = EcosedRuntime();
+    EcosedPlatformInterface.instance = EcosedPlatformEntry();
   }
 }
