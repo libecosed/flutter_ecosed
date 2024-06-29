@@ -8,12 +8,12 @@ import 'src/platform/platform_interface.dart';
 import 'src/plugin/plugin_base.dart';
 
 /// 平台插件注册
-/// 插件注册由Flutter接管,无需手动注册.
+/// 插件注册由Flutter接管,无需手动注册
 final class EcosedPlatformRegister {
   const EcosedPlatformRegister();
 
   /// 注册插件
-  /// 插件注册由Flutter接管,无需手动注册.
+  /// 插件注册由Flutter接管,无需手动注册
   static void registerWith() {
     EcosedPlatformInterface.instance = EcosedPlatformEntry();
   }
