@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-
 abstract class BaseEcosedPlugin {
   ///插件信息
   String pluginChannel();
