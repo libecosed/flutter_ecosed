@@ -154,7 +154,7 @@ final class EcosedRuntime extends EcosedBase {
     // 初始化运行时
     await _initRuntime();
     // 初始化平台层插件
-    await _initPlatform();
+    //await _initPlatform();
     // 初始化普通插件
     await _initPlugins();
   }
@@ -681,17 +681,23 @@ final class EcosedRuntime extends EcosedBase {
   ]) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (pluginChannel() == channel &&
-            super.pluginChannel() == channel &&
-            !internal) {
-          continue;
+        for (var internalPlugin in [this, super.get]) {
+          if (internalPlugin.pluginChannel() == channel && !internal) {
+            return await null;
+          }
         }
+        // if (pluginChannel() == channel &&
+        //     super.pluginChannel() == channel &&
+        //     !internal) {
+        //   continue;
+        // }
         if (element.pluginChannel() == channel) {
           return await element.onMethodCall(method, arguments);
         }
       }
+    } else {
+      return await null;
     }
-    return await null;
   }
 
   /// 判断插件是否为运行时
