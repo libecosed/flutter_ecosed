@@ -1,8 +1,8 @@
 # flutter_ecosed
 
-FlutterEcosed is a Flutter plugin and an advanced Flutter development framework that provides Android platform debugging, plugin development and dashboard functions.
+FlutterEcosed is a Flutter plugin and a simple Flutter library OS and advanced Flutter development framework that providing plugin development and dashboard functions.
 
-FlutterEcosed 是一个 Flutter 插件，也是一个高级的 Flutter 开发框架，提供 Android 平台调试、插件化开发和仪表盘等功能。
+FlutterEcosed 是一个 Flutter 插件，也是一个简单的 Flutter 库操作系统和高级 Flutter 开发框架，提供插件化开发和仪表盘等功能。
 
 <p align="left">
 <img src="https://raw.githubusercontent.com/libecosed/flutter_ecosed/master/screenshot.png" width="200">
