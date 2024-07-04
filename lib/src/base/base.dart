@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -9,6 +8,7 @@ import '../widget/banner.dart';
 
 base class EcosedBase
     implements EcosedPlatformInterface, BaseEcosedPlugin, EcosedKernelModule {
+      const EcosedBase();
   /// 插件作者
   @override
   String pluginAuthor() => 'wyq0918dev';
@@ -63,10 +63,10 @@ base class EcosedBase
   }
 
   /// 获取绑定层
-  BaseEcosedPlugin get get => EcosedBase();
+  BaseEcosedPlugin get get => const EcosedBase();
 
   /// 管理器布局
-  Widget build(BuildContext context) => Container();
+  Widget build(BuildContext context) => const Placeholder();
 
   /// 获取管理器
   Widget buildManager(BuildContext context) => pluginWidget(context);
@@ -86,12 +86,23 @@ base class EcosedBase
     required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    return await runner(EcosedBanner(child: app)).then((_) {
-      if (!kReleaseMode && kIsWeb) {
-        // 打印提示信息
-        debugPrint('此应用正在Web浏览器中运行, 资源受限.');
-      }
+    return await runner(_builder(child: app)).then((_) {
+      // if (!kReleaseMode && kIsWeb) {
+      //   // 打印提示信息
+      //   debugPrint('此应用正在Web浏览器中运行, 资源受限.');
+      // }
     });
+  }
+
+  Widget _builder({required Widget child}) {
+    Navigator(
+      onGenerateInitialRoutes: (navigator, name) => [
+        MaterialPageRoute(
+          builder: (context) => EcosedBanner(child: child),
+        )
+      ],
+    );
+    return EcosedBanner(child: child);
   }
 
   @override
