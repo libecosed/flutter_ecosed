@@ -1,13 +1,14 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_ecosed/src/runtime/runtime_wrapper.dart';
 
 import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
 import 'runtime.dart';
+import 'runtime_wrapper.dart';
 
 base mixin RuntimeMixin on EcosedPlatformInterface {
   final RuntimeWrapper _wrapper = EcosedRuntime()();
 
+  /// 运行应用
   @override
   Future<void> runEcosedApp({
     required Widget app,
@@ -29,6 +30,7 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
     }
   }
 
+  /// 执行插件方法
   @override
   Future<dynamic> execPluginMethod(
     String channel,
@@ -50,6 +52,7 @@ base mixin RuntimeMixin on EcosedPlatformInterface {
     }
   }
 
+  /// 管理器
   @override
   Widget getManagerWidget() {
     try {
