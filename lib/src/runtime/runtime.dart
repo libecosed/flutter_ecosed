@@ -5,6 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
+import '../engine/engine.dart';
+import '../engine/entry.dart';
+import '../framework/framework.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
@@ -107,6 +110,23 @@ final class EcosedRuntime extends EcosedBase {
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
+
+    EngineBridge bridgeScope = EngineBridge();
+
+    await bridgeScope.onCreateEngine(ContextWrapper());
+
+    await bridgeScope.onMethodCall(
+      const CallProxyImport(
+        callMethod: 'get_pluginssss',
+        callArguments: {'channel': 'ecosed_engine'},
+      ),
+      ResultProxyImport(
+        callback: (success) async {
+          //debugPrint(success);
+        },
+      ),
+    );
+
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
   }

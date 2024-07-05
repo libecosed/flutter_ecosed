@@ -72,8 +72,12 @@ class Log {
   }
 }
 
-class Toast {
+class AlertDialog {
   
+}
+
+class Toast {
+
 }
 
 final class MainActivity extends Activity {

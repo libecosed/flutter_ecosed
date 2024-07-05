@@ -5,11 +5,11 @@ import 'package:flutter/widgets.dart';
 
 import '../framework/framework.dart';
 
-abstract interface class FlutterPluginProxy {
-  void onCreateEngine(Context context);
-  void onDestroyEngine();
+abstract interface class PluginProxy {
+  Future<void> onCreateEngine(Context context);
+  Future<void> onDestroyEngine();
 
-  void onMethodCall(
+  Future<void> onMethodCall(
     MethodCallProxy call,
     ResultProxy result,
   );
@@ -41,18 +41,18 @@ abstract base class EcosedFrameworkPlugin extends ContextWrapper {
   late PluginChannel _pluginChannel;
   late EngineWrapper _engine;
 
-  void onEcosedAdded(PluginBinding binding) {
-    _pluginChannel = PluginChannel(binding: binding, channel: channel);
+  Future<void> onEcosedAdded(PluginBinding binding) async {
+    _pluginChannel = PluginChannel(binding: binding, channel: channel());
     attachBaseContext(_pluginChannel.getContext());
     _engine = _pluginChannel.getEngine();
     _pluginChannel.setMethodCallHandler(this);
   }
 
   PluginChannel get getPluginChannel => _pluginChannel;
-  String get title;
-  String get channel;
-  String get author;
-  String get description;
+  String title();
+  String channel();
+  String author();
+  String description();
 
   Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result);
 
@@ -62,7 +62,7 @@ abstract base class EcosedFrameworkPlugin extends ContextWrapper {
   }
 }
 
-abstract interface class EngineWrapper implements FlutterPluginProxy {
+abstract interface class EngineWrapper implements PluginProxy {
   Future<dynamic> execMethodCall(String channel, String method,
       [dynamic arguments]);
 }
@@ -92,7 +92,6 @@ final class PluginChannel {
   EcosedFrameworkPlugin? _plugin;
   String? _method;
   dynamic _arguments;
-
   dynamic _result;
 
   void setMethodCallHandler(EcosedFrameworkPlugin handler) {
@@ -173,50 +172,46 @@ final class Result implements EcosedResult {
 }
 
 mixin BridgeMixin {
-  EngineBridge bridgeScope = EngineBridge()();
+  EngineBridge get bridgeScope => EngineBridge()();
 }
 
 final class EngineBridge extends EcosedFrameworkPlugin
     with EngineMixin
-    implements FlutterPluginProxy {
+    implements PluginProxy {
   EngineBridge call() => this;
-  @override
-  String get author => 'wyq0918dev';
 
   @override
-  String get channel => 'engine_bridge';
+  String author() => 'wyq0918dev';
 
   @override
-  String get description => 'engine bridge';
+  String channel() => 'engine_bridge';
 
   @override
-  String get title => 'EngineBridge';
+  String description() => 'engine bridge';
+
+  @override
+  String title() => 'EngineBridge';
+
+  @override
+  Future<void> onEcosedMethodCall(call, result) async => await null;
 }
 
-base mixin EngineMixin on EcosedFrameworkPlugin implements FlutterPluginProxy {
+base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
   final EcosedEngine engineScope = EcosedEngine()();
 
   @override
-  void onCreateEngine(Context context) {
-    return engineScope.onCreateEngine(context);
+  Future<void> onCreateEngine(Context context) async {
+    return await engineScope.onCreateEngine(context);
   }
 
   @override
-  void onDestroyEngine() {
-    return engineScope.onDestroyEngine();
+  Future<void> onDestroyEngine() async {
+    return await engineScope.onDestroyEngine();
   }
 
   @override
-  Future<void> onEcosedMethodCall(
-    EcosedMethodCall call,
-    EcosedResult result,
-  ) async {
-    return await engineScope.onEcosedMethodCall(call, result);
-  }
-
-  @override
-  void onMethodCall(MethodCallProxy call, ResultProxy result) {
-    return engineScope.onMethodCall(call, result);
+  Future<void> onMethodCall(MethodCallProxy call, ResultProxy result) async {
+    return await engineScope.onMethodCall(call, result);
   }
 }
 
@@ -224,27 +219,24 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     with PluginMixin
     implements EngineWrapper {
   EcosedEngine();
-
-  /// 引擎入口函数
   EcosedEngine call() => this;
 
   /// 引擎初始化状态
   bool initialized = false;
-  late List<EcosedFrameworkPlugin> _pluginList;
-  late List<Map<String, String>> _infoList;
+  final List<EcosedFrameworkPlugin> _pluginList = [];
+  final dynamic _infoList = [];
   late PluginBinding _binding;
+  @override
+  String author() => 'wyq0918dev';
 
   @override
-  String get author => 'wyq0918dev';
+  String channel() => 'ecosed_engine';
 
   @override
-  String get channel => 'ecosed_engine';
+  String description() => 'EcosedEngine';
 
   @override
-  String get description => 'EcosedEngine';
-
-  @override
-  String get title => 'EcosedEngine';
+  String title() => 'EcosedEngine';
 
   @override
   Future<void> onEcosedMethodCall(
@@ -253,7 +245,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   ) async {
     switch (call.method) {
       case 'get_plugins':
-        result.success(_infoList);
+        result.success('a');
         break;
       default:
         result.notImplemented();
@@ -261,35 +253,41 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   }
 
   @override
-  void onCreateEngine(Context context) {
+  Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
       // 打印横幅
-      debugPrint('');
-      // 初始化列表
-      _pluginList = [];
-      _infoList = [];
+      debugPrint('banner');
+      // // 初始化列表
+      // _pluginList = [];
+      // _infoList = [];
+      // 初始化绑定
+      _binding = PluginBinding(context: context, engine: this);
+
+      List<EcosedFrameworkPlugin> list = [];
+      list.add(this);
+      list.addAll(plugins);
+
       // 遍历插件列表
-      for (var element in plugins) {
+      for (var element in list) {
         // 加载插件
         try {
-          element.onEcosedAdded(_binding);
-          debugPrint('插件${element.channel}已加载');
+          await element.onEcosedAdded(_binding);
+          debugPrint('插件${element.channel()}已加载');
         } catch (e) {
-          debugPrint('插件${element.channel}添加失败!\n$e');
-          
+          debugPrint('插件${element.channel()}添加失败!\n$e');
         }
         // 将插件添加进列表
         _pluginList.add(element);
         _infoList.add(
           {
-            'channel': element.channel,
-            'title': element.title,
-            'description': element.description,
-            'author': element.author
+            'channel': element.channel(),
+            'title': element.title(),
+            'description': element.description(),
+            'author': element.author()
           },
         );
         // 打印提示
-        debugPrint('插件${element.channel}已添加到插件列表');
+        debugPrint('插件${element.channel()}已添加到插件列表');
       }
       // 将引擎状态设为已加载
       initialized = true;
@@ -300,23 +298,28 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   }
 
   @override
-  void onDestroyEngine() {
-    if (initialized == true) {
-      _pluginList = [];
-      _infoList = [];
-    } else {
-      debugPrint('请勿重复执行onDestroyEngine!');
-    }
+  Future<void> onDestroyEngine() async {
+    // if (initialized == true) {
+    //   _pluginList = [];
+    //   _infoList = [];
+    // } else {
+    //   debugPrint('请勿重复执行onDestroyEngine!');
+    // }
   }
 
   @override
-  void onMethodCall(
+  Future<void> onMethodCall(
     MethodCallProxy call,
     ResultProxy result,
-  ) {
+  ) async {
     try {
-      result.success(execMethodCall(call.argumentsProxy['channel'],
-          call.methodProxy, call.argumentsProxy));
+      result.success(
+        execMethodCall(
+          call.argumentsProxy['channel'],
+          call.methodProxy,
+          call.argumentsProxy,
+        ),
+      );
     } catch (e) {
       result.error('flutter_ecosed', 'engine: onMethodCall', e);
     }
@@ -348,13 +351,10 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     } catch (e) {
       debugPrint('插件代码调用失败!\n$e');
     }
-    return await result;
+    return await result as dynamic;
   }
 }
 
 mixin PluginMixin {
-  List<EcosedFrameworkPlugin> plugins = [
-    EngineBridge(),
-    EcosedEngine(),
-  ];
+  List<EcosedFrameworkPlugin> plugins = [];
 }
