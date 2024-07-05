@@ -111,13 +111,13 @@ final class EcosedRuntime extends EcosedBase {
     // 初始化运行时
     await _initRuntime();
 
-    EngineBridge bridgeScope = EngineBridge();
+    EcosedEngine bridgeScope = EcosedEngine();
 
     await bridgeScope.onCreateEngine(ContextWrapper());
 
     await bridgeScope.onMethodCall(
       const CallProxyImport(
-        callMethod: 'get_pluginssss',
+        callMethod: 'get_plugins',
         callArguments: {'channel': 'ecosed_engine'},
       ),
       ResultProxyImport(

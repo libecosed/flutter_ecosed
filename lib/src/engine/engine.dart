@@ -116,7 +116,7 @@ final class PluginChannel {
           callArguments: _arguments,
         ),
         Result(
-          successCallBack: (result) {
+          callback: (result) async {
             _result = result;
           },
         ),
@@ -133,7 +133,7 @@ final class Call implements EcosedMethodCall {
   });
 
   final String? callMethod;
-  final String callArguments;
+  final dynamic callArguments;
 
   @override
   String? get method => callMethod;
@@ -144,13 +144,13 @@ final class Call implements EcosedMethodCall {
 
 final class Result implements EcosedResult {
   const Result({
-    required this.successCallBack,
+    required this.callback,
   });
 
-  final Function(dynamic result) successCallBack;
+  final Future<void> Function(dynamic result) callback;
 
   @override
-  void success(dynamic result) => successCallBack(result);
+  void success(dynamic result) => callback(result);
 
   @override
   void error(
@@ -245,7 +245,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   ) async {
     switch (call.method) {
       case 'get_plugins':
-        result.success('a');
+        result.success(_infoList);
         break;
       default:
         result.notImplemented();
@@ -351,7 +351,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     } catch (e) {
       debugPrint('插件代码调用失败!\n$e');
     }
-    return await result as dynamic;
+    return await result;
   }
 }
 
