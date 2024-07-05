@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../kernel/kernel.dart';
-import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
+import '../runtime/runtime_wrapper.dart';
 import '../widget/banner.dart';
 
-base class EcosedBase implements EcosedPlatformInterface, BaseEcosedPlugin, EcosedKernelModule {
+base class EcosedBase
+    implements RuntimeWrapper, BaseEcosedPlugin, EcosedKernelModule {
   const EcosedBase();
 
   /// 插件作者
@@ -19,7 +20,7 @@ base class EcosedBase implements EcosedPlatformInterface, BaseEcosedPlugin, Ecos
 
   /// 插件描述
   @override
-  String pluginDescription() => '运行时内核绑定层';
+  String pluginDescription() => '框架运行时与库操作系统内核的绑定与通信';
 
   /// 插件名称
   @override
@@ -62,8 +63,14 @@ base class EcosedBase implements EcosedPlatformInterface, BaseEcosedPlugin, Ecos
     return await null;
   }
 
+  /// 运行时入口
+  RuntimeWrapper call() => _runtime;
+
   /// 获取绑定层
   BaseEcosedPlugin get get => const EcosedBase();
+
+  /// 获取运行时
+  RuntimeWrapper get _runtime => this;
 
   /// 管理器布局
   Widget build(BuildContext context) => const Placeholder();

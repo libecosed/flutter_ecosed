@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -15,15 +11,6 @@ import '../plugin/plugin_type.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
-  /// 应用程序
-  late Widget _app;
-
-  /// 插件列表
-  late List<BaseEcosedPlugin> _plugins;
-
-  /// 执行器
-  late Future<void> Function(Widget app) _runner;
-
   /// 应用名称
   late String _appName;
 
@@ -37,33 +24,10 @@ final class EcosedRuntime extends EcosedBase {
   final List<PluginDetails> _pluginDetailsList = [];
 
   /// 滚动控制器
-  late ScrollController _scrollController;
-
-  /// 方法通道平台代码调用Android平台独占
-  final MethodChannel _methodChannel = const MethodChannel('flutter_ecosed');
-
-  /// 方法通道调用参数
-  final Map<String, String> _arguments = const {'channel': 'ecosed_engine'};
-
-  /// 默认空模块JSON用于占位
-  static const String _unknownPlugin = '{'
-      '"channel":"unknown",'
-      '"title":"unknown",'
-      '"description":"unknown",'
-      '"author":"unknown"'
-      '}';
-
-  /// 获取插件方法名
-  static const String _getPluginMethod = 'get_plugins';
-
-  /// 打开对话框方法名
-  static const String _openDialogMethod = 'open_dialog';
-
-  /// 关闭对话框方法名
-  static const String _closeDialogMethod = 'close_dialog';
+  final ScrollController _scrollController = ScrollController();
 
   /// PubDev 统一资源定位符
-  static const String _pubDev = 'https://pub.dev/packages/flutter_ecosed';
+  static const String _pubDevUrl = 'https://pub.dev/packages/flutter_ecosed';
 
   /// 启动应用
   @override
@@ -72,14 +36,14 @@ final class EcosedRuntime extends EcosedBase {
     required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    // 赋值
-    _app = app;
-    _plugins = plugins;
-    _runner = runner;
     // 初始化
-    await _init();
+    await _init(plugins: plugins);
     // 启动应用
-    await _startup();
+    await super.runWithRunner(
+      app: app,
+      plugins: plugins,
+      runner: runner,
+    );
   }
 
   /// 插件通道
@@ -130,107 +94,27 @@ final class EcosedRuntime extends EcosedBase {
   @override
   Future<dynamic> onMethodCall(String method, [dynamic _]) async {
     switch (method) {
-      // 获取平台插件列表
-      case _getPluginMethod:
-        return await _getPlatformPluginList();
-      // 打开平台对话框
-      case _openDialogMethod:
-        return await _openPlatformDialog();
-      // 关闭平台对话框
-      case _closeDialogMethod:
-        return await _closePlatformDialog();
-      // 其他值返回空
       default:
         return await null;
     }
   }
 
   /// 初始化运行时
-  Future<void> _init() async {
+  Future<void> _init({required List<BaseEcosedPlugin> plugins}) async {
     // 初始化Flutter相关
     await _initFlutter();
     // 初始化包信息
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
-    // 初始化平台层插件
-    //await _initPlatform();
     // 初始化普通插件
-    await _initPlugins();
-  }
-
-  /// 启动应用
-  Future<void> _startup() async {
-    return await super.runWithRunner(
-      app: _app,
-      plugins: _plugins,
-      runner: _runner,
-    );
-  }
-
-  /// 从引擎获取原生插件JSON
-  Future<List?> _getPlatformPluginList() async {
-    return await _withPlatform(
-      android: () async => await _invokeAndroid(
-        invoke: () async => await _methodChannel.invokeListMethod<String?>(
-          'getPlugins',
-          _arguments,
-        ),
-        error: () async => List.empty(),
-      ),
-      fuchsia: () async => List.empty(),
-      iOS: () async => List.empty(),
-      linux: () async => List.empty(),
-      macOS: () async => List.empty(),
-      windows: () async => List.empty(),
-      web: () async => List.empty(),
-    );
-  }
-
-  /// 从客户端启动对话框
-  Future<bool?> _openPlatformDialog() async {
-    return await _withPlatform(
-      android: () async => await _invokeAndroid(
-        invoke: () async => await _methodChannel.invokeMethod<bool?>(
-          'openDialog',
-          _arguments,
-        ),
-        error: () async => List.empty(),
-      ),
-      fuchsia: () async => await null,
-      iOS: () async => await null,
-      linux: () async => await null,
-      macOS: () async => await null,
-      windows: () async => await null,
-      web: () async => await null,
-    );
-  }
-
-  /// 关闭平台对话框
-  Future<bool?> _closePlatformDialog() async {
-    return await _withPlatform(
-      android: () async => await _invokeAndroid(
-        invoke: () async => await _methodChannel.invokeMethod<bool?>(
-          'closeDialog',
-          _arguments,
-        ),
-        error: () async => List.empty(),
-      ),
-      fuchsia: () async => await null,
-      iOS: () async => await null,
-      linux: () async => await null,
-      macOS: () async => await null,
-      windows: () async => await null,
-      web: () async => await null,
-    );
+    await _initPlugins(plugins: plugins);
   }
 
   /// 初始化Flutter相关组件
   Future<void> _initFlutter() async {
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
-    // 初始化滚动控制器
-    _scrollController = ScrollController();
   }
 
   /// 初始化包信息
@@ -264,37 +148,37 @@ final class EcosedRuntime extends EcosedBase {
     }
   }
 
-  /// 初始化平台层插件
-  Future<void> _initPlatform() async {
-    // 初始化平台插件
-    try {
-      // 遍历原生插件
-      for (var element
-          in (await _exec(pluginChannel(), _getPluginMethod, true) as List? ??
-              [_unknownPlugin])) {
-        // 添加到插件详细信息列表
-        _pluginDetailsList.add(
-          PluginDetails.formJSON(
-            json: jsonDecode(element),
-            type: PluginType.platform,
-          ),
-        );
-      }
-    } on PlatformException {
-      // 平台错误添加未知插件占位
-      _pluginDetailsList.add(
-        PluginDetails.formJSON(
-          json: jsonDecode(_unknownPlugin),
-          type: PluginType.unknown,
-        ),
-      );
-    }
-  }
+  // /// 初始化平台层插件
+  // Future<void> _initPlatform() async {
+  //   // 初始化平台插件
+  //   try {
+  //     // 遍历原生插件
+  //     for (var element
+  //         in (await _exec(pluginChannel(), _getPluginMethod, true) as List? ??
+  //             [_unknownPlugin])) {
+  //       // 添加到插件详细信息列表
+  //       _pluginDetailsList.add(
+  //         PluginDetails.formJSON(
+  //           json: jsonDecode(element),
+  //           type: PluginType.platform,
+  //         ),
+  //       );
+  //     }
+  //   } on PlatformException {
+  //     // 平台错误添加未知插件占位
+  //     _pluginDetailsList.add(
+  //       PluginDetails.formJSON(
+  //         json: jsonDecode(_unknownPlugin),
+  //         type: PluginType.unknown,
+  //       ),
+  //     );
+  //   }
+  // }
 
   /// 初始化普通插件
-  Future<void> _initPlugins() async {
-    if (_plugins.isNotEmpty) {
-      for (var element in _plugins) {
+  Future<void> _initPlugins({required List<BaseEcosedPlugin> plugins}) async {
+    if (plugins.isNotEmpty) {
+      for (var element in plugins) {
         _pluginList.add(element);
         _pluginDetailsList.add(
           PluginDetails(
@@ -309,48 +193,48 @@ final class EcosedRuntime extends EcosedBase {
     }
   }
 
-  /// 根据平台执行
-  Future<dynamic> _withPlatform({
-    required Future<dynamic> Function() android,
-    required Future<dynamic> Function() fuchsia,
-    required Future<dynamic> Function() iOS,
-    required Future<dynamic> Function() linux,
-    required Future<dynamic> Function() macOS,
-    required Future<dynamic> Function() windows,
-    required Future<dynamic> Function() web,
-  }) async {
-    if (kIsWeb) return await web.call();
-    if (Platform.isAndroid) {
-      return await android.call();
-    } else if (Platform.isFuchsia) {
-      return await fuchsia.call();
-    } else if (Platform.isIOS) {
-      return await iOS.call();
-    } else if (Platform.isLinux) {
-      return await linux.call();
-    } else if (Platform.isMacOS) {
-      return await macOS.call();
-    } else if (Platform.isWindows) {
-      return await windows.call();
-    } else {
-      return await null;
-    }
-  }
+  // /// 根据平台执行
+  // Future<dynamic> _withPlatform({
+  //   required Future<dynamic> Function() android,
+  //   required Future<dynamic> Function() fuchsia,
+  //   required Future<dynamic> Function() iOS,
+  //   required Future<dynamic> Function() linux,
+  //   required Future<dynamic> Function() macOS,
+  //   required Future<dynamic> Function() windows,
+  //   required Future<dynamic> Function() web,
+  // }) async {
+  //   if (kIsWeb) return await web.call();
+  //   if (Platform.isAndroid) {
+  //     return await android.call();
+  //   } else if (Platform.isFuchsia) {
+  //     return await fuchsia.call();
+  //   } else if (Platform.isIOS) {
+  //     return await iOS.call();
+  //   } else if (Platform.isLinux) {
+  //     return await linux.call();
+  //   } else if (Platform.isMacOS) {
+  //     return await macOS.call();
+  //   } else if (Platform.isWindows) {
+  //     return await windows.call();
+  //   } else {
+  //     return await null;
+  //   }
+  // }
 
-  /// 平台调用处理机制
-  Future<dynamic> _invokeAndroid({
-    required Future<dynamic> Function() invoke,
-    required Future<dynamic> Function() error,
-  }) async {
-    if (Platform.isAndroid) {
-      try {
-        return await invoke.call();
-      } on PlatformException {
-        return await error.call();
-      }
-    }
-    return await error.call();
-  }
+  // /// 平台调用处理机制
+  // Future<dynamic> _invokeAndroid({
+  //   required Future<dynamic> Function() invoke,
+  //   required Future<dynamic> Function() error,
+  // }) async {
+  //   if (Platform.isAndroid) {
+  //     try {
+  //       return await invoke.call();
+  //     } on PlatformException {
+  //       return await error.call();
+  //     }
+  //   }
+  //   return await error.call();
+  // }
 
   /// 管理器体部
   Widget _managerBody({
@@ -542,7 +426,7 @@ final class EcosedRuntime extends EcosedBase {
             ),
             IconButton(
               onPressed: () => launchUrl(
-                Uri.parse(_pubDev),
+                Uri.parse(_pubDevUrl),
               ),
               icon: Icon(
                 Icons.open_in_browser,
@@ -762,34 +646,6 @@ final class EcosedRuntime extends EcosedBase {
         return SimpleDialog(
           title: const Text('调试菜单 (Flutter)'),
           children: <SimpleDialogOption>[
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text('打开平台调试菜单'),
-                leading: Icon(
-                  Icons.android,
-                  size: Theme.of(context).iconTheme.size,
-                  color: Colors.green,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-                enabled: Theme.of(context).platform == TargetPlatform.android,
-                onTap: () => _exec(pluginChannel(), _openDialogMethod, true),
-              ),
-            ),
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text('关闭平台调试菜单'),
-                leading: Icon(
-                  Icons.android,
-                  size: Theme.of(context).iconTheme.size,
-                  color: Colors.green,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-                enabled: Theme.of(context).platform == TargetPlatform.android,
-                onTap: () => _exec(pluginChannel(), _closeDialogMethod, true),
-              ),
-            ),
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
               child: ListTile(
