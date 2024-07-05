@@ -6,9 +6,9 @@ import '../platform/platform_interface.dart';
 import '../plugin/plugin_base.dart';
 import '../widget/banner.dart';
 
-base class EcosedBase
-    implements EcosedPlatformInterface, BaseEcosedPlugin, EcosedKernelModule {
-      const EcosedBase();
+base class EcosedBase implements EcosedPlatformInterface, BaseEcosedPlugin, EcosedKernelModule {
+  const EcosedBase();
+
   /// 插件作者
   @override
   String pluginAuthor() => 'wyq0918dev';
