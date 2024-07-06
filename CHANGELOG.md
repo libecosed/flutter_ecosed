@@ -52,3 +52,5 @@
 * Adjust software architecture.
 * Improve the function.
 * Fix some bugs.
+## 0.2.0-dev.2
+* Improve the function.

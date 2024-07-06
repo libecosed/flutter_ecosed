@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -299,12 +300,12 @@ final class EcosedEngine extends EcosedFrameworkPlugin
 
   @override
   Future<void> onDestroyEngine() async {
-    // if (initialized == true) {
-    //   _pluginList = [];
-    //   _infoList = [];
-    // } else {
-    //   debugPrint('请勿重复执行onDestroyEngine!');
-    // }
+    if (initialized == true) {
+      _pluginList.clear();
+      _infoList.call();
+    } else {
+      debugPrint('请勿重复执行onDestroyEngine!');
+    }
   }
 
   @override
