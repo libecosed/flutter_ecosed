@@ -99,8 +99,6 @@ base class EcosedBase
     return MultiProvider(
       providers: [
         Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
-        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
-        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
       ],
       child: Directionality(
         textDirection: TextDirection.ltr,
