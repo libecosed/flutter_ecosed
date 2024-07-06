@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import '../kernel/kernel.dart';
 import '../plugin/plugin_base.dart';
@@ -42,12 +43,8 @@ base class EcosedBase
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          child: Navigator(
-            onGenerateInitialRoutes: (navigator, name) => [
-              MaterialPageRoute(
-                builder: (context) => build(context),
-              )
-            ],
+          child: Builder(
+            builder: (context) => build(context),
           ),
         ),
       ),
@@ -93,23 +90,29 @@ base class EcosedBase
     required List<BaseEcosedPlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    return await runner(_builder(child: app)).then((_) {
-      // if (!kReleaseMode && kIsWeb) {
-      //   // 打印提示信息
-      //   debugPrint('此应用正在Web浏览器中运行, 资源受限.');
-      // }
-    });
+    return await runner(_builder(child: app));
   }
 
-  Widget _builder({required Widget child}) {
-    Navigator(
-      onGenerateInitialRoutes: (navigator, name) => [
-        MaterialPageRoute(
-          builder: (context) => EcosedBanner(child: child),
-        )
+  Widget _builder({
+    required Widget child,
+  }) {
+    return MultiProvider(
+      providers: [
+        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
+        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
+        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
       ],
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Navigator(
+          onGenerateInitialRoutes: (navigator, name) => [
+            MaterialPageRoute(
+              builder: (_) => EcosedBanner(child: child),
+            ),
+          ],
+        ),
+      ),
     );
-    return EcosedBanner(child: child);
   }
 
   @override
@@ -135,3 +138,5 @@ base class EcosedBase
     throw UnimplementedError();
   }
 }
+
+class LoginViewmodel extends ChangeNotifier {}

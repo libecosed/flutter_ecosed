@@ -9,6 +9,21 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
+  // await runEcosedApp(
+  //   app: MaterialApp(
+  //     home: Scaffold(
+  //       appBar: AppBar(
+  //         title: const Text('flutter_ecosed'),
+  //       ),
+  //       body: getManagerWidget(),
+  //       bottomNavigationBar: BottomAppBar(child: Text('damn man'),),
+        
+  //     ),
+  //     theme: ThemeData(platform: TargetPlatform.android),
+  //   ),
+  //   plugins: const [],
+  //   runner: (app) async => runApp(app),
+  // );
   await runEcosedApp(
     app: const MyApp(),
     plugins: const [ExamplePlugin()],
@@ -311,21 +326,6 @@ class _NavigationTransitionState extends State<NavigationTransition> {
         floatingActionButton: widget.floatingActionButton,
       ),
       title: Global.appName,
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-          },
-        ),
-      ),
-      darkTheme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-          },
-        ),
-      ),
     );
   }
 }
