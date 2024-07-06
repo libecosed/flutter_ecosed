@@ -257,16 +257,12 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     if (initialized == false) {
       // 打印横幅
       debugPrint('banner');
-      // // 初始化列表
-      // _pluginList = [];
-      // _infoList = [];
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
-
+      // 初始化插件列表
       List<EcosedFrameworkPlugin> list = [];
       list.add(this);
       list.addAll(plugins);
-
       // 遍历插件列表
       for (var element in list) {
         // 加载插件
