@@ -54,3 +54,4 @@
 * Fix some bugs.
 ## 0.2.0-dev.2
 * Improve the function.
+* Use Dart to preliminarily implement the original Android platform layer engine.
