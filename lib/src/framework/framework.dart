@@ -72,13 +72,9 @@ class Log {
   }
 }
 
-class AlertDialog {
-  
-}
+class AlertDialog {}
 
-class Toast {
-
-}
+class Toast {}
 
 final class MainActivity extends Activity {
   @override

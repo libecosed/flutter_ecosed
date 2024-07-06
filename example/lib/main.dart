@@ -17,7 +17,7 @@ Future<void> main() async {
   //       ),
   //       body: getManagerWidget(),
   //       bottomNavigationBar: BottomAppBar(child: Text('damn man'),),
-        
+
   //     ),
   //     theme: ThemeData(platform: TargetPlatform.android),
   //   ),

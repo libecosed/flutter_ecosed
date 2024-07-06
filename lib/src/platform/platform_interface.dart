@@ -43,7 +43,6 @@ abstract class EcosedPlatformInterface extends PlatformInterface {
 
   /// 获取管理器
   Widget getManagerWidget() {
-  
     throw UnimplementedError('未实现getManagerWidget()方法');
   }
 }
