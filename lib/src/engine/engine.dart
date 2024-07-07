@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -256,15 +257,12 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
       // 打印横幅
-      debugPrint('banner');
+      String banner = 'SGVsbG8gV29ybGQ=';
+      debugPrint(utf8.decode(base64Decode(banner)));
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
-      // 初始化插件列表
-      List<EcosedFrameworkPlugin> list = [];
-      list.add(this);
-      list.addAll(plugins);
       // 遍历插件列表
-      for (var element in list) {
+      for (var element in [this, ...plugins]) {
         // 加载插件
         try {
           await element.onEcosedAdded(_binding);
@@ -352,5 +350,23 @@ final class EcosedEngine extends EcosedFrameworkPlugin
 }
 
 mixin PluginMixin {
-  List<EcosedFrameworkPlugin> plugins = [];
+  List<EcosedFrameworkPlugin> plugins = [Example()];
+}
+
+final class Example extends EcosedFrameworkPlugin {
+  @override
+  String author() => 'xeample';
+
+  @override
+  String channel() => 'example';
+
+  @override
+  String description() => 'example';
+
+  @override
+  String title() => 'example';
+
+  @override
+  Future<void> onEcosedMethodCall(
+      EcosedMethodCall call, EcosedResult result) async {}
 }

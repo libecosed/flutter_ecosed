@@ -213,49 +213,6 @@ final class EcosedRuntime extends EcosedBase {
     }
   }
 
-  // /// 根据平台执行
-  // Future<dynamic> _withPlatform({
-  //   required Future<dynamic> Function() android,
-  //   required Future<dynamic> Function() fuchsia,
-  //   required Future<dynamic> Function() iOS,
-  //   required Future<dynamic> Function() linux,
-  //   required Future<dynamic> Function() macOS,
-  //   required Future<dynamic> Function() windows,
-  //   required Future<dynamic> Function() web,
-  // }) async {
-  //   if (kIsWeb) return await web.call();
-  //   if (Platform.isAndroid) {
-  //     return await android.call();
-  //   } else if (Platform.isFuchsia) {
-  //     return await fuchsia.call();
-  //   } else if (Platform.isIOS) {
-  //     return await iOS.call();
-  //   } else if (Platform.isLinux) {
-  //     return await linux.call();
-  //   } else if (Platform.isMacOS) {
-  //     return await macOS.call();
-  //   } else if (Platform.isWindows) {
-  //     return await windows.call();
-  //   } else {
-  //     return await null;
-  //   }
-  // }
-
-  // /// 平台调用处理机制
-  // Future<dynamic> _invokeAndroid({
-  //   required Future<dynamic> Function() invoke,
-  //   required Future<dynamic> Function() error,
-  // }) async {
-  //   if (Platform.isAndroid) {
-  //     try {
-  //       return await invoke.call();
-  //     } on PlatformException {
-  //       return await error.call();
-  //     }
-  //   }
-  //   return await error.call();
-  // }
-
   /// 管理器体部
   Widget _managerBody({
     required BuildContext context,
@@ -590,11 +547,6 @@ final class EcosedRuntime extends EcosedBase {
             return await null;
           }
         }
-        // if (pluginChannel() == channel &&
-        //     super.pluginChannel() == channel &&
-        //     !internal) {
-        //   continue;
-        // }
         if (element.pluginChannel() == channel) {
           return await element.onMethodCall(method, arguments);
         }
