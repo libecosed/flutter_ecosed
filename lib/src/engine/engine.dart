@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../framework/framework.dart';
+import '../values/banner.dart';
 
 abstract interface class PluginProxy {
   Future<void> onCreateEngine(Context context);
@@ -173,7 +174,13 @@ final class Result implements EcosedResult {
 }
 
 mixin BridgeMixin {
-  EngineBridge get bridgeScope => EngineBridge()();
+  late EngineBridge _bridge;
+
+  void initEngineBridge() {
+    _bridge = EngineBridge()();
+  }
+
+  EngineBridge get bridgeScope => _bridge;
 }
 
 final class EngineBridge extends EcosedFrameworkPlugin
@@ -220,25 +227,39 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     with PluginMixin
     implements EngineWrapper {
   EcosedEngine();
+
+  /// 引擎入口函数
   EcosedEngine call() => this;
 
   /// 引擎初始化状态
   bool initialized = false;
+
+  /// 差劲列表
   final List<EcosedFrameworkPlugin> _pluginList = [];
-  final dynamic _infoList = [];
+
+  /// 插件信息列表
+  final List<Map<String, String>> _infoList = [];
+
+  /// 插件绑定
   late PluginBinding _binding;
+
+  /// 插件作者
   @override
   String author() => 'wyq0918dev';
 
+  /// 插件通道
   @override
   String channel() => 'ecosed_engine';
 
+  /// 插件描述
   @override
   String description() => 'EcosedEngine';
 
+  /// 插件名称
   @override
   String title() => 'EcosedEngine';
 
+  /// 调用插件方法
   @override
   Future<void> onEcosedMethodCall(
     EcosedMethodCall call,
@@ -257,7 +278,6 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
       // 打印横幅
-      String banner = 'SGVsbG8gV29ybGQ=';
       debugPrint(utf8.decode(base64Decode(banner)));
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
@@ -295,7 +315,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   Future<void> onDestroyEngine() async {
     if (initialized == true) {
       _pluginList.clear();
-      _infoList.call();
+      _infoList.clear();
     } else {
       debugPrint('请勿重复执行onDestroyEngine!');
     }

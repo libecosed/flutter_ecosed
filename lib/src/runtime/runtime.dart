@@ -13,7 +13,7 @@ import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 
 /// 运行时
-final class EcosedRuntime extends EcosedBase {
+final class EcosedRuntime extends EcosedBase with BridgeMixin {
   /// 应用名称
   late String _appName;
 
@@ -111,10 +111,7 @@ final class EcosedRuntime extends EcosedBase {
     // 初始化运行时
     await _initRuntime();
 
-    EcosedEngine bridgeScope = EcosedEngine();
-
-    await bridgeScope.onCreateEngine(ContextWrapper());
-
+    await _initBridge();
     await bridgeScope.onMethodCall(
       const CallProxyImport(
         callMethod: 'get_plugins',
@@ -122,7 +119,8 @@ final class EcosedRuntime extends EcosedBase {
       ),
       ResultProxyImport(
         callback: (success) async {
-          //debugPrint(success);
+          List<Map<String, String>> list = await success;
+          debugPrint('$list');
         },
       ),
     );
@@ -166,6 +164,11 @@ final class EcosedRuntime extends EcosedBase {
         ),
       );
     }
+  }
+
+  Future<void> _initBridge() async {
+    initEngineBridge();
+    await bridgeScope.onCreateEngine(ContextWrapper());
   }
 
   // /// 初始化平台层插件
