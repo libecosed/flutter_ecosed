@@ -176,7 +176,7 @@ final class Result implements EcosedResult {
 mixin BridgeMixin {
   late EngineBridge _bridge;
 
-  void initEngineBridge() {
+  void initBridge() {
     _bridge = EngineBridge()();
   }
 
@@ -238,7 +238,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   final List<EcosedFrameworkPlugin> _pluginList = [];
 
   /// 插件信息列表
-  final List<Map<String, String>> _infoList = [];
+  final List<Map<String, dynamic>> _infoList = [];
 
   /// 插件绑定
   late PluginBinding _binding;

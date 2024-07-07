@@ -25,16 +25,16 @@ final class PluginDetails {
   /// 插件类型
   final PluginType type;
 
-  /// 使用JSON解析插件详细信息
-  factory PluginDetails.formJSON({
-    required Map<String, dynamic> json,
+  /// 使用Map解析插件详细信息
+  factory PluginDetails.formMap({
+    required Map<String, dynamic> map,
     required PluginType type,
   }) {
     return PluginDetails(
-      channel: json['channel'],
-      title: json['title'],
-      description: json['description'],
-      author: json['author'],
+      channel: map['channel'],
+      title: map['title'],
+      description: map['description'],
+      author: map['author'],
       type: type,
     );
   }

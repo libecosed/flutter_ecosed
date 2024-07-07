@@ -32,6 +32,13 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   /// PubDev 统一资源定位符
   static const String _pubDevUrl = 'https://pub.dev/packages/flutter_ecosed';
 
+  static const Map<String, dynamic> _unknownPlugin = {
+    'channel': '',
+    'title': '',
+    'description': '',
+    'author': ''
+  };
+
   /// 启动应用
   @override
   Future<void> runEcosedApp({
@@ -97,6 +104,20 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   @override
   Future<dynamic> onMethodCall(String method, [dynamic _]) async {
     switch (method) {
+      case 'get_plugins':
+        List<Map<String, dynamic>> list = [];
+        await bridgeScope.onMethodCall(
+          const CallProxyImport(
+            callMethod: 'get_plugins',
+            callArguments: {'channel': 'ecosed_engine'},
+          ),
+          ResultProxyImport(
+            callback: (success) async {
+              list = await success;
+            },
+          ),
+        );
+        return list;
       default:
         return await null;
     }
@@ -110,20 +131,8 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
-
-    await _initBridge();
-    await bridgeScope.onMethodCall(
-      const CallProxyImport(
-        callMethod: 'get_plugins',
-        callArguments: {'channel': 'ecosed_engine'},
-      ),
-      ResultProxyImport(
-        callback: (success) async {
-          List<Map<String, String>> list = await success;
-          debugPrint('$list');
-        },
-      ),
-    );
+    // 初始化引擎
+    await _initEngine();
 
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
@@ -166,37 +175,41 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     }
   }
 
-  Future<void> _initBridge() async {
-    initEngineBridge();
+  Future<void> _initEngine() async {
+    initBridge();
     await bridgeScope.onCreateEngine(ContextWrapper());
   }
 
-  // /// 初始化平台层插件
-  // Future<void> _initPlatform() async {
-  //   // 初始化平台插件
-  //   try {
-  //     // 遍历原生插件
-  //     for (var element
-  //         in (await _exec(pluginChannel(), _getPluginMethod, true) as List? ??
-  //             [_unknownPlugin])) {
-  //       // 添加到插件详细信息列表
-  //       _pluginDetailsList.add(
-  //         PluginDetails.formJSON(
-  //           json: jsonDecode(element),
-  //           type: PluginType.platform,
-  //         ),
-  //       );
-  //     }
-  //   } on PlatformException {
-  //     // 平台错误添加未知插件占位
-  //     _pluginDetailsList.add(
-  //       PluginDetails.formJSON(
-  //         json: jsonDecode(_unknownPlugin),
-  //         type: PluginType.unknown,
-  //       ),
-  //     );
-  //   }
-  // }
+  /// 初始化平台层插件
+  Future<void> _initPlatform() async {
+    // 初始化平台插件
+    try {
+      List<Map<String, dynamic>> l = await _exec(
+        pluginChannel(),
+        'get_plugins',
+        true,
+      );
+
+      // 遍历原生插件
+      for (var element in (l as List? ?? [_unknownPlugin])) {
+        // 添加到插件详细信息列表
+        _pluginDetailsList.add(
+          PluginDetails.formMap(
+            map: element,
+            type: PluginType.platform,
+          ),
+        );
+      }
+    } catch (exception) {
+      // 平台错误添加未知插件占位
+      _pluginDetailsList.add(
+        PluginDetails.formMap(
+          map: _unknownPlugin,
+          type: PluginType.unknown,
+        ),
+      );
+    }
+  }
 
   /// 初始化普通插件
   Future<void> _initPlugins({required List<BaseEcosedPlugin> plugins}) async {
