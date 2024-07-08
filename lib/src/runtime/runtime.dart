@@ -106,21 +106,48 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     switch (method) {
       case 'get_plugins':
         List<Map<String, dynamic>> list = [];
-        await bridgeScope.onMethodCall(
-          const CallProxyImport(
-            callMethod: 'get_plugins',
-            callArguments: {'channel': 'ecosed_engine'},
-          ),
-          ResultProxyImport(
-            callback: (success) async {
-              list = await success;
-            },
-          ),
+        // await bridgeScope.onMethodCall(
+        //   const CallProxyImport(
+        //     callMethod: 'get_plugins',
+        //     callArguments: {'channel': 'ecosed_engine'},
+        //   ),
+        //   ResultProxyImport(
+        //     callback: (success) async {
+        //       list = await success;
+        //     },
+        //   ),
+        // );
+        await execFramework(
+          'get_plugins',
+          (success) {
+            list = success;
+          },
+          {'channel': 'ecosed_engine'},
         );
         return list;
       default:
         return await null;
     }
+  }
+
+  Future<dynamic> execFramework(
+    String method,
+    Function(dynamic success) callback, [
+    dynamic arguments,
+  ]) async {
+    dynamic result;
+    await bridgeScope.onMethodCall(
+      const CallProxyImport(
+        callMethod: 'get_plugins',
+        callArguments: {'channel': 'ecosed_engine'},
+      ),
+      ResultProxyImport(
+        callback: (success) async {
+          result = await success;
+        },
+      ),
+    );
+    return await result;
   }
 
   /// 初始化运行时
@@ -133,6 +160,8 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     await _initRuntime();
     // 初始化引擎
     await _initEngine();
+
+    await _initFramework();
 
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
@@ -181,7 +210,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   }
 
   /// 初始化平台层插件
-  Future<void> _initPlatform() async {
+  Future<void> _initFramework() async {
     // 初始化平台插件
     try {
       List<Map<String, dynamic>> l = await _exec(
