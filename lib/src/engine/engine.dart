@@ -10,21 +10,7 @@ abstract interface class PluginProxy {
   Future<void> onCreateEngine(Context context);
   Future<void> onDestroyEngine();
 
-  Future<void> onMethodCall(
-    MethodCallProxy call,
-    ResultProxy result,
-  );
-}
-
-abstract interface class MethodCallProxy {
-  String get methodProxy;
-  dynamic get argumentsProxy;
-}
-
-abstract interface class ResultProxy {
-  void success(dynamic result);
-  void error(String errorCode, String? errorMessage, dynamic errorDetails);
-  void notImplemented();
+  Future<dynamic> onMethodCall(String methodProxy, dynamic argumentsProxy);
 }
 
 abstract interface class EcosedMethodCall {
@@ -222,8 +208,11 @@ base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
   }
 
   @override
-  Future<void> onMethodCall(MethodCallProxy call, ResultProxy result) async {
-    return await engineScope.onMethodCall(call, result);
+  Future<dynamic> onMethodCall(
+    String methodProxy,
+    dynamic argumentsProxy,
+  ) async {
+    return await engineScope.onMethodCall(methodProxy, argumentsProxy);
   }
 }
 
@@ -327,22 +316,32 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     }
   }
 
+  // @override
+  // Future<void> onMethodCall(
+  //   MethodCallProxy call,
+  //   ResultProxy result,
+  // ) async {
+
+  // }
+
   @override
-  Future<void> onMethodCall(
-    MethodCallProxy call,
-    ResultProxy result,
-  ) async {
-    try {
-      result.success(
-        execMethodCall(
-          call.argumentsProxy['channel'],
-          call.methodProxy,
-          call.argumentsProxy,
-        ),
-      );
-    } catch (e) {
-      result.error('flutter_ecosed', 'engine: onMethodCall', e);
-    }
+  Future<dynamic> onMethodCall(String methodProxy, argumentsProxy) async {
+    // try {
+    //   result.success(
+    //     execMethodCall(
+    //       call.argumentsProxy['channel'],
+    //       call.methodProxy,
+    //       call.argumentsProxy,
+    //     ),
+    //   );
+    // } catch (e) {
+    //   result.error('flutter_ecosed', 'engine: onMethodCall', e);
+    // }
+    return await execMethodCall(
+      argumentsProxy['channel'],
+      methodProxy,
+      argumentsProxy,
+    );
   }
 
   @override

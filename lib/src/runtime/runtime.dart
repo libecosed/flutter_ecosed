@@ -6,7 +6,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
 import '../engine/engine.dart';
-import '../engine/entry.dart';
 import '../framework/framework.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
@@ -102,52 +101,26 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
 
   /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String method, [dynamic _]) async {
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       case 'get_plugins':
-        List<Map<String, dynamic>> list = [];
-        // await bridgeScope.onMethodCall(
-        //   const CallProxyImport(
-        //     callMethod: 'get_plugins',
-        //     callArguments: {'channel': 'ecosed_engine'},
-        //   ),
-        //   ResultProxyImport(
-        //     callback: (success) async {
-        //       list = await success;
-        //     },
-        //   ),
-        // );
-        await execFramework(
+        return await execFramework(
           'get_plugins',
-          (success) {
-            list = success;
-          },
           {'channel': 'ecosed_engine'},
         );
-        return list;
       default:
         return await null;
     }
   }
 
   Future<dynamic> execFramework(
-    String method,
-    Function(dynamic success) callback, [
+    String method, [
     dynamic arguments,
   ]) async {
-    dynamic result;
-    await bridgeScope.onMethodCall(
-      const CallProxyImport(
-        callMethod: 'get_plugins',
-        callArguments: {'channel': 'ecosed_engine'},
-      ),
-      ResultProxyImport(
-        callback: (success) async {
-          result = await success;
-        },
-      ),
+    return await bridgeScope.onMethodCall(
+      method,
+      arguments,
     );
-    return await result;
   }
 
   /// 初始化运行时
@@ -213,14 +186,10 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   Future<void> _initFramework() async {
     // 初始化平台插件
     try {
-      List<Map<String, dynamic>> l = await _exec(
-        pluginChannel(),
-        'get_plugins',
-        true,
-      );
-
       // 遍历原生插件
-      for (var element in (l as List? ?? [_unknownPlugin])) {
+      for (var element
+          in (await _exec(pluginChannel(), 'get_plugins', true) as List? ??
+              [_unknownPlugin])) {
         // 添加到插件详细信息列表
         _pluginDetailsList.add(
           PluginDetails.formMap(
