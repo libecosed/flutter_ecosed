@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../framework/framework.dart';
@@ -118,11 +117,11 @@ final class PluginChannel {
     _arguments = arguments;
     if (name == channel) {
       await _plugin?.onEcosedMethodCall(
-        Call(
+        CallImport(
           callMethod: _method,
           callArguments: _arguments,
         ),
-        Result(
+        ResultImport(
           callback: (result) async {
             _result = result;
           },
@@ -133,8 +132,8 @@ final class PluginChannel {
   }
 }
 
-final class Call implements EcosedMethodCall {
-  const Call({
+final class CallImport implements EcosedMethodCall {
+  const CallImport({
     required this.callMethod,
     required this.callArguments,
   });
@@ -149,8 +148,8 @@ final class Call implements EcosedMethodCall {
   dynamic get arguments => callArguments;
 }
 
-final class Result implements EcosedResult {
-  const Result({
+final class ResultImport implements EcosedResult {
+  const ResultImport({
     required this.callback,
   });
 
@@ -228,6 +227,8 @@ base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
   }
 }
 
+const String tag = 'flutter_ecosed_engine';
+
 final class EcosedEngine extends EcosedFrameworkPlugin
     with PluginMixin
     implements EngineWrapper {
@@ -283,7 +284,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
       // 打印横幅
-      debugPrint(utf8.decode(base64Decode(banner)));
+      Log.d(tag, '\n${utf8.decode(base64Decode(banner))}');
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
       // 遍历插件列表
@@ -291,9 +292,9 @@ final class EcosedEngine extends EcosedFrameworkPlugin
         // 加载插件
         try {
           await element.onEcosedAdded(_binding);
-          debugPrint('插件${element.channel}已加载');
+          Log.d(tag, '插件${element.channel}已加载');
         } catch (e) {
-          debugPrint('插件${element.channel}添加失败!\n$e');
+          Log.d(tag, '插件${element.channel}添加失败!\n$e');
         }
         // 将插件添加进列表
         _pluginList.add(element);
@@ -306,13 +307,13 @@ final class EcosedEngine extends EcosedFrameworkPlugin
           },
         );
         // 打印提示
-        debugPrint('插件${element.channel}已添加到插件列表');
+        Log.d(tag, '插件${element.channel}已添加到插件列表');
       }
       // 将引擎状态设为已加载
       initialized = true;
     } else {
       // 打印提示
-      debugPrint('请勿重复执行onCreateEngine!');
+      Log.d(tag, '请勿重复执行onCreateEngine!');
     }
   }
 
@@ -322,7 +323,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
       _pluginList.clear();
       _infoList.clear();
     } else {
-      debugPrint('请勿重复执行onDestroyEngine!');
+      Log.d(tag, '请勿重复执行onDestroyEngine!');
     }
   }
 
@@ -359,7 +360,8 @@ final class EcosedEngine extends EcosedFrameworkPlugin
             method,
             arguments,
           );
-          debugPrint(
+          Log.d(
+            tag,
             '插件代码调用成功!\n'
             '通道名称:$channel.\n'
             '方法名称:$method.\n'
@@ -367,20 +369,21 @@ final class EcosedEngine extends EcosedFrameworkPlugin
           );
         }
       }
-    } catch (e) {
-      debugPrint('插件代码调用失败!\n$e');
+    } catch (exception) {
+      Log.d(tag, '插件代码调用失败!\n$exception');
     }
     return await result;
   }
 }
 
 base mixin PluginMixin {
+  /// 插件列表
   List<EcosedFrameworkPlugin> plugins = [Example()];
 }
 
 final class Example extends EcosedFrameworkPlugin {
   @override
-  String get author => 'xeample';
+  String get author => 'exeample';
 
   @override
   String get channel => 'example';

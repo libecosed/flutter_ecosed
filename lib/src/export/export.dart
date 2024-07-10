@@ -5,7 +5,6 @@ import '../plugin/plugin_base.dart';
 
 /// 启动应用
 ///
-/// {@tool snippet}
 /// ```dart
 /// await runEcosedApp(
 ///   app: const MyApp(),
@@ -13,7 +12,6 @@ import '../plugin/plugin_base.dart';
 ///   runner: (app) async => runApp(app),
 /// );
 /// ```
-/// {@end-tool}
 Future<void> runEcosedApp({
   required Widget app,
   required List<EcosedPlugin> plugins,
@@ -28,7 +26,6 @@ Future<void> runEcosedApp({
 
 /// 实现插件的接口
 ///
-/// {@tool snippet}
 /// ```dart
 /// class ExamplePlugin implements EcosedBasePlugin {
 ///   const ExamplePlugin();
@@ -71,16 +68,13 @@ Future<void> runEcosedApp({
 ///   }
 /// }
 /// ```
-/// {@end-tool}
 abstract interface class EcosedPlugin extends BaseEcosedPlugin {}
 
 /// 调用插件方法
 ///
-/// {@tool snippet}
 /// ```dart
 /// execPluginMethod('example_plugin', 'hello', {'name': 'value'});
 /// ```
-/// {@end-tool}
 Future<dynamic> execPluginMethod(
   String channel,
   String method, [
@@ -95,11 +89,9 @@ Future<dynamic> execPluginMethod(
 
 /// 获取管理器控件
 ///
-/// {@tool snippet}
 /// ```dart
 /// getManagerWidget();
 /// ```
-/// {@end-tool}
 Widget getManagerWidget() {
   return EcosedPlatformInterface.instance.getManagerWidget();
 }

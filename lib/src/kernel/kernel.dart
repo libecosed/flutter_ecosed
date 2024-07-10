@@ -26,7 +26,7 @@ abstract class EcosedKernelModule implements BaseEcosedPlugin {
   }
 
   @override
-  Future<dynamic> onMethodCall(String method, [arguments]) async {
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     return await null;
   }
 }
