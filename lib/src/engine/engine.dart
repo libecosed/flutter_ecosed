@@ -43,18 +43,23 @@ abstract base class EcosedFrameworkPlugin extends ContextWrapper {
   late PluginChannel _pluginChannel;
   late EngineWrapper _engine;
 
+  /// 插件添加时执行
   Future<void> onEcosedAdded(PluginBinding binding) async {
-    _pluginChannel = PluginChannel(binding: binding, channel: channel());
+    // 初始化插件通道
+    _pluginChannel = PluginChannel(binding: binding, channel: channel);
+    // 附加基础上下文
     attachBaseContext(_pluginChannel.getContext());
+    // 获取引擎
     _engine = _pluginChannel.getEngine();
+    // 设置方法回调
     _pluginChannel.setMethodCallHandler(this);
   }
 
   PluginChannel get getPluginChannel => _pluginChannel;
-  String title();
-  String channel();
-  String author();
-  String description();
+  String get title;
+  String get channel;
+  String get author;
+  String get description;
 
   Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result);
 
@@ -173,7 +178,7 @@ final class Result implements EcosedResult {
   }
 }
 
-mixin BridgeMixin {
+base mixin BridgeMixin {
   late EngineBridge _bridge;
 
   void initBridge() {
@@ -189,16 +194,16 @@ final class EngineBridge extends EcosedFrameworkPlugin
   EngineBridge call() => this;
 
   @override
-  String author() => 'wyq0918dev';
+  String get author => 'wyq0918dev';
 
   @override
-  String channel() => 'engine_bridge';
+  String get channel => 'engine_bridge';
 
   @override
-  String description() => 'engine bridge';
+  String get description => 'engine bridge';
 
   @override
-  String title() => 'EngineBridge';
+  String get title => 'EngineBridge';
 
   @override
   Future<void> onEcosedMethodCall(call, result) async => await null;
@@ -245,19 +250,19 @@ final class EcosedEngine extends EcosedFrameworkPlugin
 
   /// 插件作者
   @override
-  String author() => 'wyq0918dev';
+  String get author => 'wyq0918dev';
 
   /// 插件通道
   @override
-  String channel() => 'ecosed_engine';
+  String get channel => 'ecosed_engine';
 
   /// 插件描述
   @override
-  String description() => 'EcosedEngine';
+  String get description => 'EcosedEngine';
 
   /// 插件名称
   @override
-  String title() => 'EcosedEngine';
+  String get title => 'EcosedEngine';
 
   /// 调用插件方法
   @override
@@ -286,22 +291,22 @@ final class EcosedEngine extends EcosedFrameworkPlugin
         // 加载插件
         try {
           await element.onEcosedAdded(_binding);
-          debugPrint('插件${element.channel()}已加载');
+          debugPrint('插件${element.channel}已加载');
         } catch (e) {
-          debugPrint('插件${element.channel()}添加失败!\n$e');
+          debugPrint('插件${element.channel}添加失败!\n$e');
         }
         // 将插件添加进列表
         _pluginList.add(element);
         _infoList.add(
           {
-            'channel': element.channel(),
-            'title': element.title(),
-            'description': element.description(),
-            'author': element.author()
+            'channel': element.channel,
+            'title': element.title,
+            'description': element.description,
+            'author': element.author
           },
         );
         // 打印提示
-        debugPrint('插件${element.channel()}已添加到插件列表');
+        debugPrint('插件${element.channel}已添加到插件列表');
       }
       // 将引擎状态设为已加载
       initialized = true;
@@ -369,22 +374,22 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   }
 }
 
-mixin PluginMixin {
+base mixin PluginMixin {
   List<EcosedFrameworkPlugin> plugins = [Example()];
 }
 
 final class Example extends EcosedFrameworkPlugin {
   @override
-  String author() => 'xeample';
+  String get author => 'xeample';
 
   @override
-  String channel() => 'example';
+  String get channel => 'example';
 
   @override
-  String description() => 'example';
+  String get description => 'example';
 
   @override
-  String title() => 'example';
+  String get title => 'example';
 
   @override
   Future<void> onEcosedMethodCall(

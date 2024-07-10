@@ -178,11 +178,11 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     // 获取包信息
     PackageInfo info = await PackageInfo.fromPlatform();
     // 获取应用名称
-    _appName = info.appName.isNotEmpty ? info.appName : "";
+    _appName = info.appName.isNotEmpty ? info.appName : "unknown";
     // 获取应用版本
-    String name = info.version.isNotEmpty ? info.version : "";
-    String code = info.buildNumber.isNotEmpty ? "(${info.buildNumber})" : "";
-    _appVersion = "$name\t$code";
+    String name = info.version.isNotEmpty ? info.version : "unknown";
+    String code = info.buildNumber.isNotEmpty ? info.buildNumber : "unknown";
+    _appVersion = "版本\t$name\t(版本号\t$code)";
   }
 
   /// 初始化运行时
@@ -328,7 +328,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '版本:\t$_appVersion',
+                      _appVersion,
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
