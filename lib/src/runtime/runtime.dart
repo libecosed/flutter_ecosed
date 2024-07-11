@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
-import '../engine/engine.dart';
+import '../engine/bridge_mixin.dart';
 import '../framework/framework.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
@@ -752,7 +752,6 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
                 applicationName: _appName,
                 applicationVersion: _appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',
-                useRootNavigator: false,
               );
             }
           }

@@ -1,28 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
-
 import '../framework/framework.dart';
 import '../values/banner.dart';
-
-abstract interface class PluginProxy {
-  Future<void> onCreateEngine(Context context);
-  Future<void> onDestroyEngine();
-
-  Future<dynamic> onMethodCall(String methodProxy, [dynamic argumentsProxy]);
-}
-
-abstract interface class EcosedMethodCall {
-  String? get method;
-  dynamic get arguments;
-}
-
-abstract interface class EcosedResult {
-  void success(dynamic result);
-  void error(String errorCode, String? errorMessage, dynamic errorDetails);
-  void notImplemented();
-}
+import 'binding.dart';
+import 'channel.dart';
+import 'engine_mixin.dart';
+import 'engine_wrapper.dart';
+import 'method_call.dart';
+import 'proxy.dart';
+import 'result.dart';
+import 'tag.dart';
 
 abstract base class EcosedFrameworkPlugin extends ContextWrapper {
   late PluginChannel _pluginChannel;
@@ -65,125 +53,6 @@ abstract base class EcosedFrameworkPlugin extends ContextWrapper {
   }
 }
 
-abstract interface class EngineWrapper implements PluginProxy {
-  Future<dynamic> execMethodCall(String channel, String method,
-      [dynamic arguments]);
-}
-
-final class PluginBinding {
-  const PluginBinding({
-    required this.context,
-    required this.engine,
-  });
-
-  final Context context;
-  final EngineWrapper engine;
-
-  Context getContext() => context;
-  EngineWrapper getEngine() => engine;
-}
-
-final class PluginChannel {
-  PluginChannel({
-    required this.binding,
-    required this.channel,
-  });
-
-  final PluginBinding binding;
-  final String channel;
-
-  EcosedFrameworkPlugin? _plugin;
-  String? _method;
-  dynamic _arguments;
-  dynamic _result;
-
-  void setMethodCallHandler(EcosedFrameworkPlugin handler) {
-    _plugin = handler;
-  }
-
-  Context getContext() => binding.getContext();
-  String getChannel() => channel;
-  EngineWrapper getEngine() => binding.getEngine();
-
-  Future<dynamic> execMethodCall(
-    String name,
-    String method, [
-    dynamic arguments,
-  ]) async {
-    _method = method;
-    _arguments = arguments;
-    if (name == channel) {
-      await _plugin?.onEcosedMethodCall(
-        CallImport(
-          callMethod: _method,
-          callArguments: _arguments,
-        ),
-        ResultImport(
-          callback: (result) async {
-            _result = result;
-          },
-        ),
-      );
-    }
-    return await _result;
-  }
-}
-
-final class CallImport implements EcosedMethodCall {
-  const CallImport({
-    required this.callMethod,
-    required this.callArguments,
-  });
-
-  final String? callMethod;
-  final dynamic callArguments;
-
-  @override
-  String? get method => callMethod;
-
-  @override
-  dynamic get arguments => callArguments;
-}
-
-final class ResultImport implements EcosedResult {
-  const ResultImport({
-    required this.callback,
-  });
-
-  final Future<void> Function(dynamic result) callback;
-
-  @override
-  void success(dynamic result) => callback(result);
-
-  @override
-  void error(
-    String errorCode,
-    String? errorMessage,
-    dynamic errorDetails,
-  ) {
-    throw FlutterError(
-      '错误代码:$errorCode\n'
-      '错误消息:$errorMessage\n'
-      '详细信息:$errorDetails',
-    );
-  }
-
-  @override
-  void notImplemented() {
-    throw UnimplementedError();
-  }
-}
-
-base mixin BridgeMixin {
-  late EngineBridge _bridge;
-
-  void initBridge() {
-    _bridge = EngineBridge()();
-  }
-
-  EngineBridge get bridgeScope => _bridge;
-}
-
 final class EngineBridge extends EcosedFrameworkPlugin
     with EngineMixin
     implements PluginProxy {
@@ -204,30 +73,6 @@ final class EngineBridge extends EcosedFrameworkPlugin
   @override
   Future<void> onEcosedMethodCall(call, result) async => await null;
 }
-
-base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
-  final EcosedEngine engineScope = EcosedEngine()();
-
-  @override
-  Future<void> onCreateEngine(Context context) async {
-    return await engineScope.onCreateEngine(context);
-  }
-
-  @override
-  Future<void> onDestroyEngine() async {
-    return await engineScope.onDestroyEngine();
-  }
-
-  @override
-  Future<dynamic> onMethodCall(
-    String methodProxy, [
-    dynamic argumentsProxy,
-  ]) async {
-    return await engineScope.onMethodCall(methodProxy, argumentsProxy);
-  }
-}
-
-const String tag = 'flutter_ecosed_engine';
 
 final class EcosedEngine extends EcosedFrameworkPlugin
     with PluginMixin
