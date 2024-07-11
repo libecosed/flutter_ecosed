@@ -10,7 +10,7 @@ abstract interface class PluginProxy {
   Future<void> onCreateEngine(Context context);
   Future<void> onDestroyEngine();
 
-  Future<dynamic> onMethodCall(String methodProxy, dynamic argumentsProxy);
+  Future<dynamic> onMethodCall(String methodProxy, [dynamic argumentsProxy]);
 }
 
 abstract interface class EcosedMethodCall {
@@ -220,9 +220,9 @@ base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
 
   @override
   Future<dynamic> onMethodCall(
-    String methodProxy,
+    String methodProxy, [
     dynamic argumentsProxy,
-  ) async {
+  ]) async {
     return await engineScope.onMethodCall(methodProxy, argumentsProxy);
   }
 }
@@ -327,27 +327,11 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     }
   }
 
-  // @override
-  // Future<void> onMethodCall(
-  //   MethodCallProxy call,
-  //   ResultProxy result,
-  // ) async {
-
-  // }
-
   @override
-  Future<dynamic> onMethodCall(String methodProxy, argumentsProxy) async {
-    // try {
-    //   result.success(
-    //     execMethodCall(
-    //       call.argumentsProxy['channel'],
-    //       call.methodProxy,
-    //       call.argumentsProxy,
-    //     ),
-    //   );
-    // } catch (e) {
-    //   result.error('flutter_ecosed', 'engine: onMethodCall', e);
-    // }
+  Future<dynamic> onMethodCall(
+    String methodProxy, [
+    dynamic argumentsProxy,
+  ]) async {
     return await execMethodCall(
       argumentsProxy['channel'],
       methodProxy,
