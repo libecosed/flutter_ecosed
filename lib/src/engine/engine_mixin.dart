@@ -1,4 +1,4 @@
-import '../framework/framework.dart';
+import '../framework/context.dart';
 import 'engine.dart';
 import 'plugin.dart';
 import 'proxy.dart';

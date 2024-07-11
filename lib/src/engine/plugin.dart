@@ -1,4 +1,4 @@
-import '../framework/framework.dart';
+import '../framework/context_wrapper.dart';
 import 'binding.dart';
 import 'channel.dart';
 import 'engine_wrapper.dart';

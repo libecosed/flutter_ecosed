@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 abstract class Context {
   void startActivity(Intent intent);
   void startService(Intent intent);
+  void stopService(Intent intent);
 }
 
 base class ContextWrapper extends Context {
@@ -13,6 +14,9 @@ base class ContextWrapper extends Context {
 
   @override
   void startService(Intent intent) {}
+
+  @override
+  void stopService(Intent intent) {}
 }
 
 class Intent {

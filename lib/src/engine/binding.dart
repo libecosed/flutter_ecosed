@@ -1,4 +1,4 @@
-import '../framework/framework.dart';
+import '../framework/context.dart';
 import 'engine_wrapper.dart';
 
 final class PluginBinding {
