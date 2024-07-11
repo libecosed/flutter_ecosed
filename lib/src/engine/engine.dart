@@ -40,14 +40,25 @@ abstract base class EcosedFrameworkPlugin extends ContextWrapper {
     _pluginChannel.setMethodCallHandler(this);
   }
 
+  /// 获取插件通道
   PluginChannel get getPluginChannel => _pluginChannel;
+
+  /// 插件标题
   String get title;
+
+  /// 插件通道
   String get channel;
+
+  /// 插件作者
   String get author;
+
+  /// 插件描述
   String get description;
 
+  /// 执行插件方法
   Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result);
 
+  /// 执行插件方法
   Future<dynamic> execPluginMethod(String channel, String method,
       [dynamic arguments]) async {
     return await _engine.execMethodCall(channel, method, arguments);
