@@ -752,6 +752,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
                 applicationName: _appName,
                 applicationVersion: _appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',
+                useRootNavigator: false,
               );
             }
           }
