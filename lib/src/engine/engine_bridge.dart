@@ -1,3 +1,6 @@
+import 'package:flutter_ecosed/src/engine/method_call.dart';
+import 'package:flutter_ecosed/src/engine/result.dart';
+
 import 'engine_mixin.dart';
 import 'proxy.dart';
 import 'plugin.dart';
@@ -20,5 +23,10 @@ final class EngineBridge extends EcosedFrameworkPlugin
   String get title => 'EngineBridge';
 
   @override
-  Future<void> onEcosedMethodCall(call, result) async => await null;
+  Future<void> onEcosedMethodCall(
+    EcosedMethodCall call,
+    EcosedResult result,
+  ) async {
+    return await null;
+  }
 }
