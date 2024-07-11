@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../kernel/kernel.dart';
+import '../kernel/module.dart';
 import '../plugin/plugin_base.dart';
 import '../runtime/runtime_wrapper.dart';
 import '../widget/banner.dart';
