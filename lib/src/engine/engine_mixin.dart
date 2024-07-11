@@ -1,5 +1,6 @@
 import '../framework/framework.dart';
 import 'engine.dart';
+import 'plugin.dart';
 import 'proxy.dart';
 
 base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {

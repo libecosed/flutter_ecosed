@@ -1,8 +1,8 @@
 import '../framework/framework.dart';
 import 'binding.dart';
 import 'call_import.dart';
-import 'engine.dart';
 import 'engine_wrapper.dart';
+import 'plugin.dart';
 import 'result_import.dart';
 
 final class PluginChannel {

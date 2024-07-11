@@ -1,4 +1,4 @@
-import 'engine.dart';
+import 'engine_bridge.dart';
 
 base mixin BridgeMixin {
   late EngineBridge _bridge;

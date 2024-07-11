@@ -4,75 +4,12 @@ import 'dart:convert';
 import '../framework/framework.dart';
 import '../values/banner.dart';
 import 'binding.dart';
-import 'channel.dart';
-import 'engine_mixin.dart';
 import 'engine_wrapper.dart';
 import 'method_call.dart';
-import 'proxy.dart';
+import 'plugin_mixin.dart';
 import 'result.dart';
 import 'tag.dart';
-
-abstract base class EcosedFrameworkPlugin extends ContextWrapper {
-  late PluginChannel _pluginChannel;
-  late EngineWrapper _engine;
-
-  /// 插件添加时执行
-  Future<void> onEcosedAdded(PluginBinding binding) async {
-    // 初始化插件通道
-    _pluginChannel = PluginChannel(binding: binding, channel: channel);
-    // 附加基础上下文
-    attachBaseContext(_pluginChannel.getContext());
-    // 获取引擎
-    _engine = _pluginChannel.getEngine();
-    // 设置方法回调
-    _pluginChannel.setMethodCallHandler(this);
-  }
-
-  /// 获取插件通道
-  PluginChannel get getPluginChannel => _pluginChannel;
-
-  /// 插件标题
-  String get title;
-
-  /// 插件通道
-  String get channel;
-
-  /// 插件作者
-  String get author;
-
-  /// 插件描述
-  String get description;
-
-  /// 执行插件方法
-  Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result);
-
-  /// 执行插件方法
-  Future<dynamic> execPluginMethod(String channel, String method,
-      [dynamic arguments]) async {
-    return await _engine.execMethodCall(channel, method, arguments);
-  }
-}
-
-final class EngineBridge extends EcosedFrameworkPlugin
-    with EngineMixin
-    implements PluginProxy {
-  EngineBridge call() => this;
-
-  @override
-  String get author => 'wyq0918dev';
-
-  @override
-  String get channel => 'engine_bridge';
-
-  @override
-  String get description => 'engine bridge';
-
-  @override
-  String get title => 'EngineBridge';
-
-  @override
-  Future<void> onEcosedMethodCall(call, result) async => await null;
-}
+import 'plugin.dart';
 
 final class EcosedEngine extends EcosedFrameworkPlugin
     with PluginMixin
@@ -213,27 +150,4 @@ final class EcosedEngine extends EcosedFrameworkPlugin
     }
     return await result;
   }
-}
-
-base mixin PluginMixin {
-  /// 插件列表
-  List<EcosedFrameworkPlugin> plugins = [Example()];
-}
-
-final class Example extends EcosedFrameworkPlugin {
-  @override
-  String get author => 'exeample';
-
-  @override
-  String get channel => 'example';
-
-  @override
-  String get description => 'example';
-
-  @override
-  String get title => 'example';
-
-  @override
-  Future<void> onEcosedMethodCall(
-      EcosedMethodCall call, EcosedResult result) async {}
 }
