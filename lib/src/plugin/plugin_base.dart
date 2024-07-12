@@ -2,16 +2,16 @@ import 'package:flutter/widgets.dart';
 
 abstract class BaseEcosedPlugin {
   ///插件信息
-  String pluginChannel();
+  String get pluginChannel;
 
   ///插件名称
-  String pluginName();
+  String get pluginName;
 
   ///插件描述
-  String pluginDescription();
+  String get pluginDescription;
 
   ///插件作者
-  String pluginAuthor();
+  String get pluginAuthor;
 
   ///插件界面
   Widget pluginWidget(BuildContext context);

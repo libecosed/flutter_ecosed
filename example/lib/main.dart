@@ -335,19 +335,19 @@ class ExamplePlugin implements EcosedPlugin {
 
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
-  String pluginAuthor() => 'ExampleAuthor';
+  String get pluginAuthor => 'ExampleAuthor';
 
   /// “example_channel”为插件的通道,可以理解为插件的唯一标识,我们通常使用全小写英文字母加下划线的命名方式,通过[pluginChannel]方法定义.
   @override
-  String pluginChannel() => 'example_channel';
+  String get pluginChannel => 'example_channel';
 
   /// "Example description"为插件的描述,通过[pluginDescription]方法定.
   @override
-  String pluginDescription() => 'Example description';
+  String get pluginDescription => 'Example description';
 
   /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
   @override
-  String pluginName() => 'ExamplePlugin';
+  String get pluginName => 'ExamplePlugin';
 
   /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
   @override

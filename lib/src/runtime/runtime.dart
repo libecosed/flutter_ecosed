@@ -57,15 +57,15 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
 
   /// 插件通道
   @override
-  String pluginChannel() => 'ecosed_runtime';
+  String get pluginChannel => 'ecosed_runtime';
 
   /// 插件描述
   @override
-  String pluginDescription() => 'FlutterEcosed框架运行时';
+  String get pluginDescription => 'FlutterEcosed框架运行时';
 
   /// 插件名称
   @override
-  String pluginName() => 'EcosedRuntime';
+  String get pluginName => 'EcosedRuntime';
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +167,10 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
       // 添加到插件详细信息列表
       _pluginDetailsList.add(
         PluginDetails(
-          channel: element.pluginChannel(),
-          title: element.pluginName(),
-          description: element.pluginDescription(),
-          author: element.pluginAuthor(),
+          channel: element.pluginChannel,
+          title: element.pluginName,
+          description: element.pluginDescription,
+          author: element.pluginAuthor,
           type: element == this ? PluginType.runtime : PluginType.base,
         ),
       );
@@ -188,7 +188,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     try {
       // 遍历原生插件
       for (var element
-          in (await _exec(pluginChannel(), 'get_plugins', true) as List? ??
+          in (await _exec(pluginChannel, 'get_plugins', true) as List? ??
               [_unknownPlugin])) {
         // 添加到插件详细信息列表
         _pluginDetailsList.add(
@@ -216,10 +216,10 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
         _pluginList.add(element);
         _pluginDetailsList.add(
           PluginDetails(
-            channel: element.pluginChannel(),
-            title: element.pluginName(),
-            description: element.pluginDescription(),
-            author: element.pluginAuthor(),
+            channel: element.pluginChannel,
+            title: element.pluginName,
+            description: element.pluginDescription,
+            author: element.pluginAuthor,
             type: PluginType.flutter,
           ),
         );
@@ -557,11 +557,11 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         for (var internalPlugin in [this, super.get]) {
-          if (internalPlugin.pluginChannel() == channel && !internal) {
+          if (internalPlugin.pluginChannel == channel && !internal) {
             return await null;
           }
         }
-        if (element.pluginChannel() == channel) {
+        if (element.pluginChannel == channel) {
           return await element.onMethodCall(method, arguments);
         }
       }
@@ -572,7 +572,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
 
   /// 判断插件是否为运行时
   bool _isRuntime(PluginDetails details) {
-    return details.channel == pluginChannel();
+    return details.channel == pluginChannel;
   }
 
   /// 获取插件界面
@@ -616,7 +616,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   BaseEcosedPlugin? _getPlugin(PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        if (element.pluginChannel() == details.channel) {
+        if (element.pluginChannel == details.channel) {
           return element;
         }
       }
@@ -762,7 +762,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   /// 获取插件的动作名
   String _getPluginAction(PluginDetails details) {
     return _isAllowPush(details)
-        ? details.channel != pluginChannel()
+        ? details.channel != pluginChannel
             ? '打开'
             : '关于'
         : '无界面';

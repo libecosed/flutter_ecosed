@@ -13,19 +13,19 @@ base class EcosedBase
 
   /// 插件作者
   @override
-  String pluginAuthor() => 'wyq0918dev';
+  String get pluginAuthor => 'wyq0918dev';
 
   /// 插件通道
   @override
-  String pluginChannel() => 'ecosed_base';
+  String get pluginChannel => 'ecosed_base';
 
   /// 插件描述
   @override
-  String pluginDescription() => '框架运行时与库操作系统内核的绑定与通信';
+  String get pluginDescription => '框架运行时与库操作系统内核的绑定与通信';
 
   /// 插件名称
   @override
-  String pluginName() => 'EcosedBase';
+  String get pluginName => 'EcosedBase';
 
   /// 插件界面
   @override

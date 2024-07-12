@@ -23,7 +23,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   /// 引擎初始化状态
   bool initialized = false;
 
-  /// 差劲列表
+  /// 插件列表
   final List<EcosedFrameworkPlugin> _pluginList = [];
 
   /// 插件信息列表
