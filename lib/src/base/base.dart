@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/framework/context_wrapper.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +8,9 @@ import '../plugin/plugin_base.dart';
 import '../runtime/runtime_wrapper.dart';
 import '../widget/banner.dart';
 
-base class EcosedBase
+base class EcosedBase extends ContextWrapper
     implements RuntimeWrapper, BaseEcosedPlugin, EcosedKernelModule {
-  const EcosedBase();
+  EcosedBase();
 
   /// 插件作者
   @override
@@ -64,7 +65,7 @@ base class EcosedBase
   RuntimeWrapper call() => _runtime;
 
   /// 获取绑定层
-  BaseEcosedPlugin get get => const EcosedBase();
+  BaseEcosedPlugin get get => EcosedBase();
 
   /// 获取运行时
   RuntimeWrapper get _runtime => this;

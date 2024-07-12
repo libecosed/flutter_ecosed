@@ -6,6 +6,7 @@ import 'method_call.dart';
 import 'result.dart';
 
 abstract base class EcosedFrameworkPlugin extends ContextWrapper {
+  EcosedFrameworkPlugin() : super(attach: false);
   late PluginChannel _pluginChannel;
   late EngineWrapper _engine;
 

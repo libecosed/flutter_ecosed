@@ -179,7 +179,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
 
   Future<void> _initEngine() async {
     initBridge();
-    await bridgeScope.onCreateEngine(ContextWrapper());
+    await bridgeScope.onCreateEngine(this);
   }
 
   /// 初始化平台层插件
