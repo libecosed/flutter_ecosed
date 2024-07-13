@@ -5,13 +5,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
-import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 
 /// 运行时
-final class EcosedRuntime extends EcosedBase with BridgeMixin {
+final class EcosedRuntime extends EcosedBase {
   /// 应用名称
   late String _appName;
 
@@ -30,6 +29,7 @@ final class EcosedRuntime extends EcosedBase with BridgeMixin {
   /// PubDev 统一资源定位符
   static const String _pubDevUrl = 'https://pub.dev/packages/flutter_ecosed';
 
+  /// 占位符
   static const Map<String, dynamic> _unknownPlugin = {
     'channel': '',
     'title': '',

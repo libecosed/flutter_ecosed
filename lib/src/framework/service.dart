@@ -2,15 +2,12 @@ import 'package:flutter_ecosed/src/framework/intent.dart';
 
 import 'context_wrapper.dart';
 
-abstract interface class IBinder {
+abstract interface class IBinder {}
 
-}
-
-base class Binder extends IBinder {
-
-}
+base class Binder extends IBinder {}
 
 base class Service extends ContextWrapper {
+  Service() : super(attach: true);
   void onCreate() {}
   IBinder onBind(Intent intent) => Binder();
   bool onUnbind(Intent intent) => true;

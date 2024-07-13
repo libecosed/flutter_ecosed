@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/framework/context_wrapper.dart';
+import 'package:flutter_ecosed/src/server/server.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../engine/bridge_mixin.dart';
+import '../framework/context_wrapper.dart';
+import '../kernel/kernel_bridge.dart';
 import '../kernel/module.dart';
 import '../plugin/plugin_base.dart';
 import '../runtime/runtime_wrapper.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
+    with KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
     implements RuntimeWrapper, BaseEcosedPlugin, EcosedKernelModule {
-  EcosedBase();
+  EcosedBase() : super(attach: true);
 
   /// 插件作者
   @override
@@ -114,6 +118,7 @@ base class EcosedBase extends ContextWrapper
     );
   }
 
+  /// 执行插件方法
   @override
   Future<dynamic> execPluginMethod(
     String channel,
@@ -123,11 +128,13 @@ base class EcosedBase extends ContextWrapper
     return await exec(channel, method, arguments);
   }
 
+  /// 获取管理器
   @override
   Widget getManagerWidget() {
     return Builder(builder: (context) => buildManager(context));
   }
 
+  /// 运行应用
   @override
   Future<void> runEcosedApp({
     required Widget app,

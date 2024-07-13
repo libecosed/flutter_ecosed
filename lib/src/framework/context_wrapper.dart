@@ -6,7 +6,7 @@ import 'intent.dart';
 import 'service.dart';
 
 base class ContextWrapper extends Context {
-  ContextWrapper({bool attach = true}) {
+  ContextWrapper({required bool attach}) {
     if (attach) {
       final ContextImpl impl = ContextImpl();
       attachBaseContext(impl);
