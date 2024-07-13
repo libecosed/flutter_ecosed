@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/server/server.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +8,7 @@ import '../kernel/kernel_bridge.dart';
 import '../kernel/module.dart';
 import '../plugin/plugin_base.dart';
 import '../runtime/runtime_wrapper.dart';
+import '../server/server.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
@@ -26,7 +26,7 @@ base class EcosedBase extends ContextWrapper
 
   /// 插件描述
   @override
-  String get pluginDescription => '框架运行时与库操作系统内核、系统服务、框架引擎的绑定与通信';
+  String get pluginDescription => '框架运行时、库操作系统内核、系统服务和框架引擎的绑定与通信';
 
   /// 插件名称
   @override
