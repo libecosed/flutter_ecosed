@@ -6,7 +6,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
 import '../engine/bridge_mixin.dart';
-import '../framework/context_wrapper.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';

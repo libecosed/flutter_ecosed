@@ -1,5 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-
 import 'context.dart';
 import 'intent.dart';
 import 'service.dart';
