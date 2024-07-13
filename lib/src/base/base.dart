@@ -26,7 +26,7 @@ base class EcosedBase extends ContextWrapper
 
   /// 插件描述
   @override
-  String get pluginDescription => '框架运行时与库操作系统内核的绑定与通信';
+  String get pluginDescription => '框架运行时与库操作系统内核、系统服务、框架引擎的绑定与通信';
 
   /// 插件名称
   @override
