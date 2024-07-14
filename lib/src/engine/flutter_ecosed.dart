@@ -1,5 +1,3 @@
-
-
 import '../framework/activity.dart';
 import '../framework/intent.dart';
 import '../framework/service.dart';
@@ -15,10 +13,7 @@ final class FlutterEcosedPlugin extends Service {
     return LocalBinder(service: this);
   }
 
-
-  void test() {
-
-  }
+  void test() {}
 }
 
 final class LocalBinder extends Binder {
@@ -26,7 +21,8 @@ final class LocalBinder extends Binder {
 
   final FlutterEcosedPlugin service;
 
-  FlutterEcosedPlugin getServices() => service;
+  @override
+  Service get getService => service;
 }
 
 final class TestActivity extends Activity {
@@ -34,34 +30,30 @@ final class TestActivity extends Activity {
 
   @override
   void onCreate() {
-    // TODO: implement onCreate
     super.onCreate();
 
-    var con = MyConnection(oi: (service) {
-      myService = service;
-    });
+    final MyConnection connect = MyConnection(
+      calback: (service) => myService = service,
+    );
 
-    var intent = Intent(classes: FlutterEcosedPlugin());
+    final Intent intent = Intent(classes: FlutterEcosedPlugin());
 
     startService(intent);
-    bindService(intent, con);
-
+    bindService(intent, connect);
 
     myService.test();
-
-  
   }
 }
 
 class MyConnection implements ServiceConnection {
-  MyConnection({required this.oi});
+  MyConnection({required this.calback});
 
-  final void Function(FlutterEcosedPlugin myService) oi;
+  final void Function(FlutterEcosedPlugin myService) calback;
 
   @override
   void onServiceConnected(String name, IBinder service) {
     LocalBinder binder = service as LocalBinder;
-    oi.call(binder.getServices());
+    calback.call(binder.getService as FlutterEcosedPlugin);
   }
 
   @override
@@ -69,5 +61,3 @@ class MyConnection implements ServiceConnection {
     // TODO: implement onServiceDisconnected
   }
 }
-
-
