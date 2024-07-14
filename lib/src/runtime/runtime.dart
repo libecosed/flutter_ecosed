@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
+import '../engine/tag.dart';
+import '../framework/log.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
+import '../values/banner.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
@@ -116,7 +120,7 @@ final class EcosedRuntime extends EcosedBase {
     String method, [
     dynamic arguments,
   ]) async {
-    return await bridgeScope.onMethodCall(
+    return await engineBridgerScope.onMethodCall(
       method,
       arguments,
     );
@@ -141,6 +145,8 @@ final class EcosedRuntime extends EcosedBase {
 
   /// 初始化Flutter相关组件
   Future<void> _initFlutter() async {
+    // 打印横幅
+    Log.d(tag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
   }
@@ -177,8 +183,8 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   Future<void> _initEngine() async {
-    initBridge();
-    await bridgeScope.onCreateEngine(this);
+    initEngineBridge();
+    await engineBridgerScope.onCreateEngine(this);
   }
 
   /// 初始化平台层插件

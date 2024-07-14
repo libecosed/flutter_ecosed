@@ -66,8 +66,6 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   @override
   Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
-      // 打印横幅
-      Log.d(tag, '\n${utf8.decode(base64Decode(banner))}');
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
       // 遍历插件列表
