@@ -17,7 +17,7 @@ Future<void> runEcosedApp({
   required List<EcosedPlugin> plugins,
   required Future<void> Function(Widget app) runner,
 }) async {
-  return await EcosedPlatformInterface.instance.runEcosedApp(
+  return await EcosedInterface.instance.runEcosedApp(
     app: app,
     plugins: plugins,
     runner: runner,
@@ -80,7 +80,7 @@ Future<dynamic> execPluginMethod(
   String method, [
   dynamic arguments,
 ]) async {
-  return await EcosedPlatformInterface.instance.execPluginMethod(
+  return await EcosedInterface.instance.execPluginMethod(
     channel,
     method,
     arguments,
@@ -93,5 +93,5 @@ Future<dynamic> execPluginMethod(
 /// getManagerWidget();
 /// ```
 Widget getManagerWidget() {
-  return EcosedPlatformInterface.instance.getManagerWidget();
+  return EcosedInterface.instance.getManagerWidget();
 }

@@ -6,7 +6,7 @@ import '../plugin/plugin_base.dart';
 import 'platform_interface.dart';
 
 /// 无法正确加载平台时的实现
-final class DefaultPlatform extends EcosedPlatformInterface {
+final class DefaultPlatform extends EcosedInterface {
   /// 获取当前操作系统名称
   final String _platform = Platform.operatingSystem;
 

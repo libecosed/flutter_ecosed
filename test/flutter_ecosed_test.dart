@@ -7,7 +7,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 final class MockFlutterEcosedPlatform
     with MockPlatformInterfaceMixin
-    implements EcosedPlatformInterface {
+    implements EcosedInterface {
   @override
   Future<void> runEcosedApp({
     required Widget app,
@@ -31,8 +31,7 @@ final class MockFlutterEcosedPlatform
 }
 
 void main() {
-  final EcosedPlatformInterface initialPlatform =
-      EcosedPlatformInterface.instance;
+  final EcosedInterface initialPlatform = EcosedInterface.instance;
 
   test('$EcosedRuntime is the default instance', () {
     expect(initialPlatform, isInstanceOf<EcosedRuntime>());
@@ -40,9 +39,9 @@ void main() {
 
   test('runEcosedApp', () async {
     MockFlutterEcosedPlatform fakePlatform = MockFlutterEcosedPlatform();
-    EcosedPlatformInterface.instance = fakePlatform;
+    EcosedInterface.instance = fakePlatform;
     expect(
-      EcosedPlatformInterface.instance.runEcosedApp(
+      EcosedInterface.instance.runEcosedApp(
         app: Container(),
         plugins: const <BaseEcosedPlugin>[],
         runner: (app) async => runApp(app),

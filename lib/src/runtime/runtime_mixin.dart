@@ -5,7 +5,7 @@ import '../plugin/plugin_base.dart';
 import 'runtime.dart';
 import 'runtime_wrapper.dart';
 
-base mixin RuntimeMixin on EcosedPlatformInterface {
+base mixin RuntimeMixin on EcosedInterface {
   final RuntimeWrapper _wrapper = EcosedRuntime()();
 
   /// 运行应用

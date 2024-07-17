@@ -14,6 +14,6 @@ final class EcosedWebRegister {
   /// 注册插件
   /// 插件注册由Flutter接管,无需手动注册
   static void registerWith(Registrar registrar) {
-    EcosedPlatformInterface.instance = EcosedPlatformEntry();
+    EcosedInterface.instance = EcosedEntry();
   }
 }

@@ -5,20 +5,20 @@ import '../plugin/plugin_base.dart';
 import 'default_platform.dart';
 
 /// 实现平台接口的抽象类
-abstract class EcosedPlatformInterface extends PlatformInterface {
-  EcosedPlatformInterface() : super(token: _token);
+abstract class EcosedInterface extends PlatformInterface {
+  EcosedInterface() : super(token: _token);
 
   /// 令牌
   static final Object _token = Object();
 
   /// 实例
-  static EcosedPlatformInterface _instance = DefaultPlatform();
+  static EcosedInterface _instance = DefaultPlatform();
 
   /// 获取实例
-  static EcosedPlatformInterface get instance => _instance;
+  static EcosedInterface get instance => _instance;
 
   /// 设置实例
-  static set instance(EcosedPlatformInterface instance) {
+  static set instance(EcosedInterface instance) {
     PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
