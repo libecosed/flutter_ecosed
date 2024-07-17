@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/runtime/runtime_mixin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -7,13 +8,14 @@ import '../framework/context_wrapper.dart';
 import '../kernel/kernel_bridge.dart';
 import '../kernel/module.dart';
 import '../plugin/plugin_base.dart';
-import '../runtime/runtime_wrapper.dart';
+import '../runtime/runtime.dart';
+import 'base_wrapper.dart';
 import '../server/server.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
-    with KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
-    implements RuntimeWrapper, BaseEcosedPlugin, EcosedKernelModule {
+    with RuntimeMixin, KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
+    implements BaseWrapper, BaseEcosedPlugin, EcosedKernelModule {
   EcosedBase() : super(attach: true);
 
   /// 插件作者
@@ -66,13 +68,13 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 运行时入口
-  RuntimeWrapper call() => _runtime;
+  BaseWrapper call() => _runtime;
 
   /// 获取绑定层
   BaseEcosedPlugin get get => EcosedBase();
 
   /// 获取运行时
-  RuntimeWrapper get _runtime => this;
+  EcosedRuntime get _runtime => EcosedRuntime();
 
   /// 管理器布局
   Widget build(BuildContext context) => const Placeholder();
