@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/platform/platform_interface.dart';
+import 'package:flutter_ecosed/src/platform/ecosed_interface.dart';
 import 'package:flutter_ecosed/src/plugin/plugin_base.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';

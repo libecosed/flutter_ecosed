@@ -16,7 +16,11 @@ import '../widget/banner.dart';
 base class EcosedBase extends ContextWrapper
     with RuntimeMixin, KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
     implements BaseWrapper, BaseEcosedPlugin, EcosedKernelModule {
+  /// 构造函数
   EcosedBase() : super(attach: true);
+
+  /// base
+  final EcosedBase base = EcosedBase();
 
   /// 插件作者
   @override
@@ -68,10 +72,10 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 运行时入口
-  BaseWrapper call() => _runtime;
+  BaseWrapper call() => ecosedRuntime;
 
   /// 获取绑定层
-  BaseEcosedPlugin get get => EcosedBase();
+  BaseEcosedPlugin get get => base;
 
   /// 获取运行时
   EcosedRuntime get _runtime => EcosedRuntime();

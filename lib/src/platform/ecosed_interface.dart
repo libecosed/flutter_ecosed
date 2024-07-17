@@ -12,7 +12,7 @@ abstract class EcosedInterface extends PlatformInterface {
   static final Object _token = Object();
 
   /// 实例
-  static EcosedInterface _instance = DefaultPlatform();
+  static EcosedInterface _instance = DefaultEntry();
 
   /// 获取实例
   static EcosedInterface get instance => _instance;

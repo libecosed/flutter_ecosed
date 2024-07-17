@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../platform/platform_interface.dart';
+import '../platform/ecosed_interface.dart';
 import '../plugin/plugin_base.dart';
 
 /// 启动应用
