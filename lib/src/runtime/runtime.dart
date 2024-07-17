@@ -166,7 +166,7 @@ final class EcosedRuntime extends EcosedBase {
   /// 初始化运行时
   Future<void> _initRuntime() async {
     // 初始化运行时
-    for (var element in [this, super.get]) {
+    for (var element in [super.get, this]) {
       // 添加到内置插件列表
       _pluginList.add(element);
       // 添加到插件详细信息列表

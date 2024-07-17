@@ -8,13 +8,12 @@ import '../kernel/kernel_bridge.dart';
 import '../kernel/module.dart';
 import '../plugin/plugin_base.dart';
 import '../runtime/runtime.dart';
-import '../runtime/runtime_mixin.dart';
 import 'base_wrapper.dart';
 import '../server/server.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
-    with RuntimeMixin, KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
+    with KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
     implements BaseWrapper, BaseEcosedPlugin, EcosedKernelModule {
   /// 构造函数
   EcosedBase() : super(attach: true);
@@ -69,10 +68,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 运行时入口
-  BaseWrapper call() {
-    initRuntime();
-    return ecosedRuntime;
-  }
+  BaseWrapper call() => _runtime;
 
   /// 获取绑定层
   BaseEcosedPlugin get get => EcosedBase();
