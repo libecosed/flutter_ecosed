@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../plugin/plugin_base.dart';
-import 'default_platform.dart';
+import '../entry/default_entry.dart';
 
 /// 实现平台接口的抽象类
 abstract class EcosedInterface extends PlatformInterface {

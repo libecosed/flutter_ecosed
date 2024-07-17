@@ -2,11 +2,11 @@ import 'package:flutter/widgets.dart';
 
 import '../platform/ecosed_interface.dart';
 import '../plugin/plugin_base.dart';
-import '../runtime/runtime.dart';
+import 'base.dart';
 import 'base_wrapper.dart';
 
 base mixin BaseEntry on EcosedInterface {
-  final BaseWrapper _wrapper = EcosedRuntime()();
+  final BaseWrapper _wrapper = EcosedBase()();
 
   /// 运行应用
   @override

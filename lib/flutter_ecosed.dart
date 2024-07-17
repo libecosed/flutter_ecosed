@@ -1,7 +1,7 @@
 /// 平台插件注册及外部访问接口
 library flutter_ecosed;
 
-import 'src/platform/ecosed_entry.dart';
+import 'src/entry/ecosed_entry.dart';
 import 'src/platform/ecosed_interface.dart';
 
 export 'src/export/export.dart';
