@@ -7,7 +7,7 @@ import 'engine_wrapper.dart';
 import 'method_call.dart';
 import 'plugin_mixin.dart';
 import 'result.dart';
-import 'tag.dart';
+import '../values/tag.dart';
 import 'plugin.dart';
 
 final class EcosedEngine extends EcosedFrameworkPlugin
@@ -71,9 +71,9 @@ final class EcosedEngine extends EcosedFrameworkPlugin
         // 加载插件
         try {
           await element.onEcosedAdded(_binding);
-          Log.d(tag, '插件${element.channel}已加载');
+          Log.d(engineTag, '插件${element.channel}已加载');
         } catch (e) {
-          Log.d(tag, '插件${element.channel}添加失败!\n$e');
+          Log.d(engineTag, '插件${element.channel}添加失败!\n$e');
         }
         // 将插件添加进列表
         _pluginList.add(element);
@@ -86,13 +86,13 @@ final class EcosedEngine extends EcosedFrameworkPlugin
           },
         );
         // 打印提示
-        Log.d(tag, '插件${element.channel}已添加到插件列表');
+        Log.d(engineTag, '插件${element.channel}已添加到插件列表');
       }
       // 将引擎状态设为已加载
       initialized = true;
     } else {
       // 打印提示
-      Log.d(tag, '请勿重复执行onCreateEngine!');
+      Log.d(engineTag, '请勿重复执行onCreateEngine!');
     }
   }
 
@@ -102,7 +102,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
       _pluginList.clear();
       _infoList.clear();
     } else {
-      Log.d(tag, '请勿重复执行onDestroyEngine!');
+      Log.d(engineTag, '请勿重复执行onDestroyEngine!');
     }
   }
 
@@ -134,7 +134,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
             arguments,
           );
           Log.d(
-            tag,
+            engineTag,
             '插件代码调用成功!\n'
             '通道名称:$channel.\n'
             '方法名称:$method.\n'
@@ -143,7 +143,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
         }
       }
     } catch (exception) {
-      Log.d(tag, '插件代码调用失败!\n$exception');
+      Log.d(engineTag, '插件代码调用失败!\n$exception');
     }
     return await result;
   }

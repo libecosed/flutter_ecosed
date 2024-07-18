@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 import '../platform/ecosed_interface.dart';
 import '../plugin/plugin_base.dart';
 import 'base.dart';
-import 'base_wrapper.dart';
 
 base mixin BaseEntry on EcosedInterface {
-  final BaseWrapper _wrapper = EcosedBase()();
+  /// 初始化运行时
+  final EcosedInterface _runtime = EcosedBase()();
 
   /// 运行应用
   @override
@@ -16,7 +16,7 @@ base mixin BaseEntry on EcosedInterface {
     required Future<void> Function(Widget app) runner,
   }) async {
     try {
-      return await _wrapper.runEcosedApp(
+      return await _runtime.runEcosedApp(
         app: app,
         plugins: plugins,
         runner: runner,
@@ -38,7 +38,7 @@ base mixin BaseEntry on EcosedInterface {
     dynamic arguments,
   ]) async {
     try {
-      return await _wrapper.execPluginMethod(
+      return await _runtime.execPluginMethod(
         channel,
         method,
         arguments,
@@ -56,7 +56,7 @@ base mixin BaseEntry on EcosedInterface {
   @override
   Widget getManagerWidget() {
     try {
-      return _wrapper.getManagerWidget();
+      return _runtime.getManagerWidget();
     } on Exception {
       return super.getManagerWidget();
     }

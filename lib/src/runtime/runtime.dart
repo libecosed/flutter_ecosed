@@ -1,17 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
-import '../engine/tag.dart';
-import '../framework/log.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
-import '../values/banner.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
@@ -134,28 +130,18 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化运行时
-  Future<void> _init({required List<EcosedRuntimePlugin> plugins}) async {
-    // 初始化Flutter相关
-    //  await _initFlutter();
+  Future<void> _init({
+    required List<EcosedRuntimePlugin> plugins,
+  }) async {
     // 初始化包信息
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
-    // 初始化引擎
-    //await _initEngine();
 
     await _initFramework();
 
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
-  }
-
-  /// 初始化Flutter相关组件
-  Future<void> _initFlutter() async {
-    // 打印横幅
-    Log.d(tag, '\n${utf8.decode(base64Decode(banner))}');
-    // 初始化控件绑定
-    WidgetsFlutterBinding.ensureInitialized();
   }
 
   /// 初始化包信息
@@ -173,7 +159,7 @@ final class EcosedRuntime extends EcosedBase {
   /// 初始化运行时
   Future<void> _initRuntime() async {
     // 初始化运行时
-    for (var element in [super.get, this]) {
+    for (var element in [super.base, this]) {
       // 添加到内置插件列表
       _pluginList.add(element);
       // 添加到插件详细信息列表
@@ -189,26 +175,24 @@ final class EcosedRuntime extends EcosedBase {
     }
   }
 
-  Future<void> _initEngine() async {
-    initEngineBridge();
-    await engineBridgerScope.onCreateEngine(this);
-  }
-
   /// 初始化平台层插件
   Future<void> _initFramework() async {
     // 初始化平台插件
     try {
-      // 遍历原生插件
-      for (var element
-          in (await _exec(pluginChannel, 'get_plugins', true) as List? ??
-              [_unknownPlugin])) {
-        // 添加到插件详细信息列表
-        _pluginDetailsList.add(
-          PluginDetails.formMap(
-            map: element,
-            type: PluginType.platform,
-          ),
-        );
+      var e = await _exec(pluginChannel, 'get_plugins', true) as List? ??
+          [_unknownPlugin];
+
+      if (e.isNotEmpty) {
+        // 遍历原生插件
+        for (var element in e) {
+          // 添加到插件详细信息列表
+          _pluginDetailsList.add(
+            PluginDetails.formMap(
+              map: element,
+              type: PluginType.platform,
+            ),
+          );
+        }
       }
     } catch (exception) {
       // 平台错误添加未知插件占位
@@ -222,8 +206,9 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化普通插件
-  Future<void> _initPlugins(
-      {required List<EcosedRuntimePlugin> plugins}) async {
+  Future<void> _initPlugins({
+    required List<EcosedRuntimePlugin> plugins,
+  }) async {
     if (plugins.isNotEmpty) {
       for (var element in plugins) {
         _pluginList.add(element);
@@ -569,7 +554,7 @@ final class EcosedRuntime extends EcosedBase {
   ]) async {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
-        for (var internalPlugin in [this, super.get]) {
+        for (var internalPlugin in [this, super.base]) {
           if (internalPlugin.pluginChannel == channel && !internal) {
             return await null;
           }
@@ -643,7 +628,7 @@ final class EcosedRuntime extends EcosedBase {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('调试菜单 (Flutter)'),
+          title: const Text('调试菜单'),
           children: <SimpleDialogOption>[
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
@@ -726,9 +711,9 @@ final class EcosedRuntime extends EcosedBase {
       // 框架运行时
       case PluginType.runtime:
         return '框架运行时';
-      // 运行时内核绑定
+      // 绑定通信层
       case PluginType.base:
-        return '运行时内核绑定';
+        return '绑定通信层';
       // 平台插件
       case PluginType.platform:
         return '平台插件';
@@ -738,7 +723,7 @@ final class EcosedRuntime extends EcosedBase {
       // 普通插件
       case PluginType.flutter:
         return '普通插件';
-      // 未知
+      // 未知插件类型
       case PluginType.unknown:
         return '未知插件类型';
       // 未知
