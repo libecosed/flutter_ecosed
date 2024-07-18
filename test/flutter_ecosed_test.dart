@@ -11,7 +11,7 @@ final class MockFlutterEcosedPlatform
   @override
   Future<void> runEcosedApp({
     required Widget app,
-    required List<BaseEcosedPlugin> plugins,
+    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {}
 
@@ -43,7 +43,7 @@ void main() {
     expect(
       EcosedInterface.instance.runEcosedApp(
         app: Container(),
-        plugins: const <BaseEcosedPlugin>[],
+        plugins: const <EcosedRuntimePlugin>[],
         runner: (app) async => runApp(app),
       ),
       Future.value(),
