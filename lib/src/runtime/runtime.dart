@@ -37,6 +37,8 @@ final class EcosedRuntime extends EcosedBase {
     'author': ''
   };
 
+  List get nullPluginList => [_unknownPlugin];
+
   /// 启动应用
   @override
   Future<void> runEcosedApp({
@@ -179,12 +181,12 @@ final class EcosedRuntime extends EcosedBase {
   Future<void> _initFramework() async {
     // 初始化平台插件
     try {
-      var e = await _exec(pluginChannel, 'get_plugins', true) as List? ??
-          [_unknownPlugin];
-
-      if (e.isNotEmpty) {
+      dynamic plugins = await _exec(pluginChannel, 'get_plugins', true);
+      List list = plugins as List? ?? [_unknownPlugin];
+      // 判断列表是否为空
+      if (list.isNotEmpty) {
         // 遍历原生插件
-        for (var element in e) {
+        for (var element in list) {
           // 添加到插件详细信息列表
           _pluginDetailsList.add(
             PluginDetails.formMap(
@@ -263,6 +265,10 @@ final class EcosedRuntime extends EcosedBase {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.menu),
       ),
     );
   }
