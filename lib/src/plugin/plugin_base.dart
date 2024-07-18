@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-abstract class BaseEcosedPlugin {
+abstract class EcosedRuntimePlugin {
   ///插件信息
   String get pluginChannel;
 

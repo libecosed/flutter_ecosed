@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../plugin/plugin_base.dart';
 
-abstract class EcosedKernelModule implements BaseEcosedPlugin {
+abstract class EcosedKernelModule implements EcosedRuntimePlugin {
   @override
   String get pluginAuthor => 'wyq0918dev';
 

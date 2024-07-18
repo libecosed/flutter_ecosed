@@ -12,7 +12,7 @@ base mixin BaseEntry on EcosedInterface {
   @override
   Future<void> runEcosedApp({
     required Widget app,
-    required List<BaseEcosedPlugin> plugins,
+    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     try {

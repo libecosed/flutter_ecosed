@@ -22,7 +22,7 @@ final class EcosedRuntime extends EcosedBase {
   late String _appVersion;
 
   /// 插件列表
-  final List<BaseEcosedPlugin> _pluginList = [];
+  final List<EcosedRuntimePlugin> _pluginList = [];
 
   /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
@@ -45,7 +45,7 @@ final class EcosedRuntime extends EcosedBase {
   @override
   Future<void> runEcosedApp({
     required Widget app,
-    required List<BaseEcosedPlugin> plugins,
+    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     // 初始化
@@ -127,7 +127,7 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化运行时
-  Future<void> _init({required List<BaseEcosedPlugin> plugins}) async {
+  Future<void> _init({required List<EcosedRuntimePlugin> plugins}) async {
     // 初始化Flutter相关
     await _initFlutter();
     // 初始化包信息
@@ -215,7 +215,8 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化普通插件
-  Future<void> _initPlugins({required List<BaseEcosedPlugin> plugins}) async {
+  Future<void> _initPlugins(
+      {required List<EcosedRuntimePlugin> plugins}) async {
     if (plugins.isNotEmpty) {
       for (var element in plugins) {
         _pluginList.add(element);
@@ -618,7 +619,7 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 获取插件
-  BaseEcosedPlugin? _getPlugin(PluginDetails details) {
+  EcosedRuntimePlugin? _getPlugin(PluginDetails details) {
     if (_pluginList.isNotEmpty) {
       for (var element in _pluginList) {
         if (element.pluginChannel == details.channel) {

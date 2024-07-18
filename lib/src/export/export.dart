@@ -68,7 +68,7 @@ Future<void> runEcosedApp({
 ///   }
 /// }
 /// ```
-abstract interface class EcosedPlugin extends BaseEcosedPlugin {}
+abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 
 /// 调用插件方法
 ///

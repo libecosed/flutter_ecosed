@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/base/base_mixin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +14,8 @@ import '../server/server.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
-    with KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
-    implements BaseWrapper, BaseEcosedPlugin, EcosedKernelModule {
+    with BaseMixin, KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
+    implements BaseWrapper, EcosedRuntimePlugin, EcosedKernelModule {
   /// 构造函数
   EcosedBase() : super(attach: true);
 
@@ -68,13 +69,11 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 运行时入口
-  BaseWrapper call() => _runtime;
+  @override
+  BaseWrapper call() => EcosedRuntime();
 
   /// 获取绑定层
-  BaseEcosedPlugin get get => EcosedBase();
-
-  /// 获取运行时
-  EcosedRuntime get _runtime => EcosedRuntime();
+  EcosedRuntimePlugin get get => EcosedBase();
 
   /// 管理器布局
   Widget build(BuildContext context) => const Placeholder();
@@ -94,7 +93,7 @@ base class EcosedBase extends ContextWrapper
   /// 使用运行器运行
   Future<void> runWithRunner({
     required Widget app,
-    required List<BaseEcosedPlugin> plugins,
+    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     return await runner(_builder(child: app));
@@ -140,7 +139,7 @@ base class EcosedBase extends ContextWrapper
   @override
   Future<void> runEcosedApp({
     required Widget app,
-    required List<BaseEcosedPlugin> plugins,
+    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     throw UnimplementedError();
