@@ -48,8 +48,15 @@ final class EcosedRuntime extends EcosedBase {
     required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
+    await super.runEcosedApp(
+      app: app,
+      plugins: plugins,
+      runner: runner,
+    );
     // 初始化
-    await _init(plugins: plugins);
+    await _init(
+      plugins: plugins,
+    );
     // 启动应用
     await super.runWithRunner(
       app: app,
@@ -129,13 +136,13 @@ final class EcosedRuntime extends EcosedBase {
   /// 初始化运行时
   Future<void> _init({required List<EcosedRuntimePlugin> plugins}) async {
     // 初始化Flutter相关
-    await _initFlutter();
+    //  await _initFlutter();
     // 初始化包信息
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
     // 初始化引擎
-    await _initEngine();
+    //await _initEngine();
 
     await _initFramework();
 

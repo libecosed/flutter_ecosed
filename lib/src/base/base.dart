@@ -1,21 +1,37 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/base/base_mixin.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
+import '../engine/tag.dart';
 import '../framework/context_wrapper.dart';
+import '../framework/log.dart';
 import '../kernel/kernel_bridge.dart';
 import '../kernel/module.dart';
+import '../platform/ecosed_interface.dart';
 import '../plugin/plugin_base.dart';
-import '../runtime/runtime.dart';
+import '../runtime/runtime_mixin.dart';
+import '../values/banner.dart';
+import 'base_mixin.dart';
 import 'base_wrapper.dart';
 import '../server/server.dart';
 import '../widget/banner.dart';
 
 base class EcosedBase extends ContextWrapper
-    with BaseMixin, KernelBridgeMixin, ServerBridgeMixin, EngineBridgeMixin
-    implements BaseWrapper, EcosedRuntimePlugin, EcosedKernelModule {
+    with
+        BaseMixin,
+        RuntimeMixin,
+        KernelBridgeMixin,
+        ServerBridgeMixin,
+        EngineBridgeMixin
+    implements
+        BaseWrapper,
+        EcosedInterface,
+        EcosedRuntimePlugin,
+        EcosedKernelModule {
   /// 构造函数
   EcosedBase() : super(attach: true);
 
@@ -70,10 +86,10 @@ base class EcosedBase extends ContextWrapper
 
   /// 运行时入口
   @override
-  BaseWrapper call() => EcosedRuntime();
+  BaseWrapper call() => runtime;
 
   /// 获取绑定层
-  EcosedRuntimePlugin get get => EcosedBase();
+  EcosedRuntimePlugin get get => base;
 
   /// 管理器布局
   Widget build(BuildContext context) => const Placeholder();
@@ -142,7 +158,17 @@ base class EcosedBase extends ContextWrapper
     required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    throw UnimplementedError();
+    // 打印横幅
+    Log.d(tag, '\n${utf8.decode(base64Decode(banner))}');
+    // 初始化控件绑定
+    WidgetsFlutterBinding.ensureInitialized();
+    initKernelBridge();
+
+    initServerBridge();
+    // 初始化引擎桥接
+    initEngineBridge();
+    // 初始化引擎
+    await engineBridgerScope.onCreateEngine(this);
   }
 }
 
