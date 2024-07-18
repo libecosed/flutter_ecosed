@@ -30,4 +30,9 @@ abstract interface class BaseWrapper {
     required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   });
+
+  Future<dynamic> execFramework(
+    String method, [
+    dynamic arguments,
+  ]);
 }

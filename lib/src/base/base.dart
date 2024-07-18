@@ -115,6 +115,17 @@ base class EcosedBase extends ContextWrapper
     return await runner(_builder(child: app));
   }
 
+  @override
+  Future<dynamic> execFramework(
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await engineBridgerScope.onMethodCall(
+      method,
+      arguments,
+    );
+  }
+
   /// 执行插件方法
   @override
   Future<dynamic> execPluginMethod(

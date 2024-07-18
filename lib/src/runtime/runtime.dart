@@ -8,6 +8,8 @@ import '../base/base.dart';
 import '../plugin/plugin_base.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
+import '../values/placeholder.dart';
+import '../values/url.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
@@ -25,19 +27,6 @@ final class EcosedRuntime extends EcosedBase {
 
   /// 滚动控制器
   final ScrollController _scrollController = ScrollController();
-
-  /// PubDev 统一资源定位符
-  static const String _pubDevUrl = 'https://pub.dev/packages/flutter_ecosed';
-
-  /// 占位符
-  static const Map<String, dynamic> _unknownPlugin = {
-    'channel': '',
-    'title': '',
-    'description': '',
-    'author': ''
-  };
-
-  List get nullPluginList => [_unknownPlugin];
 
   /// 启动应用
   @override
@@ -112,23 +101,13 @@ final class EcosedRuntime extends EcosedBase {
   Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       case 'get_plugins':
-        return await execFramework(
+        return await super.execFramework(
           'get_plugins',
           {'channel': 'ecosed_engine'},
         );
       default:
         return await null;
     }
-  }
-
-  Future<dynamic> execFramework(
-    String method, [
-    dynamic arguments,
-  ]) async {
-    return await engineBridgerScope.onMethodCall(
-      method,
-      arguments,
-    );
   }
 
   /// 初始化运行时
@@ -182,7 +161,7 @@ final class EcosedRuntime extends EcosedBase {
     // 初始化平台插件
     try {
       dynamic plugins = await _exec(pluginChannel, 'get_plugins', true);
-      List list = plugins as List? ?? [_unknownPlugin];
+      List list = plugins as List? ?? [unknownPlugin];
       // 判断列表是否为空
       if (list.isNotEmpty) {
         // 遍历原生插件
@@ -200,7 +179,7 @@ final class EcosedRuntime extends EcosedBase {
       // 平台错误添加未知插件占位
       _pluginDetailsList.add(
         PluginDetails.formMap(
-          map: _unknownPlugin,
+          map: unknownPlugin,
           type: PluginType.unknown,
         ),
       );
@@ -421,7 +400,7 @@ final class EcosedRuntime extends EcosedBase {
             ),
             IconButton(
               onPressed: () => launchUrl(
-                Uri.parse(_pubDevUrl),
+                Uri.parse(pubDevUrl),
               ),
               icon: Icon(
                 Icons.open_in_browser,
