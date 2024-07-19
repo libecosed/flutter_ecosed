@@ -35,6 +35,7 @@ final class EcosedRuntime extends EcosedBase {
     required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
+    // 执行父类代码
     await super.runEcosedApp(
       app: app,
       plugins: plugins,
