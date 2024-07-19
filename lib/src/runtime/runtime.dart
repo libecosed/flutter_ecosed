@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
-import '../plugin/plugin_base.dart';
+import '../plugin/runtime/plugin_runtime.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../values/placeholder.dart';

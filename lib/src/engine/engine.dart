@@ -2,15 +2,16 @@ import 'dart:async';
 
 import '../framework/context.dart';
 import '../framework/log.dart';
-import 'binding.dart';
+import '../plugin/engine/binding.dart';
+import '../plugin/engine/result.dart';
 import 'engine_wrapper.dart';
-import 'method_call.dart';
+import '../plugin/engine/method_call.dart';
 import 'plugin_mixin.dart';
-import 'result.dart';
-import '../values/tag.dart';
-import 'plugin.dart';
 
-final class EcosedEngine extends EcosedFrameworkPlugin
+import '../values/tag.dart';
+import '../plugin/engine/plugin_engine.dart';
+
+final class EcosedEngine extends EcosedEnginePlugin
     with PluginMixin
     implements EngineWrapper {
   EcosedEngine();
@@ -22,7 +23,7 @@ final class EcosedEngine extends EcosedFrameworkPlugin
   bool initialized = false;
 
   /// 插件列表
-  final List<EcosedFrameworkPlugin> _pluginList = [];
+  final List<EcosedEnginePlugin> _pluginList = [];
 
   /// 插件信息列表
   final List<Map<String, dynamic>> _infoList = [];

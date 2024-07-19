@@ -7,12 +7,12 @@ import 'src/platform/ecosed_interface.dart';
 export 'src/export/export.dart';
 
 /// 平台插件注册
-/// 插件注册由Flutter接管,无需手动注册
+/// 插件注册由Flutter框架接管,无需手动注册
 final class EcosedPlatformRegister {
   const EcosedPlatformRegister();
 
   /// 注册插件
-  /// 插件注册由Flutter接管,无需手动注册
+  /// 插件注册由Flutter框架接管,无需手动注册
   static void registerWith() {
     EcosedInterface.instance = EcosedEntry();
   }

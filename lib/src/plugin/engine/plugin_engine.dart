@@ -1,12 +1,12 @@
-import '../framework/context_wrapper.dart';
+import '../../framework/context_wrapper.dart';
 import 'binding.dart';
 import 'channel.dart';
-import 'engine_wrapper.dart';
+import '../../engine/engine_wrapper.dart';
 import 'method_call.dart';
 import 'result.dart';
 
-abstract base class EcosedFrameworkPlugin extends ContextWrapper {
-  EcosedFrameworkPlugin() : super(attach: false);
+abstract base class EcosedEnginePlugin extends ContextWrapper {
+  EcosedEnginePlugin() : super(attach: false);
   late PluginChannel _pluginChannel;
   late EngineWrapper _engine;
 

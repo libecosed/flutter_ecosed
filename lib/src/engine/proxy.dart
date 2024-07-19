@@ -1,7 +1,7 @@
 import '../framework/context.dart';
 
 /// 插件代理
-abstract interface class PluginProxy {
+abstract interface class EngineProxy {
   /// 创建引擎
   Future<void> onCreateEngine(Context context);
 

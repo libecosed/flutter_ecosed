@@ -9,15 +9,15 @@ import '../values/tag.dart';
 import '../framework/context_wrapper.dart';
 import '../framework/log.dart';
 import '../kernel/kernel_bridge.dart';
-import '../kernel/module.dart';
+import '../plugin/kernel/kernel_module.dart';
 import '../platform/ecosed_interface.dart';
-import '../plugin/plugin_base.dart';
+import '../plugin/runtime/plugin_runtime.dart';
 import '../runtime/runtime_mixin.dart';
 import '../values/banner.dart';
-import 'base_mixin.dart';
-import 'base_wrapper.dart';
 import '../server/server.dart';
 import '../widget/banner.dart';
+import 'base_mixin.dart';
+import 'base_wrapper.dart';
 
 base class EcosedBase extends ContextWrapper
     with

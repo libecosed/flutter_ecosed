@@ -1,9 +1,9 @@
 import '../framework/context.dart';
 import 'engine.dart';
-import 'plugin.dart';
+import '../plugin/engine/plugin_engine.dart';
 import 'proxy.dart';
 
-base mixin EngineMixin on EcosedFrameworkPlugin implements PluginProxy {
+base mixin EngineMixin on EcosedEnginePlugin implements EngineProxy {
   final EcosedEngine engineScope = EcosedEngine()();
 
   @override

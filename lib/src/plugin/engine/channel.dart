@@ -1,9 +1,9 @@
-import '../framework/context.dart';
+import '../../framework/context.dart';
 import 'binding.dart';
-import 'call_import.dart';
-import 'engine_wrapper.dart';
-import 'plugin.dart';
-import 'result_import.dart';
+import 'call_impl.dart';
+import '../../engine/engine_wrapper.dart';
+import 'plugin_engine.dart';
+import 'result_impl.dart';
 
 final class PluginChannel {
   PluginChannel({
@@ -14,12 +14,12 @@ final class PluginChannel {
   final PluginBinding binding;
   final String channel;
 
-  EcosedFrameworkPlugin? _plugin;
+  EcosedEnginePlugin? _plugin;
   String? _method;
   dynamic _arguments;
   dynamic _result;
 
-  void setMethodCallHandler(EcosedFrameworkPlugin handler) {
+  void setMethodCallHandler(EcosedEnginePlugin handler) {
     _plugin = handler;
   }
 

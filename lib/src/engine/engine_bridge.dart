@@ -1,24 +1,28 @@
-import 'package:flutter_ecosed/src/engine/method_call.dart';
-import 'package:flutter_ecosed/src/engine/result.dart';
-
+import '../plugin/engine/method_call.dart';
+import '../plugin/engine/result.dart';
 import 'engine_mixin.dart';
 import 'proxy.dart';
-import 'plugin.dart';
+import '../plugin/engine/plugin_engine.dart';
 
-final class EngineBridge extends EcosedFrameworkPlugin
+final class EngineBridge extends EcosedEnginePlugin
     with EngineMixin
-    implements PluginProxy {
+    implements EngineProxy {
+  /// 插件入口
   EngineBridge call() => this;
 
+  /// 插件作者
   @override
   String get author => 'wyq0918dev';
 
+  /// 插件通道
   @override
   String get channel => 'engine_bridge';
 
+  /// 插件描述
   @override
-  String get description => 'engine bridge';
+  String get description => '引擎桥接';
 
+  /// 插件名称
   @override
   String get title => 'EngineBridge';
 

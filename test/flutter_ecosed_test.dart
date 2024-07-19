@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/platform/ecosed_interface.dart';
-import 'package:flutter_ecosed/src/plugin/plugin_base.dart';
+import 'package:flutter_ecosed/src/plugin/runtime/plugin_runtime.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';

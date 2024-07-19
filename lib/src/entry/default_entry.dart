@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 
-import '../plugin/plugin_base.dart';
+import '../plugin/runtime/plugin_runtime.dart';
 import '../platform/ecosed_interface.dart';
 
 /// 无法正确加载平台时的实现
