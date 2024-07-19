@@ -1,4 +1,4 @@
-import '../plugin/kernel/kernel_module.dart';
+import '../kernel/kernel_module.dart';
 import '../service/service_mixin.dart';
 
 final class Shizuku extends EcosedKernelModule with VMServiceWrapper {}

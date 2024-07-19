@@ -1,4 +1,4 @@
-import '../plugin/kernel/kernel_module.dart';
+import 'kernel_module.dart';
 
 final class EcosedLibKernel extends EcosedKernelModule {
   EcosedLibKernel();

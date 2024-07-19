@@ -32,15 +32,6 @@ final class TestActivity extends Activity {
   void onCreate() {
     super.onCreate();
 
-    final MyConnection connect = MyConnection(
-      calback: (service) => myService = service,
-    );
-
-    final Intent intent = Intent(classes: FlutterEcosedPlugin());
-
-    startService(intent);
-    bindService(intent, connect);
-
     myService.test();
   }
 }

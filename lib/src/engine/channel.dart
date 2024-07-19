@@ -1,7 +1,7 @@
-import '../../framework/context.dart';
+import '../framework/context.dart';
 import 'binding.dart';
 import 'call_impl.dart';
-import '../../engine/engine_wrapper.dart';
+import 'engine_wrapper.dart';
 import 'plugin_engine.dart';
 import 'result_impl.dart';
 

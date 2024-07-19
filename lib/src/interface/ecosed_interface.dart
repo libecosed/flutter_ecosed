@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../plugin/runtime/plugin_runtime.dart';
+import '../plugin/plugin_runtime.dart';
 import '../entry/default_entry.dart';
 
 /// 实现平台接口的抽象类

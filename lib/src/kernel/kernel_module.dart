@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../runtime/plugin_runtime.dart';
+import '../plugin/plugin_runtime.dart';
 
 abstract class EcosedKernelModule implements EcosedRuntimePlugin {
   @override

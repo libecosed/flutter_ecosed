@@ -1,8 +1,8 @@
-import '../plugin/engine/method_call.dart';
-import '../plugin/engine/result.dart';
+import 'method_call.dart';
+import 'result.dart';
 import 'engine_mixin.dart';
 import 'proxy.dart';
-import '../plugin/engine/plugin_engine.dart';
+import 'plugin_engine.dart';
 
 final class EngineBridge extends EcosedEnginePlugin
     with EngineMixin

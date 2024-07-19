@@ -2,14 +2,14 @@ import 'dart:async';
 
 import '../framework/context.dart';
 import '../framework/log.dart';
-import '../plugin/engine/binding.dart';
-import '../plugin/engine/result.dart';
+import 'binding.dart';
+import 'result.dart';
 import 'engine_wrapper.dart';
-import '../plugin/engine/method_call.dart';
+import 'method_call.dart';
 import 'plugin_mixin.dart';
 
 import '../values/tag.dart';
-import '../plugin/engine/plugin_engine.dart';
+import 'plugin_engine.dart';
 
 final class EcosedEngine extends EcosedEnginePlugin
     with PluginMixin

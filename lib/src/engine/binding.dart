@@ -1,5 +1,5 @@
-import '../../framework/context.dart';
-import '../../engine/engine_wrapper.dart';
+import '../framework/context.dart';
+import 'engine_wrapper.dart';
 
 final class PluginBinding {
   const PluginBinding({

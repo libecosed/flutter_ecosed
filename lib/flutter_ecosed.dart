@@ -2,7 +2,7 @@
 library flutter_ecosed;
 
 import 'src/entry/ecosed_entry.dart';
-import 'src/platform/ecosed_interface.dart';
+import 'src/interface/ecosed_interface.dart';
 
 export 'src/export/export.dart';
 

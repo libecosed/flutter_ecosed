@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 
-import '../plugin/runtime/plugin_runtime.dart';
-import '../platform/ecosed_interface.dart';
+import '../plugin/plugin_runtime.dart';
+import '../interface/ecosed_interface.dart';
 
 /// 无法正确加载平台时的实现
 final class DefaultEntry extends EcosedInterface {

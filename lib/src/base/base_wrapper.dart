@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../platform/ecosed_interface.dart';
-import '../plugin/runtime/plugin_runtime.dart';
+import '../interface/ecosed_interface.dart';
+import '../plugin/plugin_runtime.dart';
 
 /// 绑定层包装器
 abstract interface class BaseWrapper {

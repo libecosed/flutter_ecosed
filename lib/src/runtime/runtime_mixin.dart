@@ -1,5 +1,5 @@
 import '../base/base_wrapper.dart';
-import '../platform/ecosed_interface.dart';
+import '../interface/ecosed_interface.dart';
 import 'runtime.dart';
 
 /// 运行时混入

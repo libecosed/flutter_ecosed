@@ -5,13 +5,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
+import '../plugin/plugin_runtime.dart';
 import '../values/tag.dart';
 import '../framework/context_wrapper.dart';
 import '../framework/log.dart';
 import '../kernel/kernel_bridge.dart';
-import '../plugin/kernel/kernel_module.dart';
-import '../platform/ecosed_interface.dart';
-import '../plugin/runtime/plugin_runtime.dart';
+import '../kernel/kernel_module.dart';
+import '../interface/ecosed_interface.dart';
 import '../runtime/runtime_mixin.dart';
 import '../values/banner.dart';
 import '../server/server.dart';

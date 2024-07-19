@@ -1,3 +1,3 @@
-import '../plugin/kernel/kernel_module.dart';
+import 'kernel_module.dart';
 
 final class FileSystem extends EcosedKernelModule {}
