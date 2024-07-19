@@ -171,7 +171,7 @@ final class EcosedRuntime extends EcosedBase {
           _pluginDetailsList.add(
             PluginDetails.formMap(
               map: element,
-              type: PluginType.platform,
+              type: PluginType.engine,
             ),
           );
         }
@@ -662,7 +662,7 @@ final class EcosedRuntime extends EcosedBase {
           size: Theme.of(context).iconTheme.size,
           color: Colors.pinkAccent,
         );
-      case PluginType.platform:
+      case PluginType.engine:
         return Icon(
           Icons.android,
           size: Theme.of(context).iconTheme.size,
@@ -701,8 +701,8 @@ final class EcosedRuntime extends EcosedBase {
       case PluginType.base:
         return '绑定通信层';
       // 平台插件
-      case PluginType.platform:
-        return '平台插件';
+      case PluginType.engine:
+        return '引擎插件';
       // 内核模块
       case PluginType.kernel:
         return '内核模块';

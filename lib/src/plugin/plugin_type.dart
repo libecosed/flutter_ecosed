@@ -9,8 +9,8 @@ enum PluginType {
   /// 库操作系统内核
   kernel,
 
-  /// 平台插件，特指Android
-  platform,
+  /// 引擎插件
+  engine,
 
   /// 普通插件
   flutter,
