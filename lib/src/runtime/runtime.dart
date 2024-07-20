@@ -106,6 +106,7 @@ final class EcosedRuntime extends EcosedBase {
           'get_plugins',
           {'channel': 'ecosed_engine'},
         );
+        return await null;
       default:
         return await null;
     }

@@ -3,11 +3,11 @@ import 'dart:async';
 import '../framework/context.dart';
 import '../framework/log.dart';
 import 'binding.dart';
+import 'engine_bridge.dart';
 import 'result.dart';
 import 'engine_wrapper.dart';
 import 'method_call.dart';
 import 'plugin_mixin.dart';
-
 import '../values/tag.dart';
 import 'plugin_engine.dart';
 
@@ -68,33 +68,33 @@ final class EcosedEngine extends EcosedEnginePlugin
       // 初始化绑定
       _binding = PluginBinding(context: context, engine: this);
       // 遍历插件列表
-      for (var element in [this, ...plugins]) {
-        // 加载插件
-        try {
-          await element.onEcosedAdded(_binding);
-          Log.d(engineTag, '插件${element.channel}已加载');
-        } catch (e) {
-          Log.d(engineTag, '插件${element.channel}添加失败!\n$e');
-        }
-        // 将插件添加进列表
-        _pluginList.add(element);
-        _infoList.add(
-          {
-            'channel': element.channel,
-            'title': element.title,
-            'description': element.description,
-            'author': element.author
-          },
-        );
-        // 打印提示
-        Log.d(engineTag, '插件${element.channel}已添加到插件列表');
-      }
+      [EngineBridge(), this, ...plugins].forEach(load);
       // 将引擎状态设为已加载
       initialized = true;
     } else {
       // 打印提示
       Log.d(engineTag, '请勿重复执行onCreateEngine!');
     }
+  }
+
+  Future<void> load(EcosedEnginePlugin element) async {
+    // 加载插件
+    try {
+      await element.onEcosedAdded(_binding);
+      Log.d(engineTag, '插件${element.channel}已加载');
+    } catch (e) {
+      Log.d(engineTag, '插件${element.channel}添加失败!\n$e');
+    }
+    // 将插件添加进列表
+    _pluginList.add(element);
+    _infoList.add({
+      'channel': element.channel,
+      'title': element.title,
+      'description': element.description,
+      'author': element.author
+    });
+    // 打印提示
+    Log.d(engineTag, '插件${element.channel}已添加到插件列表');
   }
 
   @override

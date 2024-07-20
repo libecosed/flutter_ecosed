@@ -16,7 +16,8 @@ final class ServiceDelegate extends EcosedEnginePlugin {
   String get title => 'ServiceDelegate';
 
   @override
-  Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result) {
-    throw UnimplementedError();
-  }
+  Future<void> onEcosedMethodCall(
+    EcosedMethodCall call,
+    EcosedResult result,
+  ) async {}
 }
