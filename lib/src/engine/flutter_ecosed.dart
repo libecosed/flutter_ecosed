@@ -1,11 +1,15 @@
+import 'package:flutter_ecosed/src/values/tag.dart';
+
 import '../framework/activity.dart';
 import '../framework/intent.dart';
+import '../framework/log.dart';
 import '../framework/service.dart';
 
 final class FlutterEcosedPlugin extends Service {
   @override
   void onCreate() {
     super.onCreate();
+    Log.i(engineTag, 'onCreate');
   }
 
   @override
