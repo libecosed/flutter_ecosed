@@ -116,7 +116,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   @override
-  Future<dynamic> execFramework(
+  Future<dynamic> execEngine(
     String method, [
     dynamic arguments,
   ]) async {

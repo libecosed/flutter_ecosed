@@ -102,7 +102,7 @@ final class EcosedRuntime extends EcosedBase {
   Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
       case 'get_plugins':
-        return await super.execFramework(
+        return await super.execEngine(
           'get_plugins',
           {'channel': 'ecosed_engine'},
         );
@@ -131,10 +131,10 @@ final class EcosedRuntime extends EcosedBase {
     // 获取包信息
     PackageInfo info = await PackageInfo.fromPlatform();
     // 获取应用名称
-    _appName = info.appName.isNotEmpty ? info.appName : "unknown";
+    _appName = info.appName.isNotEmpty ? info.appName : "未知";
     // 获取应用版本
-    String name = info.version.isNotEmpty ? info.version : "unknown";
-    String code = info.buildNumber.isNotEmpty ? info.buildNumber : "unknown";
+    String name = info.version.isNotEmpty ? info.version : "未知";
+    String code = info.buildNumber.isNotEmpty ? info.buildNumber : "未知";
     _appVersion = "版本\t$name\t(版本号\t$code)";
   }
 

@@ -31,7 +31,8 @@ abstract interface class BaseWrapper {
     required Future<void> Function(Widget app) runner,
   });
 
-  Future<dynamic> execFramework(
+  /// 执行引擎插件方法
+  Future<dynamic> execEngine(
     String method, [
     dynamic arguments,
   ]);
