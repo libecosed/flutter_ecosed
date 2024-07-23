@@ -11,7 +11,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 Future<void> main() async {
   await runEcosedApp(
     app: const MyApp(),
-    plugins: const [ExamplePlugin()],
+    plugins: [ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
 }
@@ -315,9 +315,16 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   }
 }
 
-class ExamplePlugin implements EcosedPlugin {
-  const ExamplePlugin();
+class ExamplePluginWidget extends StatefulWidget {
+  const ExamplePluginWidget({super.key});
 
+  @override
+  State<ExamplePluginWidget> createState() => ExamplePlugin();
+}
+
+final class ExamplePlugin extends EcosedPlugin<ExamplePluginWidget> {
+
+  @override
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
   String get pluginAuthor => 'ExampleAuthor';
@@ -334,10 +341,6 @@ class ExamplePlugin implements EcosedPlugin {
   @override
   String get pluginName => 'ExamplePlugin';
 
-  /// 右下角的打开按钮是打开[pluginWidget]方法定义的界面.
-  @override
-  Widget pluginWidget(BuildContext context) => const ExamplePluginPage();
-
   /// [onMethodCall]方法为插件的方法调用.
   @override
   Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
@@ -348,10 +351,6 @@ class ExamplePlugin implements EcosedPlugin {
         return await null;
     }
   }
-}
-
-class ExamplePluginPage extends StatelessWidget {
-  const ExamplePluginPage({super.key});
 
   @override
   Widget build(BuildContext context) {

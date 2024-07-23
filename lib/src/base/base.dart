@@ -151,6 +151,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 运行应用
+  @mustCallSuper
   @override
   Future<void> runEcosedApp({
     required Widget app,

@@ -13,7 +13,7 @@ final class ResultImport implements EcosedResult {
   void success(dynamic result) => callback(result);
 
   @override
-  void error(
+  Never error(
     String errorCode,
     String? errorMessage,
     dynamic errorDetails,
@@ -26,7 +26,7 @@ final class ResultImport implements EcosedResult {
   }
 
   @override
-  void notImplemented() {
+  Never notImplemented() {
     throw UnimplementedError();
   }
 }

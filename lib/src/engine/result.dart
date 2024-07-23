@@ -1,5 +1,9 @@
 abstract interface class EcosedResult {
   void success(dynamic result);
-  void error(String errorCode, String? errorMessage, dynamic errorDetails);
-  void notImplemented();
+  Never error(
+    String errorCode,
+    String? errorMessage,
+    dynamic errorDetails,
+  );
+  Never notImplemented();
 }

@@ -1,19 +1,18 @@
-/// 平台插件注册及外部访问接口
+/// 平台插件注册和API导出
 library flutter_ecosed;
 
-import 'src/entry/ecosed_entry.dart';
-import 'src/interface/ecosed_interface.dart';
+import 'src/export/export.dart';
 
-export 'src/export/export.dart';
+export 'src/export/export.dart'
+    show EcosedPlugin, runEcosedApp, execPluginMethod, getManagerWidget
+    hide registerEcosed;
 
 /// 平台插件注册
-/// 插件注册由Flutter框架接管,无需手动注册
+/// 插件注册由Flutter框架接管, 请勿手动注册.
 final class EcosedPlatformRegister {
   const EcosedPlatformRegister();
 
   /// 注册插件
-  /// 插件注册由Flutter框架接管,无需手动注册
-  static void registerWith() {
-    EcosedInterface.instance = EcosedEntry();
-  }
+  /// 插件注册由Flutter框架接管, 请勿手动注册.
+  static void registerWith() => registerEcosed();
 }
