@@ -1,3 +1,4 @@
+const String entryTag = 'flutter_ecosed_entry';
 const String baseTag = 'flutter_ecosed_base';
 const String runtimeTag = 'flutter_ecosed_runtime';
 const String engineTag = 'flutter_ecosed_engine';

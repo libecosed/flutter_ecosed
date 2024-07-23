@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 
+import '../framework/log.dart';
 import '../plugin/plugin_runtime.dart';
 import '../interface/ecosed_interface.dart';
+import '../values/tag.dart';
 
 /// 无法正确加载平台时的实现
 final class DefaultEntry extends EcosedInterface {
@@ -17,8 +19,8 @@ final class DefaultEntry extends EcosedInterface {
     required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
-    // 抛出异常
-    throw FlutterError('不支持当前平台$_platform');
+    Log.w(entryTag, '不支持当前平台$_platform');
+    runner(app);
   }
 
   @override
@@ -27,13 +29,14 @@ final class DefaultEntry extends EcosedInterface {
     String method, [
     dynamic arguments,
   ]) async {
-    // 抛出异常
-    throw FlutterError('不支持当前平台$_platform');
+    Log.w(entryTag, '不支持当前平台$_platform');
+    return await null;
   }
 
   @override
   Widget getManagerWidget() {
-    // 抛出异常
-    throw FlutterError('不支持当前平台$_platform');
+    return Center(
+      child: Text('不支持当前平台$_platform'),
+    );
   }
 }
