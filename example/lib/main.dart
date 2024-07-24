@@ -324,7 +324,6 @@ class ExamplePluginWidget extends StatefulWidget {
 
 final class ExamplePlugin extends EcosedPlugin<ExamplePluginWidget> {
 
-  @override
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
   String get pluginAuthor => 'ExampleAuthor';

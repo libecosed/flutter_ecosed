@@ -5,10 +5,9 @@ import '../interface/ecosed_interface.dart';
 import '../plugin/plugin_runtime.dart';
 
 /// 注册 flutter_ecosed 插件
-/// 
+///
 /// 此方法用于通过注册器向Flutter框架注册此插件.
 /// 插件注册由Flutter框架接管, 请勿手动注册.
-@protected
 void registerEcosed() => EcosedInterface.instance = EcosedEntry();
 
 /// 实现插件的接口
@@ -70,9 +69,30 @@ void registerEcosed() => EcosedInterface.instance = EcosedEntry();
 /// ```
 abstract base class EcosedPlugin<T extends StatefulWidget> extends State<T>
     implements EcosedRuntimePlugin {
-  @Deprecated('')
+  EcosedPlugin();
+
+  /// 插件界面上下文
+  late BuildContext? _mContext;
+
+  /// 获取上下文
+  @protected
   @override
-  Widget pluginWidget(BuildContext context) => widget;
+  BuildContext get context {
+    if (_mContext != null) {
+      return _mContext!;
+    } else {
+      return super.context;
+    }
+  }
+
+  /// 将此有状态控件设置为插件的界面
+  @mustCallSuper
+  @protected
+  @override
+  Widget pluginWidget(BuildContext context) {
+    _mContext = context;
+    return super.widget;
+  }
 }
 
 /// 启动应用

@@ -3,7 +3,6 @@ library flutter_ecosed;
 
 import 'src/export/export.dart';
 
-// 导出API
 export 'src/export/export.dart'
     show EcosedPlugin, runEcosedApp, execPluginMethod, getManagerWidget
     hide registerEcosed;
