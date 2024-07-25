@@ -72,9 +72,10 @@ abstract base class EcosedPlugin<T extends StatefulWidget> extends State<T>
   EcosedPlugin();
 
   /// 插件界面上下文
-  late BuildContext? _mContext;
+  BuildContext? _mContext;
 
   /// 获取上下文
+  @mustCallSuper
   @protected
   @override
   BuildContext get context {
