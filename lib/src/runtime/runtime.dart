@@ -48,7 +48,6 @@ final class EcosedRuntime extends EcosedBase {
     // 启动应用
     await super.runWithRunner(
       app: app,
-      plugins: plugins,
       runner: runner,
     );
   }

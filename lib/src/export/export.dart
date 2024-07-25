@@ -67,45 +67,20 @@ void registerEcosed() => EcosedInterface.instance = EcosedEntry();
 ///   }
 /// }
 /// ```
-abstract base class EcosedPlugin<T extends StatefulWidget> extends State<T>
-    implements EcosedRuntimePlugin {
-  EcosedPlugin();
-
-  /// 插件界面上下文
-  BuildContext? _mContext;
-
-  /// 获取上下文
-  @mustCallSuper
-  @protected
-  @override
-  BuildContext get context {
-    if (_mContext != null) {
-      return _mContext!;
-    } else {
-      return super.context;
-    }
-  }
-
-  /// 将此有状态控件设置为插件的界面
-  @mustCallSuper
-  @protected
-  @override
-  Widget pluginWidget(BuildContext context) {
-    _mContext = context;
-    return super.widget;
-  }
-}
+abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 
 /// 启动应用
 ///
 /// 需要将入口函数main的void类型改为Future<void>并添加async标签转为异步函数.
+/// 
+/// [app] 传入的是
 ///
 /// ```dart
 /// Future<void> main() async {
 ///   // ... 省略不相关代码
 ///   await runEcosedApp(
 ///     app: const MyApp(),
-///     plugins: const [ExamplePlugin()],
+///     plugins: const <EcosedPlugin>[ExamplePlugin()],
 ///     runner: (app) async => runApp(app),
 ///   );
 ///   // ... 省略不相关代码

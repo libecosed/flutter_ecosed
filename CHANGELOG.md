@@ -55,3 +55,9 @@
 ## 0.2.0-dev.2
 * Improve the function.
 * Use Dart to preliminarily implement the original Android platform layer engine.
+## 0.2.0-dev.3
+* Adjust software architecture.
+* Improve project architecture
+* Improve the function.
+* Fix some bugs.
+* Update dependencies.

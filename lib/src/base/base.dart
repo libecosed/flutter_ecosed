@@ -44,7 +44,7 @@ base class EcosedBase extends ContextWrapper
 
   /// 插件描述
   @override
-  String get pluginDescription => '框架运行时、库操作系统内核、系统服务和框架引擎的绑定与通信';
+  String get pluginDescription => '框架各个部分的绑定与通信';
 
   /// 插件名称
   @override
@@ -57,19 +57,8 @@ base class EcosedBase extends ContextWrapper
       data: ThemeData(
         brightness: MediaQuery.platformBrightnessOf(context),
       ),
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Localizations(
-          locale: const Locale('zh', 'CN'),
-          delegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          child: Builder(
-            builder: (context) => build(context),
-          ),
-        ),
+      child: Builder(
+        builder: (context) => build(context),
       ),
     );
   }
@@ -109,7 +98,6 @@ base class EcosedBase extends ContextWrapper
   @override
   Future<void> runWithRunner({
     required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   }) async {
     return await runner(_builder(child: app));
@@ -203,14 +191,24 @@ base class EcosedBase extends ContextWrapper
       providers: [
         Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
       ],
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Navigator(
-          onGenerateInitialRoutes: (navigator, name) => [
-            MaterialPageRoute(
-              builder: (_) => EcosedBanner(child: child),
+      child: Material(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Localizations(
+            locale: const Locale('zh', 'CN'),
+            delegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            child: Navigator(
+              onGenerateInitialRoutes: (navigator, name) => [
+                MaterialPageRoute(
+                  builder: (_) => EcosedBanner(child: child),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -10,10 +10,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
   await runEcosedApp(
-    app: const MyApp(),
-    plugins: [ExamplePlugin()],
+    app: getManagerWidget(),
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
+  // await runEcosedApp(
+  //   app: const MyApp(),
+  //   plugins: [ExamplePlugin()],
+  //   runner: (app) async => runApp(app),
+  // );
 }
 
 class MyApp extends StatefulWidget {
@@ -315,14 +320,8 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   }
 }
 
-class ExamplePluginWidget extends StatefulWidget {
-  const ExamplePluginWidget({super.key});
-
-  @override
-  State<ExamplePluginWidget> createState() => ExamplePlugin();
-}
-
-final class ExamplePlugin extends EcosedPlugin<ExamplePluginWidget> {
+final class ExamplePlugin extends StatelessWidget implements EcosedPlugin {
+  const ExamplePlugin({super.key});
 
   /// “ExampleAuthor”为作者信息,替换为你自己的名字即可,通过[pluginAuthor]方法定义.
   @override
@@ -339,6 +338,9 @@ final class ExamplePlugin extends EcosedPlugin<ExamplePluginWidget> {
   /// “Example Plugin”为插件的名称,通过[pluginName]方法定义.
   @override
   String get pluginName => 'ExamplePlugin';
+
+  @override
+  Widget pluginWidget(BuildContext context) => this;
 
   /// [onMethodCall]方法为插件的方法调用.
   @override

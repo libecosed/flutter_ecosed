@@ -27,7 +27,6 @@ abstract interface class BaseWrapper {
   /// 使用运行器运行
   Future<void> runWithRunner({
     required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
     required Future<void> Function(Widget app) runner,
   });
 
