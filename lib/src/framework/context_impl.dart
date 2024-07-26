@@ -1,29 +1,29 @@
 import 'context.dart';
-import 'intent.dart';
+import 'want.dart';
 import 'service.dart';
 
 final class ContextImpl extends Context {
   @override
-  void startActivity(Intent intent) {}
+  void startActivity(Want want) {}
 
   @override
-  void startService(Intent intent) {
-    intent.getService().onCreate();
+  void startService(Want want) {
+    want.getService().onCreate();
   }
 
   @override
-  void stopService(Intent intent) {
-    intent.getService().onDestroy();
+  void stopService(Want want) {
+    want.getService().onDestroy();
   }
 
   @override
-  void bindService(Intent intent, ServiceConnection connect) {
-    var a = intent.getService().onBind(intent);
-    connect.onServiceConnected(intent.classes.toString(), a);
+  void bindService(Want want, ServiceConnection connect) {
+    var a = want.getService().onBind(want);
+    connect.onServiceConnected(want.classes.toString(), a);
   }
 
   @override
-  void unbindService(Intent intent) {
-    intent.getService().onUnbind(intent);
+  void unbindService(Want want) {
+    want.getService().onUnbind(want);
   }
 }

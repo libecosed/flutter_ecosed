@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'activity.dart';
 import 'service.dart';
 
-class Intent {
-  Intent({required this.classes});
+class Want {
+  Want({required this.classes});
 
   final dynamic classes;
 

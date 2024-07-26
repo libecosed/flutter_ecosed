@@ -1,12 +1,11 @@
-import 'package:flutter_ecosed/src/engine/binding.dart';
-import 'package:flutter_ecosed/src/engine/flutter_ecosed.dart';
-import 'package:flutter_ecosed/src/engine/method_call.dart';
-import 'package:flutter_ecosed/src/engine/plugin_engine.dart';
-import 'package:flutter_ecosed/src/engine/result.dart';
-import 'package:flutter_ecosed/src/framework/intent.dart';
-import 'package:flutter_ecosed/src/values/tag.dart';
-
 import '../framework/log.dart';
+import '../framework/want.dart';
+import '../values/tag.dart';
+import 'binding.dart';
+import 'flutter_ecosed.dart';
+import 'method_call.dart';
+import 'plugin_engine.dart';
+import 'result.dart';
 
 final class ServiceInvoke extends EcosedEnginePlugin {
   @override
@@ -32,10 +31,10 @@ final class ServiceInvoke extends EcosedEnginePlugin {
       Log.i(engineTag, 'added');
     });
 
-    final Intent intent = Intent(classes: FlutterEcosedPlugin());
+    final Want want = Want(classes: FlutterEcosedPlugin());
 
-    startService(intent);
-    bindService(intent, connect);
+    startService(want);
+    bindService(want, connect);
 
     return added;
   }

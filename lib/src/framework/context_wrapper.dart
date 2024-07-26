@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart' hide Intent;
 
 import 'context.dart';
 import 'context_impl.dart';
-import 'intent.dart';
+import 'want.dart';
 import 'service.dart';
 
 base class ContextWrapper extends Context {
@@ -61,27 +61,27 @@ base class ContextWrapper extends Context {
   }
 
   @override
-  void startActivity(Intent intent) {
-    mBase?.startActivity(intent);
+  void startActivity(Want want) {
+    mBase?.startActivity(want);
   }
 
   @override
-  void startService(Intent intent) {
-    mBase?.startService(intent);
+  void startService(Want want) {
+    mBase?.startService(want);
   }
 
   @override
-  void stopService(Intent intent) {
-    mBase?.stopService(intent);
+  void stopService(Want want) {
+    mBase?.stopService(want);
   }
 
   @override
-  void bindService(Intent intent, ServiceConnection connect) {
-    mBase?.bindService(intent, connect);
+  void bindService(Want want, ServiceConnection connect) {
+    mBase?.bindService(want, connect);
   }
 
   @override
-  void unbindService(Intent intent) {
-    mBase?.unbindService(intent);
+  void unbindService(Want want) {
+    mBase?.unbindService(want);
   }
 }

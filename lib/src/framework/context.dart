@@ -1,10 +1,10 @@
-import 'intent.dart';
+import 'want.dart';
 import 'service.dart';
 
 abstract base class Context {
-  void startActivity(Intent intent);
-  void startService(Intent intent);
-  void stopService(Intent intent);
-  void bindService(Intent intent, ServiceConnection connect);
-  void unbindService(Intent intent);
+  void startActivity(Want want);
+  void startService(Want want);
+  void stopService(Want want);
+  void bindService(Want want, ServiceConnection connect);
+  void unbindService(Want want);
 }

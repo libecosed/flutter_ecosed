@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart' hide Intent;
+import 'package:flutter/material.dart';
 
 import '../framework/activity.dart';
 import '../framework/alert_dialog.dart';
-import '../framework/intent.dart';
+import '../framework/want.dart';
 import '../framework/log.dart';
 import '../framework/service.dart';
 import '../values/tag.dart';
@@ -24,7 +24,7 @@ final class FlutterEcosedPlugin extends Service {
   }
 
   @override
-  IBinder onBind(Intent intent) {
+  IBinder onBind(Want want) {
     return LocalBinder(service: this);
   }
 

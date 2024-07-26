@@ -1,5 +1,5 @@
 import 'context_wrapper.dart';
-import 'intent.dart';
+import 'want.dart';
 
 abstract interface class IBinder {
   Service get getService;
@@ -15,8 +15,8 @@ base class Binder extends IBinder {
 abstract base class Service extends ContextWrapper {
   Service() : super(attach: true);
   void onCreate() {}
-  IBinder onBind(Intent intent);
-  bool onUnbind(Intent intent) => true;
+  IBinder onBind(Want want);
+  bool onUnbind(Want want) => true;
   void onDestroy() {}
 }
 
