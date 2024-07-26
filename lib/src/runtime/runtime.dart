@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
@@ -9,7 +8,7 @@ import '../plugin/plugin_runtime.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../values/placeholder.dart';
-import '../values/url.dart';
+import '../widget/manager.dart';
 
 /// 运行时
 final class EcosedRuntime extends EcosedBase {
@@ -24,9 +23,6 @@ final class EcosedRuntime extends EcosedBase {
 
   /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
-
-  /// 滚动控制器
-  final ScrollController _scrollController = ScrollController();
 
   /// 启动应用
   @override
@@ -66,7 +62,12 @@ final class EcosedRuntime extends EcosedBase {
 
   @override
   Widget build(BuildContext context) {
-    return _managerBody(context: context);
+    return EcosedManager(
+      appName: _appName,
+      appVersion: _appVersion,
+      pluginDetailsList: _pluginDetailsList,
+      pluginList: _pluginCardList(context: context),
+    );
   }
 
   @override
@@ -204,210 +205,6 @@ final class EcosedRuntime extends EcosedBase {
         );
       }
     }
-  }
-
-  /// 管理器体部
-  Widget _managerBody({
-    required BuildContext context,
-  }) {
-    return Scaffold(
-      body: Scrollbar(
-        controller: _scrollController,
-        child: ListView(
-          controller: _scrollController,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-              child: _stateCard(context: context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: 12,
-              ),
-              child: _infoCard(context: context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: 12,
-              ),
-              child: _moreCard(context: context),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Divider(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-              child: _pluginCardList(context: context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 状态卡片
-  Widget _stateCard({
-    required BuildContext context,
-  }) {
-    return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          children: [
-            Icon(
-              Icons.keyboard_command_key,
-              size: Theme.of(context).iconTheme.size,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _appName,
-                      textAlign: TextAlign.left,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _appVersion,
-                      textAlign: TextAlign.left,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () => _openDialog(context),
-              icon: Icon(
-                Icons.developer_mode,
-                size: Theme.of(context).iconTheme.size,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 信息卡片
-  Widget _infoCard({
-    required BuildContext context,
-  }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _infoItem(
-                    context: context,
-                    title: '应用名称',
-                    subtitle: _appName,
-                  ),
-                  const SizedBox(height: 16),
-                  _infoItem(
-                    context: context,
-                    title: '应用版本',
-                    subtitle: _appVersion,
-                  ),
-                  const SizedBox(height: 16),
-                  _infoItem(
-                    context: context,
-                    title: '当前平台',
-                    subtitle: Theme.of(context).platform.name,
-                  ),
-                  const SizedBox(height: 16),
-                  _infoItem(
-                    context: context,
-                    title: '插件数量',
-                    subtitle: _pluginCount().toString(),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 信息项
-  Widget _infoItem({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Text>[
-        Text(
-          title,
-          textAlign: TextAlign.start,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        Text(
-          subtitle,
-          textAlign: TextAlign.start,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-      ],
-    );
-  }
-
-  /// 了解更多卡片
-  Widget _moreCard({
-    required BuildContext context,
-  }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '了解 flutter_ecosed',
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  Text(
-                    '了解如何使用 flutter_ecosed 进行开发。',
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: () => launchUrl(
-                Uri.parse(pubDevUrl),
-              ),
-              icon: Icon(
-                Icons.open_in_browser,
-                size: Theme.of(context).iconTheme.size,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 
   /// 插件卡片列表
@@ -601,42 +398,6 @@ final class EcosedRuntime extends EcosedBase {
       }
     }
     return null;
-  }
-
-  /// 打开对话和
-  void _openDialog(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: const Text('调试菜单'),
-          children: <SimpleDialogOption>[
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text('关闭'),
-                leading: const FlutterLogo(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-                enabled: true,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-            )
-          ],
-        );
-      },
-      useRootNavigator: false,
-    );
-  }
-
-  /// 统计普通插件数量
-  int _pluginCount() {
-    var count = 0;
-    for (var element in _pluginDetailsList) {
-      if (element.type == PluginType.flutter) {
-        count++;
-      }
-    }
-    return count;
   }
 
   /// 获取插件的图标

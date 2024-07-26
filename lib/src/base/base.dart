@@ -15,6 +15,7 @@ import '../interface/ecosed_interface.dart';
 import '../runtime/runtime_mixin.dart';
 import '../values/banner.dart';
 import '../server/server.dart';
+import '../viewmodel/manager_view_model.dart';
 import '../widget/banner.dart';
 import 'base_mixin.dart';
 import 'base_wrapper.dart';
@@ -57,8 +58,11 @@ base class EcosedBase extends ContextWrapper
       data: ThemeData(
         brightness: MediaQuery.platformBrightnessOf(context),
       ),
-      child: Builder(
-        builder: (context) => build(context),
+      child: ChangeNotifierProvider<ManagerViewModel>(
+        create: (_) => ManagerViewModel(),
+        child: Builder(
+          builder: (context) => build(context),
+        ),
       ),
     );
   }
@@ -184,35 +188,37 @@ base class EcosedBase extends ContextWrapper
     await engineBridgerScope.onCreateEngine(this);
   }
 
+  Widget _withHost({
+    required BuildContext host,
+    required Widget child,
+  }) {
+    attachBuildContext(host);
+    return child;
+  }
+
   Widget _builder({
     required Widget child,
   }) {
-    return MultiProvider(
-      providers: [
-        Provider<LoginViewmodel>(create: (_) => LoginViewmodel()),
-      ],
-      child: Material(
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Localizations(
-            locale: const Locale('zh', 'CN'),
-            delegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            child: Navigator(
-              onGenerateInitialRoutes: (navigator, name) => [
-                MaterialPageRoute(
-                  builder: (_) => EcosedBanner(child: child),
-                ),
-              ],
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Localizations(
+        locale: const Locale('zh', 'CN'),
+        delegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        child: Navigator(
+          onGenerateInitialRoutes: (navigator, name) => [
+            MaterialPageRoute(
+              builder: (context) => _withHost(
+                host: context,
+                child: EcosedBanner(child: child),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
-
-class LoginViewmodel extends ChangeNotifier {}

@@ -9,16 +9,16 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
+  // await runEcosedApp(
+  //   app: getManagerWidget(),
+  //   plugins: const <EcosedPlugin>[ExamplePlugin()],
+  //   runner: (app) async => runApp(app),
+  // );
   await runEcosedApp(
-    app: getManagerWidget(),
+    app: const MyApp(),
     plugins: const <EcosedPlugin>[ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
-  // await runEcosedApp(
-  //   app: const MyApp(),
-  //   plugins: [ExamplePlugin()],
-  //   runner: (app) async => runApp(app),
-  // );
 }
 
 class MyApp extends StatefulWidget {

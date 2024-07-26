@@ -1,15 +1,26 @@
-import 'package:flutter_ecosed/src/values/tag.dart';
+import 'package:flutter/material.dart' hide Intent;
 
 import '../framework/activity.dart';
+import '../framework/alert_dialog.dart';
 import '../framework/intent.dart';
 import '../framework/log.dart';
 import '../framework/service.dart';
+import '../values/tag.dart';
 
 final class FlutterEcosedPlugin extends Service {
   @override
   void onCreate() {
     super.onCreate();
     Log.i(engineTag, 'onCreate');
+
+    EAlertDialogBuilder builder = EAlertDialogBuilder(build: this);
+    builder.setTitle("");
+    builder.setItem(ListView(
+      children: [],
+    ));
+    EAlertDialog dialog = builder.create();
+
+
   }
 
   @override
