@@ -245,10 +245,6 @@ final class EcosedRuntime extends EcosedBase {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.menu),
-      ),
     );
   }
 
