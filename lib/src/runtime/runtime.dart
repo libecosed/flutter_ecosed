@@ -50,7 +50,10 @@ final class EcosedRuntime extends EcosedBase {
 
   @override
   Future<void> openDebugMenu() async {
-    super.openDebugMenu();
+    // 打开管理器
+    super.launchManager();
+
+    //super.openDebugMenu();
   }
 
   /// 插件通道
@@ -317,7 +320,7 @@ final class EcosedRuntime extends EcosedBase {
                   ),
                 ),
                 TextButton(
-                  onPressed: _openPlugin(getBuildContext(), details),
+                  onPressed: _openPlugin(details),
                   child: Text(_getPluginAction(details)),
                 ),
               ],
@@ -361,30 +364,25 @@ final class EcosedRuntime extends EcosedBase {
     required BuildContext context,
     required PluginDetails details,
   }) {
-    return _getPlugin(details)?.pluginWidget(context) ?? Container();
+    return _getPlugin(details)?.pluginWidget(context) ?? const Placeholder();
   }
 
   /// 打开插件
-  void _launchPlugin(
-    BuildContext context,
-    PluginDetails details,
-  ) {
-    Navigator.of(context, rootNavigator: true).push(
+  Future<MaterialPageRoute?> _launchPlugin(PluginDetails details) async {
+    return await Navigator.of(
+      getBuildContext(),
+      rootNavigator: true,
+    ).push(
       MaterialPageRoute(
-        builder: (context) => Theme(
-          data: ThemeData(
-            brightness: MediaQuery.platformBrightnessOf(context),
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              details.title,
+            ),
           ),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(
-                details.title,
-              ),
-            ),
-            body: _getPluginWidget(
-              context: context,
-              details: details,
-            ),
+          body: _getPluginWidget(
+            context: context,
+            details: details,
           ),
         ),
       ),
@@ -485,20 +483,17 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 打开卡片
-  VoidCallback? _openPlugin(BuildContext context, PluginDetails details) {
+  VoidCallback? _openPlugin(PluginDetails details) {
     // 无法打开的返回空
     return _isAllowPush(details)
         ? () {
             if (!_isRuntime(details)) {
               // 非运行时打开插件页面
-              _launchPlugin(
-                context,
-                details,
-              );
+              _launchPlugin(details);
             } else {
               // 运行时打开关于对话框
               showAboutDialog(
-                context: context,
+                context: getBuildContext(),
                 applicationName: _appName,
                 applicationVersion: _appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',

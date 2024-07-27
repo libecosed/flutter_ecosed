@@ -54,15 +54,10 @@ base class EcosedBase extends ContextWrapper
   /// 插件界面
   @override
   Widget pluginWidget(BuildContext context) {
-    return Theme(
-      data: ThemeData(
-        brightness: MediaQuery.platformBrightnessOf(context),
-      ),
-      child: ChangeNotifierProvider<ManagerViewModel>(
-        create: (_) => ManagerViewModel(),
-        child: Builder(
-          builder: (context) => build(context),
-        ),
+    return ChangeNotifierProvider<ManagerViewModel>(
+      create: (_) => ManagerViewModel(),
+      child: Builder(
+        builder: (context) => build(context),
       ),
     );
   }
@@ -133,14 +128,18 @@ base class EcosedBase extends ContextWrapper
   }
 
   @override
-  Future<void> openDebugMenu() async {
-    _launchManager();
-  }
+  Future<void> openDebugMenu() async => launchManager();
 
-  Future<MaterialPageRoute?> _launchManager() async {
-    return await Navigator.of(getBuildContext(), rootNavigator: true).push(
+  @override
+  Future<MaterialPageRoute?> launchManager() async {
+    return await Navigator.of(
+      getBuildContext(),
+      rootNavigator: true,
+    ).push(
       MaterialPageRoute(
-        builder: (context) => buildManager(context),
+        builder: (context) {
+          return buildManager(context);
+        },
       ),
     );
   }
@@ -201,40 +200,48 @@ base class EcosedBase extends ContextWrapper
     await engineBridgerScope.onCreateEngine(this);
   }
 
+  Widget _builder({
+    required Widget child,
+  }) {
+    return Builder(
+      builder: (context) => Theme(
+        data: ThemeData(
+          brightness: MediaQuery.platformBrightnessOf(context),
+        ),
+        child: Material(
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Localizations(
+              locale: const Locale('zh', 'CN'),
+              delegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              child: Navigator(
+                onGenerateInitialRoutes: (navigator, name) => [
+                  MaterialPageRoute(
+                    builder: (context) => _withHost(
+                      host: context,
+                      child: EcosedBanner(
+                        child: child,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _withHost({
     required BuildContext host,
     required Widget child,
   }) {
     attachBuildContext(host);
     return child;
-  }
-
-  Widget _builder({
-    required Widget child,
-  }) {
-    // PopScope(child: child, onPopInvoked: (didPop) {
-      
-    // },);
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Localizations(
-        locale: const Locale('zh', 'CN'),
-        delegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        child: Navigator(
-          onGenerateInitialRoutes: (navigator, name) => [
-            MaterialPageRoute(
-              builder: (context) => _withHost(
-                host: context,
-                child: EcosedBanner(child: child),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

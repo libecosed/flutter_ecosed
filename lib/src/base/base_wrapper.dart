@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../interface/ecosed_interface.dart';
 import '../plugin/plugin_runtime.dart';
@@ -16,6 +16,8 @@ abstract interface class BaseWrapper {
 
   /// 获取管理器
   Widget buildManager(BuildContext context);
+
+  Future<MaterialPageRoute?> launchManager();
 
   /// 执行插件方法
   Future<dynamic> exec(
