@@ -18,23 +18,23 @@ base class ContextWrapper extends Context {
 
   /// 附加构建上下文
   void attachBuildContext(BuildContext context) {
-    assert(() {
-      if (mBuild != null) {
-        throw FlutterError('请勿重复执行attachBuildContext!');
-      }
-      return true;
-    }());
+    // assert(() {
+    //   if (mBuild != null) {
+    //     throw FlutterError('请勿重复执行attachBuildContext!');
+    //   }
+    //   return true;
+    // }());
     mBuild = context;
   }
 
   /// 附加基本上下文
   void attachBaseContext(Context base) {
-    assert(() {
-      if (mBase != null) {
-        throw FlutterError('请勿重复执行attachBaseContext!');
-      }
-      return true;
-    }());
+    // assert(() {
+    //   if (mBase != null) {
+    //     throw FlutterError('请勿重复执行attachBaseContext!');
+    //   }
+    //   return true;
+    // }());
     mBase = base;
   }
 

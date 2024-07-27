@@ -40,6 +40,9 @@ class _EcosedManagerState extends State<EcosedManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('管理器'),
+      ),
       body: Scrollbar(
         controller: _scrollController,
         child: ListView(

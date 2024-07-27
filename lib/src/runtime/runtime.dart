@@ -48,6 +48,11 @@ final class EcosedRuntime extends EcosedBase {
     );
   }
 
+  @override
+  Future<void> openDebugMenu() async {
+    super.openDebugMenu();
+  }
+
   /// 插件通道
   @override
   String get pluginChannel => 'ecosed_runtime';
@@ -312,7 +317,7 @@ final class EcosedRuntime extends EcosedBase {
                   ),
                 ),
                 TextButton(
-                  onPressed: _openPlugin(context, details),
+                  onPressed: _openPlugin(getBuildContext(), details),
                   child: Text(_getPluginAction(details)),
                 ),
               ],
@@ -364,17 +369,22 @@ final class EcosedRuntime extends EcosedBase {
     BuildContext context,
     PluginDetails details,
   ) {
-    Navigator.of(context).push(
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text(
-              details.title,
-            ),
+        builder: (context) => Theme(
+          data: ThemeData(
+            brightness: MediaQuery.platformBrightnessOf(context),
           ),
-          body: _getPluginWidget(
-            context: context,
-            details: details,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                details.title,
+              ),
+            ),
+            body: _getPluginWidget(
+              context: context,
+              details: details,
+            ),
           ),
         ),
       ),
@@ -492,7 +502,7 @@ final class EcosedRuntime extends EcosedBase {
                 applicationName: _appName,
                 applicationVersion: _appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',
-                useRootNavigator: false,
+                useRootNavigator: true,
               );
             }
           }

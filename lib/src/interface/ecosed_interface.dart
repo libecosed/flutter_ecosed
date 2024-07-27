@@ -24,7 +24,6 @@ abstract class EcosedInterface extends PlatformInterface {
   }
 
   /// 运行应用
-  
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
@@ -42,8 +41,13 @@ abstract class EcosedInterface extends PlatformInterface {
     throw UnimplementedError('未实现execPluginMethod()方法');
   }
 
-  /// 获取管理器
-  Widget getManagerWidget() {
-    throw UnimplementedError('未实现getManagerWidget()方法');
+  /// 打开调试菜单
+  Future<void> openDebugMenu() async {
+    throw UnimplementedError('未实现openDebugMenu()方法');
   }
+
+  // /// 获取管理器
+  // Widget getManagerWidget() {
+  //   throw UnimplementedError('未实现getManagerWidget()方法');
+  // }
 }

@@ -115,11 +115,20 @@ Future<dynamic> execPluginMethod(
   );
 }
 
-/// 获取管理器控件
-///
+/// 打开调试菜单
+/// 
 /// ```dart
-/// getManagerWidget();
+/// await openDebugMenu();
 /// ```
-Widget getManagerWidget() {
-  return EcosedInterface.instance.getManagerWidget();
+Future<void> openDebugMenu() async {
+  return EcosedInterface.instance.openDebugMenu();
 }
+
+// /// 获取管理器控件
+// ///
+// /// ```dart
+// /// getManagerWidget();
+// /// ```
+// Widget getManagerWidget() {
+//   return EcosedInterface.instance.getManagerWidget();
+// }

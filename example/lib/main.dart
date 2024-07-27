@@ -10,7 +10,12 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
   // await runEcosedApp(
-  //   app: getManagerWidget(),
+  //   app: Center(
+  //     child: TextButton(
+  //       onPressed: () => openDebugMenu(),
+  //       child: const Text('debug'),
+  //     ),
+  //   ),
   //   plugins: const <EcosedPlugin>[ExamplePlugin()],
   //   runner: (app) async => runApp(app),
   // );
@@ -421,7 +426,13 @@ class ManagerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: getManagerWidget());
+    //return Container(child: getManagerWidget());
+    return Center(
+      child: TextButton(
+        onPressed: () => openDebugMenu(),
+        child: Text('open'),
+      ),
+    );
   }
 }
 

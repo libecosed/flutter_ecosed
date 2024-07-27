@@ -34,9 +34,14 @@ final class DefaultEntry extends EcosedInterface {
   }
 
   @override
-  Widget getManagerWidget() {
-    return Center(
-      child: Text('不支持当前平台$_platform'),
-    );
+  Future<void> openDebugMenu() async {
+
   }
+
+  // @override
+  // Widget getManagerWidget() {
+  //   return Center(
+  //     child: Text('不支持当前平台$_platform'),
+  //   );
+  // }
 }

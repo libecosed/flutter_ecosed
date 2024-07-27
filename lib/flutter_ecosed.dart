@@ -4,7 +4,7 @@ library flutter_ecosed;
 import 'src/export/export.dart';
 
 export 'src/export/export.dart'
-    show EcosedPlugin, runEcosedApp, execPluginMethod, getManagerWidget
+    show EcosedPlugin, runEcosedApp, execPluginMethod, openDebugMenu
     hide registerEcosed;
 
 /// 平台插件注册

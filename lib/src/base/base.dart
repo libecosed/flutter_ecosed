@@ -132,15 +132,28 @@ base class EcosedBase extends ContextWrapper
     );
   }
 
-  /// 获取管理器
   @override
-  Widget getManagerWidget() {
-    return Builder(
-      builder: (context) {
-        return buildManager(context);
-      },
+  Future<void> openDebugMenu() async {
+    _launchManager();
+  }
+
+  Future<MaterialPageRoute?> _launchManager() async {
+    return await Navigator.of(getBuildContext(), rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) => buildManager(context),
+      ),
     );
   }
+
+  // /// 获取管理器
+  // @override
+  // Widget getManagerWidget() {
+  //   return Builder(
+  //     builder: (context) {
+  //       return buildManager(context);
+  //     },
+  //   );
+  // }
 
   /// 运行应用
   @mustCallSuper
@@ -199,6 +212,9 @@ base class EcosedBase extends ContextWrapper
   Widget _builder({
     required Widget child,
   }) {
+    // PopScope(child: child, onPopInvoked: (didPop) {
+      
+    // },);
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Localizations(

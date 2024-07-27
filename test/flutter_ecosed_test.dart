@@ -24,8 +24,12 @@ final class MockFlutterEcosedPlatform
     throw UnimplementedError();
   }
 
+  // @override
+  // Widget getManagerWidget() {
+  //   throw UnimplementedError();
+  // }
   @override
-  Widget getManagerWidget() {
+  Future<void> openDebugMenu() {
     throw UnimplementedError();
   }
 }

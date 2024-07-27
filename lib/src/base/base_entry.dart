@@ -6,7 +6,7 @@ import 'base.dart';
 
 base mixin BaseEntry on EcosedInterface {
   /// 初始化运行时
-  final EcosedInterface _runtime = EcosedBase()();
+  final EcosedInterface _interface = EcosedBase()();
 
   /// 运行应用
   @override
@@ -16,7 +16,7 @@ base mixin BaseEntry on EcosedInterface {
     required Future<void> Function(Widget app) runner,
   }) async {
     try {
-      return await _runtime.runEcosedApp(
+      return await _interface.runEcosedApp(
         app: app,
         plugins: plugins,
         runner: runner,
@@ -38,7 +38,7 @@ base mixin BaseEntry on EcosedInterface {
     dynamic arguments,
   ]) async {
     try {
-      return await _runtime.execPluginMethod(
+      return await _interface.execPluginMethod(
         channel,
         method,
         arguments,
@@ -52,13 +52,23 @@ base mixin BaseEntry on EcosedInterface {
     }
   }
 
-  /// 管理器
+  /// 打开调试菜单
   @override
-  Widget getManagerWidget() {
+  Future<void> openDebugMenu() async {
     try {
-      return _runtime.getManagerWidget();
+      return await _interface.openDebugMenu();
     } on Exception {
-      return super.getManagerWidget();
+      return await super.openDebugMenu();
     }
   }
+
+  // /// 管理器
+  // @override
+  // Widget getManagerWidget() {
+  //   try {
+  //     return _runtime.getManagerWidget();
+  //   } on Exception {
+  //     return super.getManagerWidget();
+  //   }
+  // }
 }
