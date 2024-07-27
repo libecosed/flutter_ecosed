@@ -3,6 +3,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../plugin/plugin_runtime.dart';
 import '../entry/default_entry.dart';
+import '../type/runner.dart';
 
 /// 实现平台接口的抽象类
 abstract class EcosedInterface extends PlatformInterface {
@@ -27,7 +28,7 @@ abstract class EcosedInterface extends PlatformInterface {
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {
     throw UnimplementedError('未实现runEcosedApp()方法');
   }
@@ -45,9 +46,4 @@ abstract class EcosedInterface extends PlatformInterface {
   Future<void> openDebugMenu() async {
     throw UnimplementedError('未实现openDebugMenu()方法');
   }
-
-  // /// 获取管理器
-  // Widget getManagerWidget() {
-  //   throw UnimplementedError('未实现getManagerWidget()方法');
-  // }
 }

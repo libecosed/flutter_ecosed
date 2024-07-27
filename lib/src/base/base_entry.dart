@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../interface/ecosed_interface.dart';
 import '../plugin/plugin_runtime.dart';
+import '../type/runner.dart';
 import 'base.dart';
 
 base mixin BaseEntry on EcosedInterface {
@@ -13,7 +14,7 @@ base mixin BaseEntry on EcosedInterface {
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {
     try {
       return await _interface.runEcosedApp(

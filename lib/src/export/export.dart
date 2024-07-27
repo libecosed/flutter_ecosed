@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../entry/ecosed_entry.dart';
 import '../interface/ecosed_interface.dart';
 import '../plugin/plugin_runtime.dart';
+import '../type/runner.dart';
 
 /// 注册 flutter_ecosed 插件
 ///
@@ -89,7 +90,7 @@ abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 Future<void> runEcosedApp({
   required Widget app,
   required List<EcosedPlugin> plugins,
-  required Future<void> Function(Widget app) runner,
+  required Runner runner,
 }) async {
   return await EcosedInterface.instance.runEcosedApp(
     app: app,

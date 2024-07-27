@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import '../framework/log.dart';
 import '../plugin/plugin_runtime.dart';
 import '../interface/ecosed_interface.dart';
+import '../type/runner.dart';
 import '../values/tag.dart';
 
 /// 无法正确加载平台时的实现
@@ -17,7 +18,7 @@ final class DefaultEntry extends EcosedInterface {
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {
     Log.w(entryTag, '不支持当前平台$_platform');
     runner(app);

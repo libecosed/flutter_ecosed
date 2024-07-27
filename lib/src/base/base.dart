@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_runtime.dart';
+import '../type/runner.dart';
 import '../values/strings.dart';
 import '../values/tag.dart';
 import '../framework/context_wrapper.dart';
@@ -129,6 +130,7 @@ base class EcosedBase extends ContextWrapper
     return await runner(_builder(child: app));
   }
 
+  /// 执行引擎方法
   @override
   Future<dynamic> execEngine(
     String method, [
@@ -155,10 +157,12 @@ base class EcosedBase extends ContextWrapper
   }
 
   // 此方法通过运行时继承后重写
+  /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async => await launchManager();
 
   // 此方法仅供绑定层与运行时调用
+  /// 获取导航主机上下文
   @override
   BuildContext get host => getBuildContext();
 
@@ -178,7 +182,7 @@ base class EcosedBase extends ContextWrapper
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {
     // 初始化Flutter相关
     _initFlutter();

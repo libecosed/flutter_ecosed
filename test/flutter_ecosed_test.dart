@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/src/interface/ecosed_interface.dart';
 import 'package:flutter_ecosed/src/plugin/plugin_runtime.dart';
 import 'package:flutter_ecosed/src/runtime/runtime.dart';
+import 'package:flutter_ecosed/src/type/runner.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -12,7 +13,7 @@ final class MockFlutterEcosedPlatform
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {}
 
   @override

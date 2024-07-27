@@ -7,6 +7,7 @@ import '../base/base.dart';
 import '../plugin/plugin_runtime.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
+import '../type/runner.dart';
 import '../values/placeholder.dart';
 import '../widget/manager.dart';
 
@@ -29,7 +30,7 @@ final class EcosedRuntime extends EcosedBase {
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
-    required Future<void> Function(Widget app) runner,
+    required Runner runner,
   }) async {
     // 执行父类代码
     await super.runEcosedApp(
@@ -48,12 +49,12 @@ final class EcosedRuntime extends EcosedBase {
     );
   }
 
+  /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async {
-    // TODO: 实现调试对话框
-
     showDialog(
       context: super.host,
+      useRootNavigator: false,
       builder: (context) => SimpleDialog(
         title: const Text('调试菜单'),
         children: <SimpleDialogOption>[
@@ -78,10 +79,9 @@ final class EcosedRuntime extends EcosedBase {
                 await super.launchManager();
               },
             ),
-          )
+          ),
         ],
       ),
-      useRootNavigator: false,
     );
   }
 
@@ -97,6 +97,7 @@ final class EcosedRuntime extends EcosedBase {
   @override
   String get pluginName => 'EcosedRuntime';
 
+  /// 管理器布局
   @override
   Widget build(BuildContext context) {
     return EcosedManager(
@@ -111,6 +112,7 @@ final class EcosedRuntime extends EcosedBase {
     );
   }
 
+  /// 获取管理器
   @override
   Widget buildManager(BuildContext context) {
     for (var element in _pluginDetailsList) {
@@ -121,6 +123,7 @@ final class EcosedRuntime extends EcosedBase {
     return super.buildManager(context);
   }
 
+  /// 执行插件方法
   @override
   Future<dynamic> exec(
     String channel,
