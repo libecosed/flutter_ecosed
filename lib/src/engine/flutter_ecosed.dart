@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-import '../framework/alert_dialog.dart';
 import '../framework/want.dart';
 import '../framework/log.dart';
 import '../framework/service.dart';
@@ -12,13 +9,13 @@ final class FlutterEcosedPlugin extends Service {
     super.onCreate();
     Log.i(engineTag, 'onCreate');
 
-    EAlertDialogBuilder builder = EAlertDialogBuilder(build: this);
-    builder.setTitle("");
-    builder.setItem(ListView(
-      children: [],
-    ));
-    EAlertDialog dialog = builder.create();
-    dialog.show();
+    // EAlertDialogBuilder builder = EAlertDialogBuilder(build: this);
+    // builder.setTitle("");
+    // builder.setItem(ListView(
+    //   children: const [],
+    // ));
+    // EAlertDialog dialog = builder.create();
+    // dialog.show();
   }
 
   @override

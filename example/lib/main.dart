@@ -426,11 +426,10 @@ class ManagerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //return Container(child: getManagerWidget());
     return Center(
       child: TextButton(
         onPressed: () => openDebugMenu(),
-        child: Text('open'),
+        child: const Text('打开管理器'),
       ),
     );
   }
