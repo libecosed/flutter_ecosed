@@ -13,17 +13,24 @@ final class DefaultEntry extends EcosedInterface {
   /// 获取当前操作系统名称
   final String _platform = Platform.operatingSystem;
 
-  /// 运行应用 - 抛出未知平台异常
+  /// 运行应用
   @override
   Future<void> runEcosedApp({
     required Widget app,
     required List<EcosedRuntimePlugin> plugins,
     required Runner runner,
   }) async {
-    Log.w(entryTag, '不支持当前平台$_platform');
-    runner(app);
+    return await runner(app).then(
+      (_) => Log.w(
+        entryTag,
+        '不支持当前平台$_platform, '
+        '框架所有代码未参与执行, '
+        '${plugins.length}插件不会被加载.',
+      ),
+    );
   }
 
+  /// 执行方法
   @override
   Future<dynamic> execPluginMethod(
     String channel,
@@ -34,15 +41,9 @@ final class DefaultEntry extends EcosedInterface {
     return await null;
   }
 
+  /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async {
-
+    Log.w(entryTag, '不支持当前平台$_platform');
   }
-
-  // @override
-  // Widget getManagerWidget() {
-  //   return Center(
-  //     child: Text('不支持当前平台$_platform'),
-  //   );
-  // }
 }
