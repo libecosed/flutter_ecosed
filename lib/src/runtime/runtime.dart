@@ -74,10 +74,11 @@ final class EcosedRuntime extends EcosedBase {
       appName: _appName,
       appVersion: _appVersion,
       pluginDetailsList: _pluginDetailsList,
-      getPlugin: (details) => _getPlugin(details),
-      getPluginWidget: (context, details) => _getPluginWidget(context, details),
+      getPlugin: _getPlugin,
+      getPluginWidget: _getPluginWidget,
       host: super.host,
-      isRuntime: (details) => _isRuntime(details),
+      isRuntime: _isRuntime,
+      openDebugMenu: openDebugMenu,
     );
   }
 

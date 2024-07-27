@@ -17,6 +17,7 @@ class EcosedManager extends StatefulWidget {
     required this.getPluginWidget,
     required this.host,
     required this.isRuntime,
+    required this.openDebugMenu,
   });
 
   final String appName;
@@ -26,6 +27,7 @@ class EcosedManager extends StatefulWidget {
   final PluginWidgetGetter getPluginWidget;
   final BuildContext host;
   final RuntimeChecker isRuntime;
+  final VoidCallback openDebugMenu;
 
   @override
   State<EcosedManager> createState() => _EcosedManagerState();
@@ -211,34 +213,32 @@ class _InfoCardState extends State<InfoCard> {
           children: [
             Expanded(
               child: Consumer<ManagerViewModel>(
-                builder: (context, viewModel, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InfoItem(
-                        title: '应用名称',
-                        subtitle: widget.appName,
-                      ),
-                      const SizedBox(height: 16),
-                      InfoItem(
-                        title: '应用版本',
-                        subtitle: widget.appVersion,
-                      ),
-                      const SizedBox(height: 16),
-                      InfoItem(
-                        title: '当前平台',
-                        subtitle: Theme.of(context).platform.name,
-                      ),
-                      const SizedBox(height: 16),
-                      InfoItem(
-                        title: '插件数量',
-                        subtitle: viewModel
-                            .pluginCount(widget.pluginDetailsList)
-                            .toString(),
-                      ),
-                    ],
-                  );
-                },
+                builder: (context, viewModel, child) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InfoItem(
+                      title: '应用名称',
+                      subtitle: widget.appName,
+                    ),
+                    const SizedBox(height: 16),
+                    InfoItem(
+                      title: '应用版本',
+                      subtitle: widget.appVersion,
+                    ),
+                    const SizedBox(height: 16),
+                    InfoItem(
+                      title: '当前平台',
+                      subtitle: Theme.of(context).platform.name,
+                    ),
+                    const SizedBox(height: 16),
+                    InfoItem(
+                      title: '插件数量',
+                      subtitle: viewModel
+                          .pluginCount(widget.pluginDetailsList)
+                          .toString(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -312,16 +312,14 @@ class _MoreCardState extends State<MoreCard> {
               ),
             ),
             Consumer<ManagerViewModel>(
-              builder: (context, viewModel, child) {
-                return IconButton(
-                  onPressed: () => viewModel.launchPubDev(),
-                  icon: Icon(
-                    Icons.open_in_browser,
-                    size: Theme.of(context).iconTheme.size,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                );
-              },
+              builder: (context, viewModel, child) => IconButton(
+                onPressed: () => viewModel.launchPubDev(),
+                icon: Icon(
+                  Icons.open_in_browser,
+                  size: Theme.of(context).iconTheme.size,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
             ),
           ],
         ),
@@ -452,11 +450,9 @@ class PluginCard extends StatelessWidget {
                   ),
                 ),
                 Consumer<ManagerViewModel>(
-                  builder: (context, viewModel, child) {
-                    return Container(
-                      child: viewModel.getPluginIcon(details),
-                    );
-                  },
+                  builder: (context, viewModel, child) => Container(
+                    child: viewModel.getPluginIcon(details),
+                  ),
                 ),
               ],
             ),
@@ -472,32 +468,34 @@ class PluginCard extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             Consumer<ManagerViewModel>(
-              builder: (context, viewModel, child) {
-                return Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        viewModel.getPluginType(details),
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+              builder: (context, viewModel, child) => Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      viewModel.getPluginType(details),
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    TextButton(
-                      onPressed: viewModel.openPlugin(
-                        host,
+                  ),
+                  TextButton(
+                    onPressed: viewModel.openPlugin(
+                      details,
+                      getPlugin,
+                      isRuntime,
+                      host,
+                      getPluginWidget,
+                      appName,
+                      appVersion,
+                    ),
+                    child: Text(
+                      viewModel.getPluginAction(
                         details,
                         getPlugin,
-                        isRuntime,
-                        getPluginWidget,
-                        appName,
-                        appVersion,
                       ),
-                      child:
-                          Text(viewModel.getPluginAction(details, getPlugin)),
                     ),
-                  ],
-                );
-              },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

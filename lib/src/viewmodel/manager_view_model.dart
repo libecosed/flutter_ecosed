@@ -142,10 +142,10 @@ class ManagerViewModel extends ChangeNotifier {
 
   /// 打开卡片
   VoidCallback? openPlugin(
-    BuildContext host,
     PluginDetails details,
     PluginGetter getPlugin,
     RuntimeChecker isRuntime,
+    BuildContext host,
     PluginWidgetGetter getPluginWidget,
     String appName,
     String appVersion,
