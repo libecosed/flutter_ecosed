@@ -342,7 +342,7 @@ class PluginCardList extends StatelessWidget {
                   details: element,
                   host: host,
                   appName: appName,
-                  appVersion: appName,
+                  appVersion: appVersion,
                   getPlugin: getPlugin,
                   getPluginWidget: getPluginWidget,
                   isRuntime: isRuntime,
