@@ -43,5 +43,11 @@ final class ServiceInvoke extends EcosedEnginePlugin {
   Future<void> onEcosedMethodCall(
     EcosedMethodCall call,
     EcosedResult result,
-  ) async {}
+  ) async {
+    switch (call.method) {
+      case '':
+        myService.test();
+      default:
+    }
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../framework/activity.dart';
 import '../framework/alert_dialog.dart';
 import '../framework/want.dart';
 import '../framework/log.dart';
@@ -19,14 +18,11 @@ final class FlutterEcosedPlugin extends Service {
       children: [],
     ));
     EAlertDialog dialog = builder.create();
-
-
+    dialog.show();
   }
 
   @override
-  IBinder onBind(Want want) {
-    return LocalBinder(service: this);
-  }
+  IBinder onBind(Want want) => LocalBinder(service: this);
 
   void test() {}
 }
@@ -40,21 +36,10 @@ final class LocalBinder extends Binder {
   Service get getService => service;
 }
 
-final class TestActivity extends Activity {
-  late FlutterEcosedPlugin myService;
-
-  @override
-  void onCreate() {
-    super.onCreate();
-
-    myService.test();
-  }
-}
-
-class MyConnection implements ServiceConnection {
+final class MyConnection implements ServiceConnection {
   MyConnection({required this.calback});
 
-  final void Function(FlutterEcosedPlugin myService) calback;
+  final void Function(FlutterEcosedPlugin service) calback;
 
   @override
   void onServiceConnected(String name, IBinder service) {
@@ -63,7 +48,5 @@ class MyConnection implements ServiceConnection {
   }
 
   @override
-  void onServiceDisconnected(String name) {
-    // TODO: implement onServiceDisconnected
-  }
+  void onServiceDisconnected(String name) {}
 }
