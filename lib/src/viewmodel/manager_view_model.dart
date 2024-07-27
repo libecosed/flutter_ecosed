@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../plugin/plugin_details.dart';
-import '../plugin/plugin_runtime.dart';
 import '../plugin/plugin_type.dart';
+import '../type/plugin_getter.dart';
+import '../type/plugin_widget_gatter.dart';
+import '../type/runtiem_checker.dart';
 import '../values/url.dart';
 
 class ManagerViewModel extends ChangeNotifier {
-  ManagerViewModel();
+  ManagerViewModel(this.context);
+
+  final BuildContext context;
 
   void launchPubDev() {
     launchUrl(
@@ -16,19 +20,17 @@ class ManagerViewModel extends ChangeNotifier {
   }
 
   /// 插件是否可以打开
-  bool isAllowPush({
-    required PluginDetails details,
-    required EcosedRuntimePlugin? Function(
-      PluginDetails details,
-    ) getPlugin,
-  }) {
+  bool isAllowPush(
+    PluginDetails details,
+    PluginGetter getPlugin,
+  ) {
     return (details.type == PluginType.runtime ||
             details.type == PluginType.flutter) &&
         getPlugin(details) != null;
   }
 
   /// 统计普通插件数量
-  int pluginCount({required List<PluginDetails> list}) {
+  int pluginCount(List<PluginDetails> list) {
     var count = 0;
     for (var element in list) {
       if (element.type == PluginType.flutter) {
@@ -38,10 +40,7 @@ class ManagerViewModel extends ChangeNotifier {
     return count;
   }
 
-  Widget getPluginIcon({
-    required BuildContext context,
-    required PluginDetails details,
-  }) {
+  Widget getPluginIcon(PluginDetails details) {
     switch (details.type) {
       case PluginType.runtime:
         return Icon(
@@ -112,24 +111,66 @@ class ManagerViewModel extends ChangeNotifier {
   }
 
   /// 获取插件的动作名
-  String getPluginAction({required PluginDetails details}) {
-    return isAllowPush(details: details, getPlugin: (details) {})
+  String getPluginAction(
+    PluginDetails details,
+    PluginGetter getPlugin,
+  ) {
+    return isAllowPush(details, getPlugin)
         ? details.channel != 'ecosed_runtime'
             ? '打开'
             : '关于'
         : '无界面';
   }
+
+  /// 打开插件
+  Future<MaterialPageRoute?> launchPlugin(
+    BuildContext host,
+    PluginDetails details,
+    PluginWidgetGetter getPluginWidget,
+  ) async {
+    return await Navigator.of(host, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(details.title),
+          ),
+          body: getPluginWidget(context, details),
+        ),
+      ),
+    );
+  }
+
+  /// 打开卡片
+  VoidCallback? openPlugin(
+    BuildContext host,
+    PluginDetails details,
+    PluginGetter getPlugin,
+    RuntimeChecker isRuntime,
+    PluginWidgetGetter getPluginWidget,
+    String appName,
+    String appVersion,
+  ) {
+    // 无法打开的返回空
+    return isAllowPush(details, getPlugin)
+        ? () {
+            if (!isRuntime(details)) {
+              // 非运行时打开插件页面
+              launchPlugin(
+                host,
+                details,
+                getPluginWidget,
+              );
+            } else {
+              // 运行时打开关于对话框
+              showAboutDialog(
+                context: host,
+                applicationName: appName,
+                applicationVersion: appVersion,
+                applicationLegalese: 'Powered by FlutterEcosed',
+                useRootNavigator: true,
+              );
+            }
+          }
+        : null;
+  }
 }
-
-// class MyWidget extends StatelessWidget {
-//   const MyWidget({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<ManagerViewModel>(
-//       builder: (context, viewModel, child) {
-        
-//       },
-//     );
-//   }
-// }

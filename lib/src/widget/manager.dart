@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/type/plugin_widget_gatter.dart';
+import 'package:flutter_ecosed/src/type/runtiem_checker.dart';
 import 'package:provider/provider.dart';
 
 import '../plugin/plugin_details.dart';
+import '../type/plugin_getter.dart';
 import '../viewmodel/manager_view_model.dart';
 
 class EcosedManager extends StatefulWidget {
@@ -10,13 +13,19 @@ class EcosedManager extends StatefulWidget {
     required this.appName,
     required this.appVersion,
     required this.pluginDetailsList,
-    required this.pluginList,
+    required this.getPlugin,
+    required this.getPluginWidget,
+    required this.host,
+    required this.isRuntime,
   });
 
   final String appName;
   final String appVersion;
   final List<PluginDetails> pluginDetailsList;
-  final Widget pluginList;
+  final PluginGetter getPlugin;
+  final PluginWidgetGetter getPluginWidget;
+  final BuildContext host;
+  final RuntimeChecker isRuntime;
 
   @override
   State<EcosedManager> createState() => _EcosedManagerState();
@@ -79,7 +88,15 @@ class _EcosedManagerState extends State<EcosedManager> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-              child: widget.pluginList,
+              child: PluginCardList(
+                pluginDetailsList: widget.pluginDetailsList,
+                host: widget.host,
+                appName: widget.appName,
+                appVersion: widget.appVersion,
+                getPlugin: widget.getPlugin,
+                getPluginWidget: widget.getPluginWidget,
+                isRuntime: widget.isRuntime,
+              ),
             ),
           ],
         ),
@@ -216,7 +233,7 @@ class _InfoCardState extends State<InfoCard> {
                       InfoItem(
                         title: '插件数量',
                         subtitle: viewModel
-                            .pluginCount(list: widget.pluginDetailsList)
+                            .pluginCount(widget.pluginDetailsList)
                             .toString(),
                       ),
                     ],
@@ -303,6 +320,182 @@ class _MoreCardState extends State<MoreCard> {
                     size: Theme.of(context).iconTheme.size,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PluginCardList extends StatelessWidget {
+  const PluginCardList({
+    super.key,
+    required this.pluginDetailsList,
+    required this.host,
+    required this.appName,
+    required this.appVersion,
+    required this.getPlugin,
+    required this.getPluginWidget,
+    required this.isRuntime,
+  });
+
+  final List<PluginDetails> pluginDetailsList;
+
+  final BuildContext host;
+  final String appName;
+  final String appVersion;
+  final PluginGetter getPlugin;
+  final PluginWidgetGetter getPluginWidget;
+  final RuntimeChecker isRuntime;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListBody(
+      children: pluginDetailsList
+          .map(
+            (element) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Builder(
+                builder: (context) => PluginCard(
+                  details: element,
+                  host: host,
+                  appName: appName,
+                  appVersion: appName,
+                  getPlugin: getPlugin,
+                  getPluginWidget: getPluginWidget,
+                  isRuntime: isRuntime,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class PluginCard extends StatelessWidget {
+  const PluginCard({
+    super.key,
+    required this.details,
+    required this.host,
+    required this.appName,
+    required this.appVersion,
+    required this.getPlugin,
+    required this.getPluginWidget,
+    required this.isRuntime,
+  });
+
+  final BuildContext host;
+  final PluginDetails details;
+  final String appName;
+  final String appVersion;
+  final PluginGetter getPlugin;
+  final PluginWidgetGetter getPluginWidget;
+  final RuntimeChecker isRuntime;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        details.title,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontFamily: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        '通道: ${details.channel}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                        ),
+                      ),
+                      Text(
+                        '作者: ${details.author}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall?.fontFamily,
+                          height: Theme.of(context).textTheme.bodySmall?.height,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Consumer<ManagerViewModel>(
+                  builder: (context, viewModel, child) {
+                    return Container(
+                      child: viewModel.getPluginIcon(details),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              details.description,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.bodySmall?.apply(
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              maxLines: 4,
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            Consumer<ManagerViewModel>(
+              builder: (context, viewModel, child) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        viewModel.getPluginType(details),
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: viewModel.openPlugin(
+                        host,
+                        details,
+                        getPlugin,
+                        isRuntime,
+                        getPluginWidget,
+                        appName,
+                        appVersion,
+                      ),
+                      child:
+                          Text(viewModel.getPluginAction(details, getPlugin)),
+                    ),
+                  ],
                 );
               },
             ),

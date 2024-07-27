@@ -50,10 +50,10 @@ final class EcosedRuntime extends EcosedBase {
 
   @override
   Future<void> openDebugMenu() async {
-    // 打开管理器
-    super.launchManager();
+    // TODO: 实现调试对话框
 
-    //super.openDebugMenu();
+    // 打开管理器
+    await super.launchManager();
   }
 
   /// 插件通道
@@ -74,7 +74,10 @@ final class EcosedRuntime extends EcosedBase {
       appName: _appName,
       appVersion: _appVersion,
       pluginDetailsList: _pluginDetailsList,
-      pluginList: _pluginCardList(context: context),
+      getPlugin: (details) => _getPlugin(details),
+      getPluginWidget: (context, details) => _getPluginWidget(context, details),
+      host: super.host,
+      isRuntime: (details) => _isRuntime(details),
     );
   }
 
@@ -82,10 +85,7 @@ final class EcosedRuntime extends EcosedBase {
   Widget buildManager(BuildContext context) {
     for (var element in _pluginDetailsList) {
       if (_isRuntime(element)) {
-        return _getPluginWidget(
-          context: context,
-          details: element,
-        );
+        return _getPluginWidget(context, element);
       }
     }
     return super.buildManager(context);
@@ -215,122 +215,6 @@ final class EcosedRuntime extends EcosedBase {
     }
   }
 
-  /// 插件卡片列表
-  Widget _pluginCardList({
-    required BuildContext context,
-  }) {
-    return ListBody(
-      children: _pluginDetailsList
-          .map(
-            (element) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Builder(
-                builder: (context) => _pluginCard(
-                  context: context,
-                  details: element,
-                ),
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  /// 插件卡片
-  Widget _pluginCard({
-    required BuildContext context,
-    required PluginDetails details,
-  }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        details.title,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.titleMedium?.fontSize,
-                          fontFamily: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.fontFamily,
-                          height: Theme.of(context).textTheme.bodySmall?.height,
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        '通道: ${details.channel}',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.bodySmall?.fontSize,
-                          fontFamily:
-                              Theme.of(context).textTheme.bodySmall?.fontFamily,
-                          height: Theme.of(context).textTheme.bodySmall?.height,
-                        ),
-                      ),
-                      Text(
-                        '作者: ${details.author}',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.bodySmall?.fontSize,
-                          fontFamily:
-                              Theme.of(context).textTheme.bodySmall?.fontFamily,
-                          height: Theme.of(context).textTheme.bodySmall?.height,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: _getPluginIcon(context: context, details: details),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              details.description,
-              textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.bodySmall?.apply(
-                    overflow: TextOverflow.ellipsis,
-                  ),
-              maxLines: 4,
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _getPluginType(details),
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-                TextButton(
-                  onPressed: _openPlugin(details),
-                  child: Text(_getPluginAction(details)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   /// 执行插件方法
   Future<dynamic> _exec(
     String channel,
@@ -360,40 +244,11 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 获取插件界面
-  Widget _getPluginWidget({
-    required BuildContext context,
-    required PluginDetails details,
-  }) {
+  Widget _getPluginWidget(
+    BuildContext context,
+    PluginDetails details,
+  ) {
     return _getPlugin(details)?.pluginWidget(context) ?? const Placeholder();
-  }
-
-  /// 打开插件
-  Future<MaterialPageRoute?> _launchPlugin(PluginDetails details) async {
-    return await Navigator.of(
-      getBuildContext(),
-      rootNavigator: true,
-    ).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text(
-              details.title,
-            ),
-          ),
-          body: _getPluginWidget(
-            context: context,
-            details: details,
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 插件是否可以打开
-  bool _isAllowPush(PluginDetails details) {
-    return (details.type == PluginType.runtime ||
-            details.type == PluginType.flutter) &&
-        _getPlugin(details) != null;
   }
 
   /// 获取插件
@@ -406,110 +261,5 @@ final class EcosedRuntime extends EcosedBase {
       }
     }
     return null;
-  }
-
-  /// 获取插件的图标
-  Widget _getPluginIcon({
-    required BuildContext context,
-    required PluginDetails details,
-  }) {
-    switch (details.type) {
-      case PluginType.runtime:
-        return Icon(
-          Icons.keyboard_command_key,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.pinkAccent,
-        );
-      case PluginType.base:
-        return Icon(
-          Icons.keyboard_command_key,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.pinkAccent,
-        );
-      case PluginType.engine:
-        return Icon(
-          Icons.android,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.green,
-        );
-      case PluginType.kernel:
-        return Icon(
-          Icons.developer_board,
-          size: Theme.of(context).iconTheme.size,
-          color: Colors.blueGrey,
-        );
-      case PluginType.flutter:
-        return const FlutterLogo();
-      case PluginType.unknown:
-        return Icon(
-          Icons.error_outline,
-          size: Theme.of(context).iconTheme.size,
-          color: Theme.of(context).colorScheme.error,
-        );
-      default:
-        return Icon(
-          Icons.error_outline,
-          size: Theme.of(context).iconTheme.size,
-          color: Theme.of(context).colorScheme.error,
-        );
-    }
-  }
-
-  /// 获取插件类型
-  String _getPluginType(PluginDetails details) {
-    switch (details.type) {
-      // 框架运行时
-      case PluginType.runtime:
-        return '框架运行时';
-      // 绑定通信层
-      case PluginType.base:
-        return '绑定通信层';
-      // 平台插件
-      case PluginType.engine:
-        return '引擎插件';
-      // 内核模块
-      case PluginType.kernel:
-        return '内核模块';
-      // 普通插件
-      case PluginType.flutter:
-        return '普通插件';
-      // 未知插件类型
-      case PluginType.unknown:
-        return '未知插件类型';
-      // 未知
-      default:
-        return 'Unknown';
-    }
-  }
-
-  /// 打开卡片
-  VoidCallback? _openPlugin(PluginDetails details) {
-    // 无法打开的返回空
-    return _isAllowPush(details)
-        ? () {
-            if (!_isRuntime(details)) {
-              // 非运行时打开插件页面
-              _launchPlugin(details);
-            } else {
-              // 运行时打开关于对话框
-              showAboutDialog(
-                context: getBuildContext(),
-                applicationName: _appName,
-                applicationVersion: _appVersion,
-                applicationLegalese: 'Powered by FlutterEcosed',
-                useRootNavigator: true,
-              );
-            }
-          }
-        : null;
-  }
-
-  /// 获取插件的动作名
-  String _getPluginAction(PluginDetails details) {
-    return _isAllowPush(details)
-        ? details.channel != pluginChannel
-            ? '打开'
-            : '关于'
-        : '无界面';
   }
 }

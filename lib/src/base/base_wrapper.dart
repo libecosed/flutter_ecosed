@@ -17,6 +17,7 @@ abstract interface class BaseWrapper {
   /// 获取管理器
   Widget buildManager(BuildContext context);
 
+  /// 打开管理器
   Future<MaterialPageRoute?> launchManager();
 
   /// 执行插件方法
@@ -37,4 +38,7 @@ abstract interface class BaseWrapper {
     String method, [
     dynamic arguments,
   ]);
+
+  /// 获取导航主机上下文
+  BuildContext get host;
 }
