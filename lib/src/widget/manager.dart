@@ -64,6 +64,7 @@ class _EcosedManagerState extends State<EcosedManager> {
               child: StateCard(
                 appName: widget.appName,
                 appVersion: widget.appVersion,
+                openDebugMenu: widget.openDebugMenu,
               ),
             ),
             Padding(
@@ -111,11 +112,12 @@ class StateCard extends StatelessWidget {
   const StateCard({
     super.key,
     required this.appName,
-    required this.appVersion,
+    required this.appVersion, required this.openDebugMenu,
   });
 
   final String appName;
   final String appVersion;
+  final VoidCallback openDebugMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -152,28 +154,7 @@ class StateCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    title: const Text('调试菜单'),
-                    children: <SimpleDialogOption>[
-                      SimpleDialogOption(
-                        padding: const EdgeInsets.all(0),
-                        child: ListTile(
-                          title: const Text('关闭'),
-                          leading: const FlutterLogo(),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 24.0),
-                          enabled: true,
-                          onTap: () => Navigator.of(context).pop(),
-                        ),
-                      )
-                    ],
-                  );
-                },
-                useRootNavigator: false,
-              ),
+              onPressed: openDebugMenu,
               icon: Icon(
                 Icons.developer_mode,
                 size: Theme.of(context).iconTheme.size,

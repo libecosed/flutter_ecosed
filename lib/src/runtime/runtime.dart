@@ -52,8 +52,37 @@ final class EcosedRuntime extends EcosedBase {
   Future<void> openDebugMenu() async {
     // TODO: 实现调试对话框
 
-    // 打开管理器
-    await super.launchManager();
+    showDialog(
+      context: super.host,
+      builder: (context) => SimpleDialog(
+        title: const Text('调试菜单'),
+        children: <SimpleDialogOption>[
+          SimpleDialogOption(
+            padding: const EdgeInsets.all(0),
+            child: ListTile(
+              title: const Text('关闭'),
+              leading: const FlutterLogo(),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+              enabled: true,
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ),
+          SimpleDialogOption(
+            padding: const EdgeInsets.all(0),
+            child: ListTile(
+              title: const Text('管理器'),
+              leading: const FlutterLogo(),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+              enabled: true,
+              onTap: () async {
+                await super.launchManager();
+              },
+            ),
+          )
+        ],
+      ),
+      useRootNavigator: false,
+    );
   }
 
   /// 插件通道
