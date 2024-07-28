@@ -8,14 +8,6 @@ final class FlutterEcosedPlugin extends Service {
   void onCreate() {
     super.onCreate();
     Log.i(engineTag, 'onCreate');
-
-    // EAlertDialogBuilder builder = EAlertDialogBuilder(build: this);
-    // builder.setTitle("");
-    // builder.setItem(ListView(
-    //   children: const [],
-    // ));
-    // EAlertDialog dialog = builder.create();
-    // dialog.show();
   }
 
   @override

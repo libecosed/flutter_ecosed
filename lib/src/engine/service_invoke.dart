@@ -24,7 +24,7 @@ final class ServiceInvoke extends EcosedEnginePlugin {
 
   @override
   Future<void> onEcosedAdded(PluginBinding binding) async {
-    var added = await super.onEcosedAdded(binding);
+    void added = await super.onEcosedAdded(binding);
 
     final MyConnection connect = MyConnection(calback: (service) {
       myService = service;

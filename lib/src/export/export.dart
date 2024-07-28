@@ -73,7 +73,7 @@ abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 /// 启动应用
 ///
 /// 需要将入口函数main的void类型改为Future<void>并添加async标签转为异步函数.
-/// 
+///
 /// [app] 传入的是
 ///
 /// ```dart
@@ -117,7 +117,7 @@ Future<dynamic> execPluginMethod(
 }
 
 /// 打开调试菜单
-/// 
+///
 /// ```dart
 /// await openDebugMenu();
 /// ```

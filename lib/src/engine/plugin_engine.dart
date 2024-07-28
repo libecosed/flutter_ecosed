@@ -16,6 +16,7 @@ abstract base class EcosedEnginePlugin extends ContextWrapper {
     _pluginChannel = PluginChannel(binding: binding, channel: channel);
     // 附加基础上下文
     attachBaseContext(_pluginChannel.getContext());
+    attachBuildContext(_pluginChannel.getBuildContext());
     // 获取引擎
     _engine = _pluginChannel.getEngine();
     // 设置方法回调

@@ -219,7 +219,7 @@ base class EcosedBase extends ContextWrapper
     // 初始化引擎桥接
     initEngineBridge();
     // 初始化引擎
-    await engineBridgerScope.onCreateEngine(this);
+    await engineBridgerScope.onCreateEngine(this, host);
   }
 
   Widget _builder({
