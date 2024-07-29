@@ -7,8 +7,8 @@ issue_tracker: https://github.com/libecosed/flutter_ecosed/issues
 documentation: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
-  flutter: '>=3.3.0'
+  sdk: ">=3.4.3 <4.0.0"
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:
@@ -43,7 +43,7 @@ flutter:
       android:
         package: io.libecosed.flutter_ecosed
         dartPluginClass: EcosedPlatformRegister
-#        pluginClass: FlutterEcosedPlugin
+        pluginClass: FlutterEcosedPlugin
         ffiPlugin: true
       ios:
         dartPluginClass: EcosedPlatformRegister
