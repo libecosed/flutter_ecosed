@@ -188,6 +188,8 @@ base class EcosedBase extends ContextWrapper
   }) async {
     // 初始化Flutter相关
     _initFlutter();
+    await RustLib.init();
+    Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核
     _initKernle();
     // 初始化服务
@@ -202,9 +204,6 @@ base class EcosedBase extends ContextWrapper
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
-
-    RustLib.init();
-    Log.i(baseTag, greet(name: 'flutter_ecosed'));
   }
 
   /// 初始化内核
