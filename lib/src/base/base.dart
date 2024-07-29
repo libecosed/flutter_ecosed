@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_runtime.dart';
+import '../rust/frb_generated.dart';
 import '../type/runner.dart';
 import '../values/strings.dart';
 import '../values/tag.dart';
@@ -200,6 +201,8 @@ base class EcosedBase extends ContextWrapper
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
+
+    RustLib.init();
   }
 
   /// 初始化内核
