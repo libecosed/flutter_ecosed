@@ -1,0 +1,78 @@
+name: flutter_ecosed
+description: "FlutterEcosed is a Flutter plugin and a simple Flutter library OS and advanced Flutter development framework that providing plugin development and dashboard functions."
+version: 0.2.0-dev.3
+homepage: https://github.com/libecosed/flutter_ecosed
+repository: https://github.com/libecosed/flutter_ecosed
+issue_tracker: https://github.com/libecosed/flutter_ecosed/issues
+documentation: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_rust_bridge: 2.1.0
+  plugin_platform_interface: ^2.1.8
+  provider: ^6.1.2
+  vm_service: ^14.2.1
+  shared_preferences: ^2.2.3
+  sensors_plus: ^5.0.1
+  package_info_plus: ^8.0.0
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  ffi: ^2.1.0
+  ffigen: ^11.0.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  plugin:
+    platforms:
+      android:
+        package: io.libecosed.flutter_ecosed
+        dartPluginClass: EcosedPlatformRegister
+#        pluginClass: FlutterEcosedPlugin
+        ffiPlugin: true
+      ios:
+        dartPluginClass: EcosedPlatformRegister
+        pluginClass: FlutterEcosedPlugin
+        ffiPlugin: true
+      linux:
+        dartPluginClass: EcosedPlatformRegister
+        ffiPlugin: true
+      macos:
+        dartPluginClass: EcosedPlatformRegister
+        ffiPlugin: true
+      windows:
+        dartPluginClass: EcosedPlatformRegister
+        ffiPlugin: true
+      web:
+        pluginClass: EcosedWebRegister
+        fileName: flutter_ecosed_web.dart
+        ffiPlugin: true
+  assets:
+    - AUTHORS
+    - LICENSE
+    - README.md
+    - CHANGELOG.md
+    - screenshot.png
+
+screenshots:
+  - description: "Screenshots 0"
+    path: screenshot.png
+
+topics:
+  - flutter
+  - library-os
+  - framework
