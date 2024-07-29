@@ -7,9 +7,6 @@ export 'src/export/export.dart'
     show EcosedPlugin, runEcosedApp, execPluginMethod, openDebugMenu
     hide registerEcosed;
 
-export 'src/rust/api/simple.dart';
-export 'src/rust/frb_generated.dart' show RustLib;
-
 /// 平台插件注册
 /// 插件注册由Flutter框架接管, 请勿手动注册.
 final class EcosedPlatformRegister {

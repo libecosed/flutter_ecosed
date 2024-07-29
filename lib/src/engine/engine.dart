@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
-
 import '../framework/context.dart';
 import '../framework/log.dart';
 import 'binding.dart';
@@ -66,14 +64,12 @@ final class EcosedEngine extends EcosedEnginePlugin
 
   @override
   Future<void> onCreateEngine(
-    Context context,
-    BuildContext buildContext,
+    Context context
   ) async {
     if (initialized == false) {
       // 初始化绑定
       _binding = PluginBinding(
         context: context,
-        buildContext: buildContext,
         engine: this,
       );
       // 遍历插件列表

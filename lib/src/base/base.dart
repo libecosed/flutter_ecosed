@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_runtime.dart';
+import '../rust/api/simple.dart';
 import '../rust/frb_generated.dart';
 import '../type/runner.dart';
 import '../values/strings.dart';
@@ -203,6 +204,7 @@ base class EcosedBase extends ContextWrapper
     WidgetsFlutterBinding.ensureInitialized();
 
     RustLib.init();
+    Log.i(baseTag, greet(name: 'flutter_ecosed'));
   }
 
   /// 初始化内核
@@ -222,7 +224,7 @@ base class EcosedBase extends ContextWrapper
     // 初始化引擎桥接
     initEngineBridge();
     // 初始化引擎
-    await engineBridgerScope.onCreateEngine(this, host);
+    await engineBridgerScope.onCreateEngine(this);
   }
 
   Widget _builder({

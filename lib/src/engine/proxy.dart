@@ -1,11 +1,9 @@
-import 'package:flutter/widgets.dart';
-
 import '../framework/context.dart';
 
 /// 插件代理
 abstract interface class EngineProxy {
   /// 创建引擎
-  Future<void> onCreateEngine(Context context, BuildContext buildContext);
+  Future<void> onCreateEngine(Context context);
 
   /// 销毁引擎
   Future<void> onDestroyEngine();

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import '../framework/context.dart';
 import 'binding.dart';
 import 'call_impl.dart';
@@ -26,7 +24,6 @@ final class PluginChannel {
   }
 
   Context getContext() => binding.getContext();
-  BuildContext getBuildContext() => binding.getBuildContext();
   String getChannel() => channel;
   EngineWrapper getEngine() => binding.getEngine();
 

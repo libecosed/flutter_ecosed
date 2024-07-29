@@ -1,6 +1,7 @@
 [package]
 name = "flutter_ecosed"
-version = "0.1.0"
+version = "0.0.1"
+authors = ["wyq0918dev <wyq0918dev@gmail.com>"]
 edition = "2021"
 
 [lib]
