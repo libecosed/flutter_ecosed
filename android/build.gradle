@@ -1,7 +1,5 @@
-// The Android Gradle Plugin builds the native code with the Android NDK.
-
-group 'com.flutter_rust_bridge.flutter_ecosed'
-version '1.0'
+group = "io.libecosed.flutter_ecosed"
+version = "1.0"
 
 buildscript {
     repositories {
@@ -10,47 +8,68 @@ buildscript {
     }
 
     dependencies {
-        // The Android Gradle Plugin knows how to build native code with the NDK.
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath("com.android.tools.build:gradle:8.5.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
 }
 
-apply plugin: 'com.android.library'
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
+apply from: "../cargokit/gradle/plugin.gradle"
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.flutter_rust_bridge.flutter_ecosed'
+        namespace = "io.libecosed.flutter_ecosed"
     }
-
-    // Bumping the plugin compileSdkVersion requires all clients of this plugin
-    // to bump the version in their app.
-    compileSdkVersion 33
-
-    // Use the NDK version
-    // declared in /android/app/build.gradle file of the Flutter project.
-    // Replace it with a version number if this plugin requires a specfic NDK version.
-    // (e.g. ndkVersion "23.1.7779620")
-    ndkVersion android.ndkVersion
-
+    compileSdk = 34
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-
+    kotlinOptions {
+        jvmTarget = "11"
+    }
     defaultConfig {
-        minSdkVersion 19
+        minSdk = 24
+    }
+    buildFeatures {
+        aidl = true
+    }
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+                events("passed", "skipped", "failed", "standardOut", "standardError")
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
+        }
     }
 }
 
-apply from: "../cargokit/gradle/plugin.gradle"
 cargokit {
     manifestDir = "../rust"
     libname = "flutter_ecosed"
+}
+
+dependencies {
+    implementation(rootProject.findProject("flutter_plugin_android_lifecycle"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.google.android.gms:play-services-base:18.5.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.lifecycle:lifecycle-common:2.8.4")
+    implementation("com.blankj:utilcodex:1.31.1")
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.22")
+    testImplementation("org.mockito:mockito-core:5.2.0")
 }
