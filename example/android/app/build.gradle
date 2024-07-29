@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.example.flutter_ecosed_example"
+    namespace = "io.libecosed.flutter_ecosed_example"
     compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
@@ -37,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.flutter_ecosed_example"
+        applicationId = "io.libecosed.flutter_ecosed_example"
         minSdk = 24
         targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
