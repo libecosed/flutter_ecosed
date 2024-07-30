@@ -88,12 +88,13 @@ abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 /// }
 /// ```
 Future<void> runEcosedApp({
-  required Widget app,
+  required Widget entry,
+  required Widget settings,
   required List<EcosedPlugin> plugins,
   required Runner runner,
 }) async {
   return await EcosedInterface.instance.runEcosedApp(
-    app: app,
+    app: entry,
     plugins: plugins,
     runner: runner,
   );
