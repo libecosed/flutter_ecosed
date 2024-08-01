@@ -165,6 +165,11 @@ final class EcosedRuntime extends EcosedBase {
 
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
+
+    await super.execEngine(
+      'test',
+      {'channel': 'engine_embedded'},
+    );
   }
 
   /// 初始化包信息
