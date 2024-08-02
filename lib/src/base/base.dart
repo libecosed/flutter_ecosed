@@ -86,9 +86,7 @@ base class EcosedBase extends ContextWrapper
   Widget pluginWidget(BuildContext context) {
     return ChangeNotifierProvider<ManagerViewModel>(
       create: (context) => ManagerViewModel(context),
-      child: Builder(
-        builder: (context) => build(context),
-      ),
+      child: build(context),
     );
   }
 

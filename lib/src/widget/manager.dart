@@ -34,13 +34,7 @@ class EcosedManager extends StatefulWidget {
 }
 
 class _EcosedManagerState extends State<EcosedManager> {
-  late ScrollController _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -50,6 +44,17 @@ class _EcosedManagerState extends State<EcosedManager> {
 
   @override
   Widget build(BuildContext context) {
+    // ScrollConfiguration(
+    //               // A Scrollbar is built-in below.
+    //               behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+    //               child: Scrollbar(
+    //                 child: ListView(
+    //                   primary: true,
+    //                   padding: padding,
+    //                   children: listWidgets,
+    //                 ),
+    //               ),
+    //             )
     return Scaffold(
       appBar: AppBar(
         title: const Text('管理器'),
@@ -112,7 +117,8 @@ class StateCard extends StatelessWidget {
   const StateCard({
     super.key,
     required this.appName,
-    required this.appVersion, required this.openDebugMenu,
+    required this.appVersion,
+    required this.openDebugMenu,
   });
 
   final String appName;

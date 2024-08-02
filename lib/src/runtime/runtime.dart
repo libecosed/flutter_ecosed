@@ -167,7 +167,7 @@ final class EcosedRuntime extends EcosedBase {
     await _initPlugins(plugins: plugins);
 
     await super.execEngine(
-      'test',
+      'openDialog',
       {'channel': 'engine_embedded'},
     );
   }

@@ -63,9 +63,7 @@ final class EcosedEngine extends EcosedEnginePlugin
   }
 
   @override
-  Future<void> onCreateEngine(
-    Context context
-  ) async {
+  Future<void> onCreateEngine(Context context) async {
     if (initialized == false) {
       // 初始化绑定
       _binding = PluginBinding(
@@ -149,7 +147,13 @@ final class EcosedEngine extends EcosedEnginePlugin
         }
       }
     } catch (exception) {
-      Log.d(engineTag, '插件代码调用失败!\n$exception');
+      Log.d(
+        engineTag,
+        '插件代码调用失败!\n$exception'
+        '通道名称:$channel.\n'
+        '方法名称:$method.\n'
+        '返回结果:$result.',
+      );
     }
     return await result;
   }

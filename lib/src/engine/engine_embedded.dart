@@ -1,11 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../framework/log.dart';
 import '../framework/service.dart';
 import '../framework/want.dart';
-import '../values/tag.dart';
+import '../utils/platform.dart';
 import 'binding.dart';
 import 'method_call.dart';
 import 'plugin_engine.dart';
@@ -60,12 +61,17 @@ final class EngineEmbedded extends EcosedEnginePlugin {
 
 final class FlutterEcosedPlugin extends Service
     implements FlutterEcosedPlatform {
-  final FlutterEcosedPlatform instance = FlutterEcosedPlatform.instance;
+  FlutterEcosedPlugin();
+
+  /// 平台实例
+  late FlutterEcosedPlatform _instance;
 
   @override
   void onCreate() {
     super.onCreate();
-    Log.i(engineTag, 'onCreate');
+    if (kUseNative) {
+      _instance = FlutterEcosedPlatform.instance;
+    }
   }
 
   @override
@@ -73,17 +79,55 @@ final class FlutterEcosedPlugin extends Service
 
   @override
   Future<List?> getPlatformPluginList() async {
-    return await instance.getPlatformPluginList();
+    return await _invoke(
+      invoke: () async => List.empty(),
+      mobile: (instance) async => await instance.getPlatformPluginList(),
+      error: (exception) async {
+        return List.empty();
+      },
+    );
   }
 
   @override
   Future<bool?> openPlatformDialog() async {
-    return await instance.openPlatformDialog();
+    return await _invoke(
+      invoke: () async => true,
+      mobile: (instance) async => await instance.openPlatformDialog(),
+      error: (exception) async {
+        return false;
+      },
+    );
   }
 
   @override
   Future<bool?> closePlatformDialog() async {
-    return await instance.closePlatformDialog();
+    return await _invoke(
+      invoke: () async => true,
+      mobile: (instance) async => await instance.closePlatformDialog(),
+      error: (exception) async {
+        return false;
+      },
+    );
+  }
+
+  Future<dynamic> _invoke({
+    required Future<dynamic> Function() invoke,
+    required Future<dynamic> Function(FlutterEcosedPlatform instance) mobile,
+    required Future<dynamic> Function(Exception exception) error,
+  }) async {
+    if (kUseNative) {
+      try {
+        return await mobile.call(_instance);
+      } on Exception catch (exception) {
+        return await error.call(exception);
+      }
+    } else {
+      try {
+        return await invoke.call();
+      } on Exception catch (exception) {
+        return await error.call(exception);
+      }
+    }
   }
 }
 
@@ -130,7 +174,7 @@ abstract class FlutterEcosedPlatform extends PlatformInterface {
   }
 }
 
-class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
+final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
   /// 方法通道
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_ecosed');
