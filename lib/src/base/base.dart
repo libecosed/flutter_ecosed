@@ -1,14 +1,11 @@
 import 'dart:convert';
 
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_runtime.dart';
-import '../rust/api/simple.dart';
-import '../rust/frb_generated.dart';
 import '../type/runner.dart';
 import '../values/strings.dart';
 import '../values/tag.dart';
@@ -229,48 +226,37 @@ base class EcosedBase extends ContextWrapper
     required Widget child,
   }) {
     return Builder(
-      builder: (context) => DynamicColorBuilder(
-        builder: (light, dark) {
-          return Theme(
-            data: ThemeData(
-              brightness: _dayNight(context),
-              colorScheme:
-                  _dayNight(context) == Brightness.light ? light : dark,
-            ),
-            child: Material(
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: Localizations(
-                  locale: const Locale('zh', 'CN'),
-                  delegates: const [
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  child: Navigator(
-                    onGenerateInitialRoutes: (navigator, name) => [
-                      MaterialPageRoute(
-                        builder: (context) => _withHost(
-                          host: context,
-                          child: EcosedBanner(
-                            child: child,
-                          ),
-                        ),
+      builder: (context) => Theme(
+        data: ThemeData(
+          brightness: MediaQuery.platformBrightnessOf(context),
+        ),
+        child: Material(
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Localizations(
+              locale: const Locale('zh', 'CN'),
+              delegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              child: Navigator(
+                onGenerateInitialRoutes: (navigator, name) => [
+                  MaterialPageRoute(
+                    builder: (context) => _withHost(
+                      host: context,
+                      child: EcosedBanner(
+                        child: child,
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
-  }
-
-  /// 是否深色模式
-  Brightness _dayNight(BuildContext context) {
-    return MediaQuery.platformBrightnessOf(context);
   }
 
   Widget _withHost({
