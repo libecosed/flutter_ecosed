@@ -2,21 +2,39 @@
 	"folders": [
 		{
 			"name": "工程目录",
-			"path": "."
+			"path": "./",
 		},
 		{
-			"name": "内核 - Dart",
-			"path": "./lib/src/kernel",
+			"name": "示例应用",
+			"path": "./example",
 		},
 		{
-			"name": "内核 - Rust",
+			"name": "Dart源码",
+			"path": "./lib",
+		},
+		{
+			"name": "Rust源码",
 			"path": "./rust",
 		},
 	],
 	"settings": {},
 	"extensions": {
-		"recommendations": [],
-		"unwantedRecommendations": []
+		"recommendations": [
+			// 简体中文语言包
+			"MS-CEINTL.vscode-language-pack-zh-hans",
+			// 图标包
+			"vscode-icons-team.vscode-icons",
+			// Flutter
+			"Dart-Code.flutter",
+			// Dart
+			"Dart-Code.dart-code",
+			// Rust
+			"rust-lang.rust-analyzer",
+			// CMake
+			"twxs.cmake",
+			// Yaml
+			"redhat.vscode-yaml",
+		],
 	},
 	"launch": {
 		"version": "0.2.0",
@@ -45,22 +63,4 @@
 		],
 		"compounds": []
 	},
-	"tasks": {
-		"version": "2.0.0",
-		"tasks": [
-			{
-				"label": "My Task",
-				"command": "echo hello",
-				"type": "shell",
-				"args": [],
-				"problemMatcher": [
-					"$tsc"
-				],
-				"presentation": {
-					"reveal": "always"
-				},
-				"group": "build"
-			}
-		]
-	}
 }
