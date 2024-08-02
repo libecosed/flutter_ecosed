@@ -26,10 +26,6 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.TypedArray
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -72,8 +68,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
 import java.nio.charset.StandardCharsets
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 /**
  * 作者: wyq0918dev
@@ -129,9 +123,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** AppCompatDelegate */
     private lateinit var mAppCompatDelegate: AppCompatDelegate
 
-    /** 传感器管理器 */
-    private lateinit var mSensorManager: SensorManager
-
     /** 调试对话框 */
     private lateinit var mDebugDialog: AlertDialog
 
@@ -159,16 +150,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
         false
     }
-
-    /** 上一次晃动的X轴坐标 */
-    private var lastX = 0f
-
-    /** 上一次晃动的Y轴坐标 */
-    private var lastY = 0f
-
-    /** 上一次晃动的Z轴坐标 */
-    private var lastZ = 0f
-
 
     private val mUserServiceArgs = Shizuku.UserServiceArgs(
         ComponentName(
@@ -610,11 +591,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     private interface LifecycleWrapper : LifecycleOwner, DefaultLifecycleObserver
 
     /**
-     * 传感器包装器
-     */
-    private interface SensorWrapper : SensorEventListener
-
-    /**
      * 服务链接包装器
      */
     private interface ConnectWrapper : ServiceConnection
@@ -636,7 +612,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 服务插件包装器
      */
     private interface DelegateWrapper : ConnectWrapper, ShizukuWrapper, AppCompatWrapper,
-        LifecycleWrapper, SensorWrapper {
+        LifecycleWrapper {
 
         /**
          * 获取Binder
@@ -1564,8 +1540,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onResume(owner: LifecycleOwner): Unit = activityScope {
             super.onResume(owner)
-            // 注册监听
-            registerSensor()
             // 执行Delegate onPostResume函数
             if (this@activityScope.isNotAppCompat) delegateScope {
                 onPostResume()
@@ -1577,8 +1551,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onPause(owner: LifecycleOwner): Unit = activityScope {
             super.onPause(owner)
-            // 注销监听
-            unregisterSensor()
         }
 
         /**
@@ -1600,23 +1572,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                 onDestroy()
             }
         }
-
-        /**
-         * 当有新的传感器事件时调用.
-         */
-        override fun onSensorChanged(
-            event: SensorEvent?
-        ) = sensorChanged(
-            event = event
-        )
-
-        /**
-         * 当注册的传感器的精度发生变化时调用.
-         */
-        override fun onAccuracyChanged(
-            sensor: Sensor?,
-            accuracy: Int,
-        ) = Unit
     }
 
     /**
@@ -1803,26 +1758,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         },
     )
 
-
-    /**
-     * 传感器调用单元
-     * 调用传感器事件回调
-     * @param content 传感器包装器
-     * @return content 返回值
-     */
-    private fun <R> sensorScope(
-        content: SensorWrapper.() -> R
-    ): R = content.invoke(
-        mServiceDelegate.run {
-            return@run when (this@run) {
-                is SensorWrapper -> this@run
-                else -> error(
-                    message = "服务代理未实现传感器包装器方法"
-                )
-            }
-        },
-    )
-
     /**
      * Activity上下文调用单元
      * Activity生命周期观察者通过此调用单元执行基于Activity上下文的代码
@@ -1913,8 +1848,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
         // 初始化用户界面
         initUi()
-        // 从系统服务中获取传感管理器对象
-        initSensor()
     }
 
     /**
@@ -2036,33 +1969,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         }
         // 设置根视图触摸事件
         findRootView()?.setOnTouchListener(delayHideTouchListener)
-    }
-
-    /**
-     * 初始化传感器
-     */
-    private fun initSensor(): Unit = activityScope {
-        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-    }
-
-    /**
-     * 注册传感器
-     */
-    private fun registerSensor(): Unit = sensorScope {
-        mSensorManager.registerListener(
-            this@sensorScope,
-            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-            SensorManager.SENSOR_DELAY_UI,
-        )
-    }
-
-    /**
-     * 注销传感器
-     */
-    private fun unregisterSensor(): Unit = sensorScope {
-        mSensorManager.unregisterListener(
-            this@sensorScope
-        )
     }
 
     /**
@@ -2259,46 +2165,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         this@FlutterEcosedPlugin.hideHandler.postDelayed(
             hideRunnable, AUTO_HIDE_DELAY_MILLIS.toLong()
         )
-    }
-
-    /**
-     * 当有新的传感器事件时调用.
-     */
-    private fun sensorChanged(event: SensorEvent?) {
-        event?.let { sensorEvent ->
-            when (sensorEvent.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> {
-                    // 加速度阈值
-                    val mSpeed = 3000
-                    //时间间隔
-                    val mInterval = 150
-                    //获取x,y,z
-                    val nowX: Float = sensorEvent.values[0]
-                    val nowY: Float = sensorEvent.values[1]
-                    val nowZ: Float = sensorEvent.values[2]
-                    //计算x,y,z变化量
-                    val deltaX: Float = nowX - lastX
-                    val deltaY: Float = nowY - lastY
-                    val deltaZ: Float = nowZ - lastZ
-                    //赋值
-                    this@FlutterEcosedPlugin.lastX = nowX
-                    this@FlutterEcosedPlugin.lastY = nowY
-                    this@FlutterEcosedPlugin.lastZ = nowZ
-                    //计算
-                    val nowSpeed: Double = sqrt(
-                        x = (deltaX.pow(
-                            n = 2
-                        ) + deltaY.pow(
-                            n = 2
-                        ) + deltaZ.pow(
-                            n = 2
-                        )).toDouble()
-                    ) / mInterval * 10000
-                    //判断
-                    if (nowSpeed >= mSpeed) openDialog()
-                }
-            }
-        }
     }
 
     private fun gms(context: Context) {
