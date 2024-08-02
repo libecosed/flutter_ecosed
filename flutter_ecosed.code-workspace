@@ -1,0 +1,66 @@
+{
+	"folders": [
+		{
+			"name": "工程目录",
+			"path": "."
+		},
+		{
+			"name": "内核 - Dart",
+			"path": "./lib/src/kernel",
+		},
+		{
+			"name": "内核 - Rust",
+			"path": "./rust",
+		},
+	],
+	"settings": {},
+	"extensions": {
+		"recommendations": [],
+		"unwantedRecommendations": []
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "示例应用 (Debug模式)",
+				"cwd": "example",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "debug",
+			},
+			{
+				"name": "示例应用 (Profile模式)",
+				"cwd": "example",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "profile",
+			},
+			{
+				"name": "示例应用 (Release模式)",
+				"cwd": "example",
+				"request": "launch",
+				"type": "dart",
+				"flutterMode": "release",
+			},
+		],
+		"compounds": []
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "My Task",
+				"command": "echo hello",
+				"type": "shell",
+				"args": [],
+				"problemMatcher": [
+					"$tsc"
+				],
+				"presentation": {
+					"reveal": "always"
+				},
+				"group": "build"
+			}
+		]
+	}
+}
