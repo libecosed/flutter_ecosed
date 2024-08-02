@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -299,28 +300,34 @@ class _NavigationTransitionState extends State<NavigationTransition> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        key: widget.scaffoldKey,
-        appBar: widget.appBar(Global.appName),
-        body: Row(
-          children: <Widget>[
-            RailTransition(
-              animation: railAnimation,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              child: widget.navigationRail,
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp(
+          home: Scaffold(
+            key: widget.scaffoldKey,
+            appBar: widget.appBar(Global.appName),
+            body: Row(
+              children: <Widget>[
+                RailTransition(
+                  animation: railAnimation,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  child: widget.navigationRail,
+                ),
+                widget.body,
+              ],
             ),
-            widget.body,
-          ],
-        ),
-        bottomNavigationBar: BarTransition(
-          animation: barAnimation,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          child: widget.navigationBar,
-        ),
-        floatingActionButton: widget.floatingActionButton,
-      ),
-      title: Global.appName,
+            bottomNavigationBar: BarTransition(
+              animation: barAnimation,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              child: widget.navigationBar,
+            ),
+            floatingActionButton: widget.floatingActionButton,
+          ),
+          title: Global.appName,
+          theme: ThemeData(colorScheme: lightDynamic),
+          darkTheme: ThemeData(colorScheme: darkDynamic),
+        );
+      },
     );
   }
 }

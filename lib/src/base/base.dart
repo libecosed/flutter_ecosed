@@ -187,8 +187,8 @@ base class EcosedBase extends ContextWrapper
   }) async {
     // 初始化Flutter相关
     _initFlutter();
-    await RustLib.init();
-    Log.i(baseTag, greet(name: 'flutter_ecosed'));
+    // await RustLib.init();
+    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核
     _initKernle();
     // 初始化服务
