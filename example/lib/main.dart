@@ -20,8 +20,7 @@ Future<void> main() async {
   //   runner: (app) async => runApp(app),
   // );
   await runEcosedApp(
-    entry: const MyApp(),
-    settings: const Placeholder(),
+    app: const MyApp(),
     plugins: const [ExamplePlugin()],
     runner: (app) async => runApp(app),
   );

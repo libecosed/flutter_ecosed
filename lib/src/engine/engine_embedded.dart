@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -115,7 +116,9 @@ final class FlutterEcosedPlugin extends Service
     required Future<dynamic> Function(FlutterEcosedPlatform instance) mobile,
     required Future<dynamic> Function(Exception exception) error,
   }) async {
-    if (kUseNative) {
+    if (kIsWeb || kIsWasm) {
+      return await invoke.call();
+    } else if (Platform.isAndroid || Platform.isIOS) {
       try {
         return await mobile.call(_instance);
       } on Exception catch (exception) {
