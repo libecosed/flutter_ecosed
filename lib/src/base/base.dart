@@ -259,17 +259,6 @@ base class EcosedBase extends ContextWrapper
                     default:
                       return null;
                   }
-                  // if (settings.name == '/') {
-                  //   return MaterialPageRoute(
-                  //     builder: (context) => _withHost(
-                  //       host: context,
-                  //       child: EcosedBanner(
-                  //         child: child,
-                  //       ),
-                  //     ),
-                  //   );
-                  // }
-                  // return null;
                 },
               ),
             ),
