@@ -167,8 +167,8 @@ base class EcosedBase extends ContextWrapper
   /// 打开管理器
   @override
   Future<MaterialPageRoute?> launchManager() async {
-     await Navigator.of(host, rootNavigator: true).pushNamed('/manager');
-     return null;
+    await Navigator.of(host, rootNavigator: true).pushNamed('/manager');
+    return null;
   }
 
   /// 运行应用
@@ -221,6 +221,26 @@ base class EcosedBase extends ContextWrapper
     await engineBridgerScope.onCreateEngine(this);
   }
 
+  Route<dynamic>? _routeFactory(RouteSettings settings, Widget child) {
+    switch (settings.name) {
+      case '/app':
+        return MaterialPageRoute(
+          builder: (context) => _withHost(
+            host: context,
+            child: EcosedBanner(
+              child: child,
+            ),
+          ),
+        );
+      case '/manager':
+        return MaterialPageRoute(
+          builder: (context) => buildManager(context),
+        );
+      default:
+        return null;
+    }
+  }
+
   Widget _builder({
     required Widget child,
   }) {
@@ -240,26 +260,11 @@ base class EcosedBase extends ContextWrapper
                 GlobalCupertinoLocalizations.delegate,
               ],
               child: Navigator(
-                initialRoute: '/',
-                onGenerateRoute: (settings) {
-                  switch (settings.name) {
-                    case '/':
-                      return MaterialPageRoute(
-                        builder: (context) => _withHost(
-                          host: context,
-                          child: EcosedBanner(
-                            child: child,
-                          ),
-                        ),
-                      );
-                    case '/manager':
-                      return MaterialPageRoute(
-                        builder: (context) => buildManager(context),
-                      );
-                    default:
-                      return null;
-                  }
-                },
+                initialRoute: '/app',
+                onGenerateRoute: (settings) => _routeFactory(
+                  settings,
+                  child,
+                ),
               ),
             ),
           ),
