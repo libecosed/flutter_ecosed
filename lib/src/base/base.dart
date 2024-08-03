@@ -98,17 +98,17 @@ base class EcosedBase extends ContextWrapper
     return await null;
   }
 
-// 此方法通过运行时继承后重写
+  // 此方法通过运行时继承后重写
   /// 管理器布局
   @override
   Widget build(BuildContext context) => const Placeholder();
 
-// 此方法通过运行时继承后重写
+  // 此方法通过运行时继承后重写
   /// 获取管理器
   @override
   Widget buildManager(BuildContext context) => pluginWidget(context);
 
-// 此方法通过运行时继承后重写
+  // 此方法通过运行时继承后重写
   /// 执行方法
   @override
   Future<dynamic> exec(
@@ -167,8 +167,12 @@ base class EcosedBase extends ContextWrapper
   /// 打开管理器
   @override
   Future<MaterialPageRoute?> launchManager() async {
-    await Navigator.of(host, rootNavigator: true).pushNamed('/manager');
-    return null;
+    return await Navigator.of(
+      host,
+      rootNavigator: true,
+    ).pushNamed<MaterialPageRoute?>(
+      '/manager',
+    );
   }
 
   /// 运行应用
@@ -183,8 +187,6 @@ base class EcosedBase extends ContextWrapper
   }) async {
     // 初始化Flutter相关
     _initFlutter();
-    // await RustLib.init();
-    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核
     _initKernle();
     // 初始化服务
@@ -203,42 +205,24 @@ base class EcosedBase extends ContextWrapper
 
   /// 初始化内核
   Future<void> _initKernle() async {
+    // await RustLib.init();
+    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核桥接
-    initKernelBridge();
+    await initKernelBridge();
   }
 
   /// 初始化服务
   Future<void> _initServer() async {
     // 初始化服务桥接
-    initServerBridge();
+    await initServerBridge();
   }
 
   /// 初始化引擎
   Future<void> _initEngine() async {
     // 初始化引擎桥接
-    initEngineBridge();
+    await initEngineBridge();
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
-  }
-
-  Route<dynamic>? _routeFactory(RouteSettings settings, Widget child) {
-    switch (settings.name) {
-      case '/app':
-        return MaterialPageRoute(
-          builder: (context) => _withHost(
-            host: context,
-            child: EcosedBanner(
-              child: child,
-            ),
-          ),
-        );
-      case '/manager':
-        return MaterialPageRoute(
-          builder: (context) => buildManager(context),
-        );
-      default:
-        return null;
-    }
   }
 
   Widget _builder({
@@ -273,11 +257,26 @@ base class EcosedBase extends ContextWrapper
     );
   }
 
-  Widget _withHost({
-    required BuildContext host,
-    required Widget child,
-  }) {
-    attachBuildContext(host);
-    return child;
+  Route<MaterialPageRoute>? _routeFactory(
+    RouteSettings settings,
+    Widget child,
+  ) {
+    switch (settings.name) {
+      case '/app':
+        return MaterialPageRoute(
+          builder: (context) {
+            attachBuildContext(context);
+            return EcosedBanner(child: child);
+          },
+        );
+      case '/manager':
+        return MaterialPageRoute(
+          builder: (context) => buildManager(context),
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (context) => const Placeholder(),
+        );
+    }
   }
 }

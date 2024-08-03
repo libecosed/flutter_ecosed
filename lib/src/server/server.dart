@@ -10,7 +10,7 @@ final class ServerBridge {}
 base mixin class ServerBridgeMixin {
   late ServerBridge _serverBridge;
 
-  void initServerBridge() => _serverBridge = ServerBridge();
+  Future<void> initServerBridge() async => _serverBridge = ServerBridge();
 
   ServerBridge get serverBridgeScope => _serverBridge;
 }

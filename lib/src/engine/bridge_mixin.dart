@@ -6,7 +6,7 @@ base mixin EngineBridgeMixin {
   late EngineBridge _engineBridge;
 
   /// 初始化引擎桥接
-  void initEngineBridge() => _engineBridge = EngineBridge()();
+  Future<void> initEngineBridge() async => _engineBridge = EngineBridge()();
 
   /// 获取引擎桥接
   EngineBridge get engineBridgerScope => _engineBridge;

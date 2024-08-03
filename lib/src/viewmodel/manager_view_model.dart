@@ -145,7 +145,6 @@ class ManagerViewModel extends ChangeNotifier {
     PluginDetails details,
     PluginGetter getPlugin,
     RuntimeChecker isRuntime,
-    BuildContext host,
     PluginWidgetGetter getPluginWidget,
     String appName,
     String appVersion,
@@ -156,14 +155,14 @@ class ManagerViewModel extends ChangeNotifier {
             if (!isRuntime(details)) {
               // 非运行时打开插件页面
               launchPlugin(
-                host,
+                context,
                 details,
                 getPluginWidget,
               );
             } else {
               // 运行时打开关于对话框
               showAboutDialog(
-                context: host,
+                context: context,
                 applicationName: appName,
                 applicationVersion: appVersion,
                 applicationLegalese: 'Powered by FlutterEcosed',

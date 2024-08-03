@@ -106,7 +106,6 @@ final class EcosedRuntime extends EcosedBase {
       pluginDetailsList: _pluginDetailsList,
       getPlugin: _getPlugin,
       getPluginWidget: _getPluginWidget,
-      host: super.host,
       isRuntime: _isRuntime,
       openDebugMenu: openDebugMenu,
     );

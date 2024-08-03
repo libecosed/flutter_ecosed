@@ -5,7 +5,7 @@ final class KernelBridge extends EcosedKernelModule {}
 base mixin KernelBridgeMixin {
   late KernelBridge _kernelBridge;
 
-  void initKernelBridge() => _kernelBridge = KernelBridge();
+  Future<void> initKernelBridge() async => _kernelBridge = KernelBridge();
 
   KernelBridge get kernelBridgeScope => _kernelBridge;
 }

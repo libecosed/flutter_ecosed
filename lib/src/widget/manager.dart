@@ -15,7 +15,6 @@ class EcosedManager extends StatefulWidget {
     required this.pluginDetailsList,
     required this.getPlugin,
     required this.getPluginWidget,
-    required this.host,
     required this.isRuntime,
     required this.openDebugMenu,
   });
@@ -25,7 +24,6 @@ class EcosedManager extends StatefulWidget {
   final List<PluginDetails> pluginDetailsList;
   final PluginGetter getPlugin;
   final PluginWidgetGetter getPluginWidget;
-  final BuildContext host;
   final RuntimeChecker isRuntime;
   final VoidCallback openDebugMenu;
 
@@ -98,7 +96,6 @@ class _EcosedManagerState extends State<EcosedManager> {
               padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
               child: PluginCardList(
                 pluginDetailsList: widget.pluginDetailsList,
-                host: widget.host,
                 appName: widget.appName,
                 appVersion: widget.appVersion,
                 getPlugin: widget.getPlugin,
@@ -319,7 +316,6 @@ class PluginCardList extends StatelessWidget {
   const PluginCardList({
     super.key,
     required this.pluginDetailsList,
-    required this.host,
     required this.appName,
     required this.appVersion,
     required this.getPlugin,
@@ -329,7 +325,6 @@ class PluginCardList extends StatelessWidget {
 
   final List<PluginDetails> pluginDetailsList;
 
-  final BuildContext host;
   final String appName;
   final String appVersion;
   final PluginGetter getPlugin;
@@ -346,7 +341,6 @@ class PluginCardList extends StatelessWidget {
               child: Builder(
                 builder: (context) => PluginCard(
                   details: element,
-                  host: host,
                   appName: appName,
                   appVersion: appVersion,
                   getPlugin: getPlugin,
@@ -365,7 +359,6 @@ class PluginCard extends StatelessWidget {
   const PluginCard({
     super.key,
     required this.details,
-    required this.host,
     required this.appName,
     required this.appVersion,
     required this.getPlugin,
@@ -373,7 +366,6 @@ class PluginCard extends StatelessWidget {
     required this.isRuntime,
   });
 
-  final BuildContext host;
   final PluginDetails details;
   final String appName;
   final String appVersion;
@@ -469,7 +461,6 @@ class PluginCard extends StatelessWidget {
                       details,
                       getPlugin,
                       isRuntime,
-                      host,
                       getPluginWidget,
                       appName,
                       appVersion,
