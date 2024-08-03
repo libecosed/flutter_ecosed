@@ -168,12 +168,8 @@ base class EcosedBase extends ContextWrapper
   /// 打开管理器
   @override
   Future<MaterialPageRoute?> launchManager() async {
-    return await Navigator.of(
-      host,
-      rootNavigator: true,
-    ).pushNamed<MaterialPageRoute?>(
-      routeManager,
-    );
+    return await Navigator.of(host, rootNavigator: true)
+        .pushNamed<MaterialPageRoute?>(routeManager);
   }
 
   /// 运行应用
@@ -246,10 +242,12 @@ base class EcosedBase extends ContextWrapper
               ],
               child: Navigator(
                 initialRoute: routeApp,
-                onGenerateRoute: (settings) => _routeFactory(
-                  settings,
-                  child,
-                ),
+                onGenerateRoute: (settings) {
+                  return _routeFactory(
+                    settings,
+                    child,
+                  );
+                },
               ),
             ),
           ),
