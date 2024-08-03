@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../engine/bridge_mixin.dart';
 import '../plugin/plugin_runtime.dart';
 import '../type/runner.dart';
+import '../values/route.dart';
 import '../values/strings.dart';
 import '../values/tag.dart';
 import '../framework/context_wrapper.dart';
@@ -171,7 +172,7 @@ base class EcosedBase extends ContextWrapper
       host,
       rootNavigator: true,
     ).pushNamed<MaterialPageRoute?>(
-      '/manager',
+      routeManager,
     );
   }
 
@@ -244,7 +245,7 @@ base class EcosedBase extends ContextWrapper
                 GlobalCupertinoLocalizations.delegate,
               ],
               child: Navigator(
-                initialRoute: '/app',
+                initialRoute: routeApp,
                 onGenerateRoute: (settings) => _routeFactory(
                   settings,
                   child,
@@ -262,14 +263,14 @@ base class EcosedBase extends ContextWrapper
     Widget child,
   ) {
     switch (settings.name) {
-      case '/app':
+      case routeApp:
         return MaterialPageRoute(
           builder: (context) {
             attachBuildContext(context);
             return EcosedBanner(child: child);
           },
         );
-      case '/manager':
+      case routeManager:
         return MaterialPageRoute(
           builder: (context) => buildManager(context),
         );
