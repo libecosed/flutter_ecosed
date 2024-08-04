@@ -209,7 +209,8 @@ base class EcosedBase extends ContextWrapper
   /// 打开管理器
   @override
   Future<dynamic> launchManager() async {
-    return await Navigator.of(host, rootNavigator: true).pushNamed(routeManager);
+    return await Navigator.of(host, rootNavigator: true)
+        .pushNamed(routeManager);
   }
 
   /// 运行应用
