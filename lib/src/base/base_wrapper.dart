@@ -38,6 +38,9 @@ abstract interface class BaseWrapper {
 
   /// 获取管理器
   Widget buildManager(BuildContext context);
+  
+
+  ChangeNotifier buildViewModel(BuildContext context);
 
   /// 管理器布局
   Widget build(BuildContext context);

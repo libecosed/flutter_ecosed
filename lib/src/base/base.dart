@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/viewmodel/manager_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,6 @@ import '../interface/ecosed_interface.dart';
 import '../runtime/runtime_mixin.dart';
 import '../values/drawable.dart';
 import '../server/server.dart';
-import '../viewmodel/manager_view_model.dart';
 import '../widget/banner.dart';
 import 'base_mixin.dart';
 import 'base_wrapper.dart';
@@ -55,7 +55,8 @@ base class EcosedBase extends ContextWrapper
         BaseMixin,
         KernelBridgeMixin,
         ServerBridgeMixin,
-        EngineBridgeMixin
+        EngineBridgeMixin,
+        ChangeNotifier
     implements
         BaseWrapper,
         EcosedInterface,
@@ -84,7 +85,16 @@ base class EcosedBase extends ContextWrapper
   @override
   Widget pluginWidget(BuildContext context) {
     return ChangeNotifierProvider<ManagerViewModel>(
-      create: (context) => ManagerViewModel(context),
+      create: (context) {
+        final viewModel = buildViewModel(context);
+        assert(() {
+          if (viewModel is! ManagerViewModel) {
+            throw FlutterError('View Model 类型错误');
+          }
+          return true;
+        }());
+        return viewModel as ManagerViewModel;
+      },
       child: build(context),
     );
   }
@@ -121,6 +131,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 使用运行器运行
+  @protected
   @override
   Future<void> runWithRunner({
     required Widget app,
@@ -171,6 +182,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   /// 执行引擎方法
+  @protected
   @override
   Future<dynamic> execEngine(
     String method, [
@@ -203,10 +215,12 @@ base class EcosedBase extends ContextWrapper
 
   // 此方法仅供绑定层与运行时调用
   /// 获取导航主机上下文
+  @protected
   @override
   BuildContext get host => getBuildContext();
 
   /// 打开管理器
+  @protected
   @override
   Future<dynamic> launchManager() async {
     return await Navigator.of(host, rootNavigator: true)
@@ -216,6 +230,7 @@ base class EcosedBase extends ContextWrapper
   /// 运行应用
   ///
   ///
+  @protected
   @mustCallSuper
   @override
   Future<void> runEcosedApp({
@@ -242,4 +257,8 @@ base class EcosedBase extends ContextWrapper
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
   }
+
+  /// 构建ViewModel
+  @override
+  ChangeNotifier buildViewModel(BuildContext context) => this;
 }

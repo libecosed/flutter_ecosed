@@ -62,14 +62,4 @@ base mixin BaseEntry on EcosedInterface {
       return await super.openDebugMenu();
     }
   }
-
-  // /// 管理器
-  // @override
-  // Widget getManagerWidget() {
-  //   try {
-  //     return _runtime.getManagerWidget();
-  //   } on Exception {
-  //     return super.getManagerWidget();
-  //   }
-  // }
 }

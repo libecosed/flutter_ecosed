@@ -9,6 +9,7 @@ import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
 import '../type/runner.dart';
 import '../values/placeholder.dart';
+import '../viewmodel/manager_view_model.dart';
 import '../widget/manager.dart';
 
 /// 运行时
@@ -107,6 +108,11 @@ final class EcosedRuntime extends EcosedBase {
       isRuntime: _isRuntime,
       openDebugMenu: openDebugMenu,
     );
+  }
+
+  @override
+  ChangeNotifier buildViewModel(BuildContext context) {
+    return ManagerViewModel(context);
   }
 
   /// 获取管理器

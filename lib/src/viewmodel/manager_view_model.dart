@@ -8,7 +8,7 @@ import '../type/plugin_widget_gatter.dart';
 import '../type/runtiem_checker.dart';
 import '../values/url.dart';
 
-class ManagerViewModel extends ChangeNotifier {
+final class ManagerViewModel with ChangeNotifier {
   ManagerViewModel(this.context);
 
   final BuildContext context;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/type/plugin_widget_gatter.dart';
-import 'package:flutter_ecosed/src/type/runtiem_checker.dart';
 import 'package:provider/provider.dart';
 
 import '../plugin/plugin_details.dart';
 import '../type/plugin_getter.dart';
+import '../type/plugin_widget_gatter.dart';
+import '../type/runtiem_checker.dart';
 import '../viewmodel/manager_view_model.dart';
 
 class EcosedManager extends StatefulWidget {
