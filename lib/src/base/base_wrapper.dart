@@ -42,6 +42,8 @@ abstract interface class BaseWrapper {
 
   ChangeNotifier buildViewModel(BuildContext context);
 
+  //TODO launchDialog
+
   /// 管理器布局
   Widget build(BuildContext context);
 }
