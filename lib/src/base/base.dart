@@ -224,48 +224,22 @@ base class EcosedBase extends ContextWrapper
     required Runner runner,
   }) async {
     // 初始化Flutter相关
-    _initFlutter();
-    // 初始化内核
-    _initKernle();
-    // 初始化服务
-    _initServer();
-    // 初始化引擎
-    _initEngine();
-  }
-
-  /// 初始化Flutter相关组件
-  Future<void> _initFlutter() async {
     // 打印横幅
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
-  }
-
-  /// 初始化内核
-  Future<void> _initKernle() async {
+    // 初始化内核
     // await RustLib.init();
     // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核桥接
     await initKernelBridge();
-  }
-
-  /// 初始化服务
-  Future<void> _initServer() async {
+    // 初始化服务
     // 初始化服务桥接
     await initServerBridge();
-  }
-
-  /// 初始化引擎
-  Future<void> _initEngine() async {
+    // 初始化引擎
     // 初始化引擎桥接
     await initEngineBridge();
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
   }
-
-  // Widget _builder({
-  //   required Widget child,
-  // }) {
-  //   return;
-  // }
 }
