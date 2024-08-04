@@ -27,7 +27,7 @@ abstract interface class BaseWrapper {
   BuildContext get host;
 
   /// 打开管理器
-  Future<MaterialPageRoute?> launchManager();
+  Future<dynamic> launchManager();
 
   /// 执行插件方法
   Future<dynamic> exec(

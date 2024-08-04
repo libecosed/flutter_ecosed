@@ -126,7 +126,48 @@ base class EcosedBase extends ContextWrapper
     required Widget app,
     required Future<void> Function(Widget app) runner,
   }) async {
-    return await runner(_builder(child: app));
+    return await runner(Builder(
+      builder: (context) => Theme(
+        data: ThemeData(
+          brightness: MediaQuery.platformBrightnessOf(context),
+        ),
+        child: Material(
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Localizations(
+              locale: const Locale('zh', 'CN'),
+              delegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              child: Navigator(
+                initialRoute: routeApp,
+                onGenerateRoute: (settings) {
+                  switch (settings.name) {
+                    case routeApp:
+                      return MaterialPageRoute(
+                        builder: (context) {
+                          attachBuildContext(context);
+                          return EcosedBanner(child: app);
+                        },
+                      );
+                    case routeManager:
+                      return MaterialPageRoute(
+                        builder: (context) => buildManager(context),
+                      );
+                    default:
+                      return MaterialPageRoute(
+                        builder: (context) => const Placeholder(),
+                      );
+                  }
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    ));
   }
 
   /// 执行引擎方法
@@ -167,9 +208,8 @@ base class EcosedBase extends ContextWrapper
 
   /// 打开管理器
   @override
-  Future<MaterialPageRoute?> launchManager() async {
-    return await Navigator.of(host, rootNavigator: true)
-        .pushNamed<MaterialPageRoute?>(routeManager);
+  Future<dynamic> launchManager() async {
+    return await Navigator.of(host, rootNavigator: true).pushNamed(routeManager);
   }
 
   /// 运行应用
@@ -222,60 +262,9 @@ base class EcosedBase extends ContextWrapper
     await engineBridgerScope.onCreateEngine(this);
   }
 
-  Widget _builder({
-    required Widget child,
-  }) {
-    return Builder(
-      builder: (context) => Theme(
-        data: ThemeData(
-          brightness: MediaQuery.platformBrightnessOf(context),
-        ),
-        child: Material(
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Localizations(
-              locale: const Locale('zh', 'CN'),
-              delegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              child: Navigator(
-                initialRoute: routeApp,
-                onGenerateRoute: (settings) {
-                  return _routeFactory(
-                    settings,
-                    child,
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Route<MaterialPageRoute>? _routeFactory(
-    RouteSettings settings,
-    Widget child,
-  ) {
-    switch (settings.name) {
-      case routeApp:
-        return MaterialPageRoute(
-          builder: (context) {
-            attachBuildContext(context);
-            return EcosedBanner(child: child);
-          },
-        );
-      case routeManager:
-        return MaterialPageRoute(
-          builder: (context) => buildManager(context),
-        );
-      default:
-        return MaterialPageRoute(
-          builder: (context) => const Placeholder(),
-        );
-    }
-  }
+  // Widget _builder({
+  //   required Widget child,
+  // }) {
+  //   return;
+  // }
 }

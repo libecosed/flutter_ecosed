@@ -75,9 +75,7 @@ final class EcosedRuntime extends EcosedBase {
               leading: const FlutterLogo(),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
               enabled: true,
-              onTap: () async {
-                await super.launchManager();
-              },
+              onTap: () async => await super.launchManager(),
             ),
           ),
         ],
