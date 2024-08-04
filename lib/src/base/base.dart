@@ -243,14 +243,17 @@ base class EcosedBase extends ContextWrapper
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
+
     // 初始化内核
     // await RustLib.init();
     // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核桥接
     await initKernelBridge();
+
     // 初始化服务
     // 初始化服务桥接
     await initServerBridge();
+
     // 初始化引擎
     // 初始化引擎桥接
     await initEngineBridge();
