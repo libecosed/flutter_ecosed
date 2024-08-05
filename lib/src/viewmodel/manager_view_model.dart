@@ -9,8 +9,9 @@ import '../type/plugin_getter.dart';
 import '../type/plugin_widget_gatter.dart';
 import '../type/runtiem_checker.dart';
 import '../values/url.dart';
+import 'view_model_wrapper.dart';
 
-final class ManagerViewModel with ChangeNotifier {
+final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
   ManagerViewModel({
     required this.context,
     required this.pluginDetailsList,
@@ -38,21 +39,12 @@ final class ManagerViewModel with ChangeNotifier {
   /// 打开对话框
   final DialogLauncher launchDialog;
 
-  /// 打开PubDev
-  Future<bool> launchPubDev() async {
-    return await launchUrl(
-      Uri.parse(pubDevUrl),
-    );
-  }
-
-  /// 插件是否可以打开
-  bool _isAllowPush(PluginDetails details) {
-    return (details.type == PluginType.runtime ||
-            details.type == PluginType.flutter) &&
-        getPlugin(details) != null;
-  }
+  /// 打开对话框
+  @override
+  Future<void> openDebugMenu() async => await launchDialog();
 
   /// 统计普通插件数量
+  @override
   int pluginCount() {
     var count = 0;
     for (var element in pluginDetailsList) {
@@ -63,7 +55,16 @@ final class ManagerViewModel with ChangeNotifier {
     return count;
   }
 
+  /// 打开PubDev
+  @override
+  Future<bool> launchPubDev() async {
+    return await launchUrl(
+      Uri.parse(pubDevUrl),
+    );
+  }
+
   /// 获取插件图标
+  @override
   Widget getPluginIcon(PluginDetails details) {
     switch (details.type) {
       case PluginType.base:
@@ -153,6 +154,7 @@ final class ManagerViewModel with ChangeNotifier {
   }
 
   /// 获取插件类型
+  @override
   String getPluginType(PluginDetails details) {
     switch (details.type) {
       // 框架运行时
@@ -183,6 +185,7 @@ final class ManagerViewModel with ChangeNotifier {
   }
 
   /// 获取插件的动作名
+  @override
   String getPluginAction(PluginDetails details) {
     return _isAllowPush(details)
         ? details.channel != 'ecosed_runtime'
@@ -191,24 +194,8 @@ final class ManagerViewModel with ChangeNotifier {
         : '无界面';
   }
 
-  /// 打开插件
-  Future<MaterialPageRoute?> _launchPlugin(
-    BuildContext host,
-    PluginDetails details,
-  ) async {
-    return await Navigator.of(host, rootNavigator: true).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text(details.title),
-          ),
-          body: getPluginWidget(context, details),
-        ),
-      ),
-    );
-  }
-
   /// 打开卡片
+  @override
   VoidCallback? openPlugin(
     PluginDetails details,
     String appName,
@@ -234,6 +221,27 @@ final class ManagerViewModel with ChangeNotifier {
         : null;
   }
 
-  /// 打开对话框ß
-  Future<void> openDebugMenu() async => await launchDialog();
+  /// 插件是否可以打开
+  bool _isAllowPush(PluginDetails details) {
+    return (details.type == PluginType.runtime ||
+            details.type == PluginType.flutter) &&
+        getPlugin(details) != null;
+  }
+
+  /// 打开插件
+  Future<MaterialPageRoute?> _launchPlugin(
+    BuildContext host,
+    PluginDetails details,
+  ) async {
+    return await Navigator.of(host, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(details.title),
+          ),
+          body: getPluginWidget(context, details),
+        ),
+      ),
+    );
+  }
 }
