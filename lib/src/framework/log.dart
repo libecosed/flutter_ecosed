@@ -16,10 +16,12 @@ class Log {
     _printLog(tag, message, exceptino, true);
   }
 
+  /// Verbose级别
   static void v(String tag, String message) {
     _printLog(tag, message, null, false);
   }
 
+  /// Warring级别
   static void w(String tag, String message) {
     _printLog(tag, message, null, false);
   }

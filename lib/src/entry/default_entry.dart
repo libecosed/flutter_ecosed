@@ -23,9 +23,9 @@ final class DefaultEntry extends EcosedInterface {
     return await runner(app).then(
       (_) => Log.w(
         entryTag,
-        '不支持当前平台$_platform, '
-        '框架所有代码未参与执行, '
-        '${plugins.length}插件不会被加载.',
+        '不支持当前平台: $_platform, '
+        '框架所有代码将不会参与执行, '
+        '${plugins.length}个插件不会被加载.',
       ),
     );
   }
@@ -37,13 +37,24 @@ final class DefaultEntry extends EcosedInterface {
     String method, [
     dynamic arguments,
   ]) async {
-    Log.w(entryTag, '不支持当前平台$_platform');
+    Log.w(
+      entryTag,
+      '不支持当前平台: $_platform, '
+      '当前调用的插件通道: $channel, '
+      '方法名: $method, '
+      '携带参数: $arguments, '
+      '无法执行操作, 将返回空.',
+    );
     return await null;
   }
 
   /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async {
-    Log.w(entryTag, '不支持当前平台$_platform');
+    Log.w(
+      entryTag,
+      '不支持当前平台: $_platform, '
+      '无法打开调试对话框.',
+    );
   }
 }

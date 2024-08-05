@@ -141,6 +141,13 @@ base class EcosedBase extends ContextWrapper
                       );
                   }
                 },
+                observers: [
+                  RouteObserver(
+                    change: (name) {
+                      Log.d(baseTag, '当前页面$name');
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -245,5 +252,37 @@ base class EcosedBase extends ContextWrapper
     dynamic arguments,
   ]) async {
     return await null;
+  }
+}
+
+class RouteObserver extends NavigatorObserver {
+  RouteObserver({required this.change});
+
+  final Function(String? route) change;
+
+  @override
+  void didPush(
+    Route<dynamic> route,
+    Route<dynamic>? previousRoute,
+  ) {
+    change(route.settings.name);
+  }
+
+  @override
+  void didPop(
+    Route<dynamic> route,
+    Route<dynamic>? previousRoute,
+  ) {
+    change(previousRoute?.settings.name);
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    change(previousRoute?.settings.name);
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    change(newRoute?.settings.name);
   }
 }
