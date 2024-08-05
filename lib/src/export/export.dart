@@ -92,7 +92,11 @@ Future<void> runEcosedApp({
   required List<EcosedPlugin> plugins,
   required Runner runner,
 }) async =>
-    await EcosedInterface.instance.runEcosedApp(app, plugins, runner);
+    await EcosedInterface.instance.runEcosedApp(
+      app,
+      plugins,
+      runner,
+    );
 
 /// 调用插件方法
 ///
@@ -104,10 +108,14 @@ Future<dynamic> execPluginMethod(
   String method, [
   dynamic arguments,
 ]) async =>
-    await EcosedInterface.instance.execPluginMethod(channel, method, arguments);
+    await EcosedInterface.instance.execPluginMethod(
+      channel,
+      method,
+      arguments,
+    );
 
 /// 打开调试菜单
-///
+///˝
 /// ```dart
 /// await openDebugMenu();
 /// ```

@@ -12,6 +12,9 @@ enum PluginType {
   /// 引擎插件
   engine,
 
+  /// 平台插件
+  platform,
+
   /// 普通插件
   flutter,
 

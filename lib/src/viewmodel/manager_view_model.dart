@@ -1,38 +1,51 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
+import '../type/dialog_launcher.dart';
 import '../type/plugin_getter.dart';
 import '../type/plugin_widget_gatter.dart';
 import '../type/runtiem_checker.dart';
 import '../values/url.dart';
 
 final class ManagerViewModel with ChangeNotifier {
-  ManagerViewModel(this.context);
+  ManagerViewModel({
+    required this.context,
+    required this.pluginDetailsList,
+    required this.getPlugin,
+    required this.getPluginWidget,
+    required this.isRuntime,
+    required this.launchDialog,
+  });
 
+  /// 上下文
   final BuildContext context;
+  final List<PluginDetails> pluginDetailsList;
+  final PluginGetter getPlugin;
+  final PluginWidgetGetter getPluginWidget;
+  final RuntimeChecker isRuntime;
+  final DialogLauncher launchDialog;
 
-  void launchPubDev() {
-    launchUrl(
+  /// 打开PubDev
+  Future<bool> launchPubDev() async {
+    return await launchUrl(
       Uri.parse(pubDevUrl),
     );
   }
 
   /// 插件是否可以打开
-  bool isAllowPush(
-    PluginDetails details,
-    PluginGetter getPlugin,
-  ) {
+  bool _isAllowPush(PluginDetails details) {
     return (details.type == PluginType.runtime ||
             details.type == PluginType.flutter) &&
         getPlugin(details) != null;
   }
 
   /// 统计普通插件数量
-  int pluginCount(List<PluginDetails> list) {
+  int pluginCount() {
     var count = 0;
-    for (var element in list) {
+    for (var element in pluginDetailsList) {
       if (element.type == PluginType.flutter) {
         count++;
       }
@@ -40,29 +53,75 @@ final class ManagerViewModel with ChangeNotifier {
     return count;
   }
 
+  /// 获取插件图标
   Widget getPluginIcon(PluginDetails details) {
     switch (details.type) {
-      case PluginType.runtime:
+      case PluginType.base:
         return Icon(
-          Icons.keyboard_command_key,
+          Icons.compare_arrows,
           size: Theme.of(context).iconTheme.size,
           color: Colors.pinkAccent,
         );
-      case PluginType.base:
+      case PluginType.runtime:
         return Icon(
-          Icons.keyboard_command_key,
+          Icons.bubble_chart,
           size: Theme.of(context).iconTheme.size,
           color: Colors.pinkAccent,
         );
       case PluginType.engine:
         return Icon(
-          Icons.android,
+          Icons.miscellaneous_services,
           size: Theme.of(context).iconTheme.size,
-          color: Colors.green,
+          color: Colors.blueAccent,
         );
+      case PluginType.platform:
+        switch (defaultTargetPlatform) {
+          case TargetPlatform.android:
+            return Icon(
+              Icons.android,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.green,
+            );
+          case TargetPlatform.fuchsia:
+            return Icon(
+              Icons.all_inclusive,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.pinkAccent,
+            );
+          case TargetPlatform.iOS:
+            return Icon(
+              Icons.apple,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.grey,
+            );
+          case TargetPlatform.linux:
+            return Icon(
+              Icons.desktop_windows,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.black,
+            );
+          case TargetPlatform.macOS:
+            return Icon(
+              Icons.apple,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.grey,
+            );
+          case TargetPlatform.windows:
+            return Icon(
+              Icons.window,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.blue,
+            );
+          default:
+            return Icon(
+              Icons.question_mark,
+              size: Theme.of(context).iconTheme.size,
+              color: Colors.red,
+            );
+        }
       case PluginType.kernel:
         return Icon(
-          Icons.developer_board,
+          Icons.memory,
           size: Theme.of(context).iconTheme.size,
           color: Colors.blueGrey,
         );
@@ -70,13 +129,13 @@ final class ManagerViewModel with ChangeNotifier {
         return const FlutterLogo();
       case PluginType.unknown:
         return Icon(
-          Icons.error_outline,
+          Icons.error,
           size: Theme.of(context).iconTheme.size,
           color: Theme.of(context).colorScheme.error,
         );
       default:
         return Icon(
-          Icons.error_outline,
+          Icons.error,
           size: Theme.of(context).iconTheme.size,
           color: Theme.of(context).colorScheme.error,
         );
@@ -95,6 +154,9 @@ final class ManagerViewModel with ChangeNotifier {
       // 平台插件
       case PluginType.engine:
         return '引擎插件';
+      // 平台插件
+      case PluginType.platform:
+        return '平台插件';
       // 内核模块
       case PluginType.kernel:
         return '内核模块';
@@ -111,11 +173,8 @@ final class ManagerViewModel with ChangeNotifier {
   }
 
   /// 获取插件的动作名
-  String getPluginAction(
-    PluginDetails details,
-    PluginGetter getPlugin,
-  ) {
-    return isAllowPush(details, getPlugin)
+  String getPluginAction(PluginDetails details) {
+    return _isAllowPush(details)
         ? details.channel != 'ecosed_runtime'
             ? '打开'
             : '关于'
@@ -123,10 +182,9 @@ final class ManagerViewModel with ChangeNotifier {
   }
 
   /// 打开插件
-  Future<MaterialPageRoute?> launchPlugin(
+  Future<MaterialPageRoute?> _launchPlugin(
     BuildContext host,
     PluginDetails details,
-    PluginWidgetGetter getPluginWidget,
   ) async {
     return await Navigator.of(host, rootNavigator: true).push(
       MaterialPageRoute(
@@ -143,22 +201,15 @@ final class ManagerViewModel with ChangeNotifier {
   /// 打开卡片
   VoidCallback? openPlugin(
     PluginDetails details,
-    PluginGetter getPlugin,
-    RuntimeChecker isRuntime,
-    PluginWidgetGetter getPluginWidget,
     String appName,
     String appVersion,
   ) {
     // 无法打开的返回空
-    return isAllowPush(details, getPlugin)
+    return _isAllowPush(details)
         ? () {
             if (!isRuntime(details)) {
               // 非运行时打开插件页面
-              launchPlugin(
-                context,
-                details,
-                getPluginWidget,
-              );
+              _launchPlugin(context, details);
             } else {
               // 运行时打开关于对话框
               showAboutDialog(
@@ -172,4 +223,6 @@ final class ManagerViewModel with ChangeNotifier {
           }
         : null;
   }
+
+  Future<void> openDebugMenu() async => await launchDialog();
 }

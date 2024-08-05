@@ -38,4 +38,18 @@ final class PluginDetails {
       type: type,
     );
   }
+
+  /// 使用JSON解析插件详细信息
+  factory PluginDetails.formJSON({
+    required Map<String, dynamic> json,
+    required PluginType type,
+  }) {
+    return PluginDetails(
+      channel: json['channel'],
+      title: json['title'],
+      description: json['description'],
+      author: json['author'],
+      type: type,
+    );
+  }
 }

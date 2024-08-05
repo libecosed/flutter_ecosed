@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/viewmodel/manager_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +18,7 @@ import '../interface/ecosed_interface.dart';
 import '../runtime/runtime_mixin.dart';
 import '../values/drawable.dart';
 import '../server/server.dart';
+import '../viewmodel/manager_view_model.dart';
 import '../widget/banner.dart';
 import 'base_mixin.dart';
 import 'base_wrapper.dart';
@@ -32,10 +32,10 @@ base class EcosedBase extends ContextWrapper
         EngineBridgeMixin,
         ChangeNotifier
     implements
-        BaseWrapper,
-        EcosedInterface,
         EcosedRuntimePlugin,
-        EcosedKernelModule {
+        EcosedInterface,
+        EcosedKernelModule,
+        BaseWrapper {
   /// 构造函数
   EcosedBase() : super(attach: true);
 
@@ -60,55 +60,54 @@ base class EcosedBase extends ContextWrapper
   Widget pluginWidget(BuildContext context) {
     return ChangeNotifierProvider<ManagerViewModel>(
       create: (context) {
+        // 初始化View Model
         final viewModel = buildViewModel(context);
         assert(() {
+          // 判断View Model类型
           if (viewModel is! ManagerViewModel) {
+            // 抛出异常
             throw FlutterError('View Model 类型错误');
           }
           return true;
         }());
+        // 转换类型后返回
         return viewModel as ManagerViewModel;
       },
-      child: build(context),
+      child: buildLayout(context),
     );
   }
 
-  // 此方法通过运行时继承后重写
-  /// 方法调用
+  /// 运行应用
   @override
-  Future<dynamic> onMethodCall(
-    String method, [
-    dynamic arguments,
-  ]) async {
-    return await null;
-  }
+  Future<void> runEcosedApp(
+    Widget app,
+    List<EcosedRuntimePlugin> plugins,
+    Runner runner,
+  ) async {
+    // 初始化Flutter相关
+    // 打印横幅
+    Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
+    // 初始化控件绑定
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // 此方法通过运行时继承后重写
-  /// 管理器布局
-  @override
-  Widget build(BuildContext context) => const Placeholder();
+    // 初始化内核
+    // await RustLib.init();
+    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
+    // 初始化内核桥接
+    await initKernelBridge();
 
-  // 此方法通过运行时继承后重写
-  /// 获取管理器
-  @override
-  Widget buildManager(BuildContext context) => pluginWidget(context);
+    // 初始化服务
+    // 初始化服务桥接
+    await initServerBridge();
 
-  // 此方法通过运行时继承后重写
-  /// 执行方法
-  @override
-  Future<dynamic> exec(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]) async {
-    return await null;
-  }
+    // 初始化引擎
+    // 初始化引擎桥接
+    await initEngineBridge();
+    // 初始化引擎
+    await engineBridgerScope.onCreateEngine(this);
 
-  /// 使用运行器运行
-  Future<void> _runWithRunner({
-    required Widget app,
-    required Future<void> Function(Widget app) runner,
-  }) async {
+    await init(plugins);
+
     return await runner(Builder(
       builder: (context) => Theme(
         data: ThemeData(
@@ -153,19 +152,6 @@ base class EcosedBase extends ContextWrapper
     ));
   }
 
-  /// 执行引擎方法
-  @protected
-  @override
-  Future<dynamic> execEngine(
-    String method, [
-    dynamic arguments,
-  ]) async {
-    return await engineBridgerScope.onMethodCall(
-      method,
-      arguments,
-    );
-  }
-
   /// 执行插件方法
   @override
   Future<dynamic> execPluginMethod(
@@ -180,67 +166,37 @@ base class EcosedBase extends ContextWrapper
     );
   }
 
-  // 此方法通过运行时继承后重写
   /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async {
     await buildDialog(getBuildContext(), false);
   }
 
-  /// 打开管理器
-  @protected
+  /// 方法调用
   @override
-  Future<dynamic> launchManager() async {
-    return await Navigator.of(
-      getBuildContext(),
-      rootNavigator: true,
-    ).pushNamed(routeManager);
+  Future<dynamic> onMethodCall(
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await null;
   }
 
-  /// 运行应用
-  ///
-  ///
-  @protected
-  @mustCallSuper
   @override
-  Future<void> runEcosedApp(
-    Widget app,
-    List<EcosedRuntimePlugin> plugins,
-    Runner runner,
-  ) async {
-    // 初始化Flutter相关
-    // 打印横幅
-    Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
-    // 初始化控件绑定
-    WidgetsFlutterBinding.ensureInitialized();
-
-    // 初始化内核
-    // await RustLib.init();
-    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
-    // 初始化内核桥接
-    await initKernelBridge();
-
-    // 初始化服务
-    // 初始化服务桥接
-    await initServerBridge();
-
-    // 初始化引擎
-    // 初始化引擎桥接
-    await initEngineBridge();
-    // 初始化引擎
-    await engineBridgerScope.onCreateEngine(this);
-
-    await init(plugins);
-
-    return await _runWithRunner(
-      app: app,
-      runner: runner,
-    );
+  Future<void> init(List<EcosedRuntimePlugin> plugins) {
+    throw UnimplementedError('');
   }
+
+  /// 获取管理器
+  @override
+  Widget buildManager(BuildContext context) => pluginWidget(context);
 
   /// 构建ViewModel
   @override
   ChangeNotifier buildViewModel(BuildContext context) => this;
+
+  /// 管理器布局
+  @override
+  Widget buildLayout(BuildContext context) => const Placeholder();
 
   @override
   Future<SimpleDialog?> buildDialog(
@@ -261,8 +217,36 @@ base class EcosedBase extends ContextWrapper
     return await buildDialog(getBuildContext(), true);
   }
 
+  /// 打开管理器
+  @protected
   @override
-  Future<void> init(List<EcosedRuntimePlugin> plugins) {
-    throw UnimplementedError('');
+  Future<dynamic> launchManager() async {
+    return await Navigator.of(
+      getBuildContext(),
+      rootNavigator: true,
+    ).pushNamed(routeManager);
+  }
+
+  /// 执行引擎方法
+  @protected
+  @override
+  Future<dynamic> execEngine(
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await engineBridgerScope.onMethodCall(
+      method,
+      arguments,
+    );
+  }
+
+  /// 执行方法
+  @override
+  Future<dynamic> exec(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await null;
   }
 }

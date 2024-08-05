@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../plugin/plugin_details.dart';
-import '../type/plugin_getter.dart';
-import '../type/plugin_widget_gatter.dart';
-import '../type/runtiem_checker.dart';
 import '../viewmodel/manager_view_model.dart';
 
 class EcosedManager extends StatefulWidget {
@@ -13,19 +10,11 @@ class EcosedManager extends StatefulWidget {
     required this.appName,
     required this.appVersion,
     required this.pluginDetailsList,
-    required this.getPlugin,
-    required this.getPluginWidget,
-    required this.isRuntime,
-    required this.openDebugMenu,
   });
 
   final String appName;
   final String appVersion;
   final List<PluginDetails> pluginDetailsList;
-  final PluginGetter getPlugin;
-  final PluginWidgetGetter getPluginWidget;
-  final RuntimeChecker isRuntime;
-  final VoidCallback openDebugMenu;
 
   @override
   State<EcosedManager> createState() => _EcosedManagerState();
@@ -42,17 +31,6 @@ class _EcosedManagerState extends State<EcosedManager> {
 
   @override
   Widget build(BuildContext context) {
-    // ScrollConfiguration(
-    //               // A Scrollbar is built-in below.
-    //               behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-    //               child: Scrollbar(
-    //                 child: ListView(
-    //                   primary: true,
-    //                   padding: padding,
-    //                   children: listWidgets,
-    //                 ),
-    //               ),
-    //             )
     return Scaffold(
       appBar: AppBar(
         title: const Text('管理器'),
@@ -67,7 +45,6 @@ class _EcosedManagerState extends State<EcosedManager> {
               child: StateCard(
                 appName: widget.appName,
                 appVersion: widget.appVersion,
-                openDebugMenu: widget.openDebugMenu,
               ),
             ),
             Padding(
@@ -98,9 +75,6 @@ class _EcosedManagerState extends State<EcosedManager> {
                 pluginDetailsList: widget.pluginDetailsList,
                 appName: widget.appName,
                 appVersion: widget.appVersion,
-                getPlugin: widget.getPlugin,
-                getPluginWidget: widget.getPluginWidget,
-                isRuntime: widget.isRuntime,
               ),
             ),
           ],
@@ -115,12 +89,10 @@ class StateCard extends StatelessWidget {
     super.key,
     required this.appName,
     required this.appVersion,
-    required this.openDebugMenu,
   });
 
   final String appName;
   final String appVersion;
-  final VoidCallback openDebugMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -156,12 +128,14 @@ class StateCard extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(
-              onPressed: openDebugMenu,
-              icon: Icon(
-                Icons.developer_mode,
-                size: Theme.of(context).iconTheme.size,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+            Consumer<ManagerViewModel>(
+              builder: (context, viewModel, child) => IconButton(
+                onPressed: viewModel.openDebugMenu,
+                icon: Icon(
+                  Icons.developer_mode,
+                  size: Theme.of(context).iconTheme.size,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
           ],
@@ -217,9 +191,7 @@ class _InfoCardState extends State<InfoCard> {
                     const SizedBox(height: 16),
                     InfoItem(
                       title: '插件数量',
-                      subtitle: viewModel
-                          .pluginCount(widget.pluginDetailsList)
-                          .toString(),
+                      subtitle: viewModel.pluginCount().toString(),
                     ),
                   ],
                 ),
@@ -297,7 +269,7 @@ class _MoreCardState extends State<MoreCard> {
             ),
             Consumer<ManagerViewModel>(
               builder: (context, viewModel, child) => IconButton(
-                onPressed: () => viewModel.launchPubDev(),
+                onPressed: viewModel.launchPubDev,
                 icon: Icon(
                   Icons.open_in_browser,
                   size: Theme.of(context).iconTheme.size,
@@ -318,18 +290,11 @@ class PluginCardList extends StatelessWidget {
     required this.pluginDetailsList,
     required this.appName,
     required this.appVersion,
-    required this.getPlugin,
-    required this.getPluginWidget,
-    required this.isRuntime,
   });
 
   final List<PluginDetails> pluginDetailsList;
-
   final String appName;
   final String appVersion;
-  final PluginGetter getPlugin;
-  final PluginWidgetGetter getPluginWidget;
-  final RuntimeChecker isRuntime;
 
   @override
   Widget build(BuildContext context) {
@@ -343,9 +308,6 @@ class PluginCardList extends StatelessWidget {
                   details: element,
                   appName: appName,
                   appVersion: appVersion,
-                  getPlugin: getPlugin,
-                  getPluginWidget: getPluginWidget,
-                  isRuntime: isRuntime,
                 ),
               ),
             ),
@@ -361,17 +323,11 @@ class PluginCard extends StatelessWidget {
     required this.details,
     required this.appName,
     required this.appVersion,
-    required this.getPlugin,
-    required this.getPluginWidget,
-    required this.isRuntime,
   });
 
   final PluginDetails details;
   final String appName;
   final String appVersion;
-  final PluginGetter getPlugin;
-  final PluginWidgetGetter getPluginWidget;
-  final RuntimeChecker isRuntime;
 
   @override
   Widget build(BuildContext context) {
@@ -459,16 +415,14 @@ class PluginCard extends StatelessWidget {
                   TextButton(
                     onPressed: viewModel.openPlugin(
                       details,
-                      getPlugin,
-                      isRuntime,
-                      getPluginWidget,
                       appName,
                       appVersion,
                     ),
-                    child: Text(
-                      viewModel.getPluginAction(
-                        details,
-                        getPlugin,
+                    child: Consumer<ManagerViewModel>(
+                      builder: (context, viewModel, child) => Container(
+                        child: Text(
+                          viewModel.getPluginAction(details),
+                        ),
                       ),
                     ),
                   ),

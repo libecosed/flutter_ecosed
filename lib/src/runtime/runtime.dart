@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../base/base.dart';
@@ -25,6 +27,18 @@ final class EcosedRuntime extends EcosedBase {
   /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
 
+  /// 插件通道
+  @override
+  String get pluginChannel => 'ecosed_runtime';
+
+  /// 插件描述
+  @override
+  String get pluginDescription => 'FlutterEcosed框架运行时';
+
+  /// 插件名称
+  @override
+  String get pluginName => 'EcosedRuntime';
+
   @override
   Future<void> init(List<EcosedRuntimePlugin> plugins) async {
     // 初始化包信息
@@ -34,12 +48,47 @@ final class EcosedRuntime extends EcosedBase {
 
     await _initFramework();
 
+    await _initPlatform();
+
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
 
     await super.execEngine(
       'openDialog',
       {'channel': 'engine_embedded'},
+    );
+  }
+
+  /// 获取管理器
+  @override
+  Widget buildManager(BuildContext context) {
+    for (var element in _pluginDetailsList) {
+      if (_isRuntime(element)) {
+        return _getPluginWidget(context, element);
+      }
+    }
+    return super.buildManager(context);
+  }
+
+  @override
+  ChangeNotifier buildViewModel(BuildContext context) {
+    return ManagerViewModel(
+      context: context,
+      pluginDetailsList: _pluginDetailsList,
+      getPlugin: _getPlugin,
+      getPluginWidget: _getPluginWidget,
+      isRuntime: _isRuntime,
+      launchDialog: super.launchDialog,
+    );
+  }
+
+  /// 管理器布局
+  @override
+  Widget buildLayout(BuildContext context) {
+    return EcosedManager(
+      appName: _appName,
+      appVersion: _appVersion,
+      pluginDetailsList: _pluginDetailsList,
     );
   }
 
@@ -81,48 +130,6 @@ final class EcosedRuntime extends EcosedBase {
     );
   }
 
-  /// 插件通道
-  @override
-  String get pluginChannel => 'ecosed_runtime';
-
-  /// 插件描述
-  @override
-  String get pluginDescription => 'FlutterEcosed框架运行时';
-
-  /// 插件名称
-  @override
-  String get pluginName => 'EcosedRuntime';
-
-  /// 管理器布局
-  @override
-  Widget build(BuildContext context) {
-    return EcosedManager(
-      appName: _appName,
-      appVersion: _appVersion,
-      pluginDetailsList: _pluginDetailsList,
-      getPlugin: _getPlugin,
-      getPluginWidget: _getPluginWidget,
-      isRuntime: _isRuntime,
-      openDebugMenu: () async => await launchDialog(),
-    );
-  }
-
-  @override
-  ChangeNotifier buildViewModel(BuildContext context) {
-    return ManagerViewModel(context);
-  }
-
-  /// 获取管理器
-  @override
-  Widget buildManager(BuildContext context) {
-    for (var element in _pluginDetailsList) {
-      if (_isRuntime(element)) {
-        return _getPluginWidget(context, element);
-      }
-    }
-    return super.buildManager(context);
-  }
-
   /// 执行插件方法
   @override
   Future<dynamic> exec(
@@ -142,10 +149,15 @@ final class EcosedRuntime extends EcosedBase {
   @override
   Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
     switch (method) {
-      case 'get_plugins':
+      case 'get_engine_plugins':
         return await super.execEngine(
           'get_plugins',
           {'channel': 'ecosed_engine'},
+        );
+      case 'get_platform_plugins':
+        return await super.execEngine(
+          'getPlugins',
+          {'channel': 'engine_embedded'},
         );
       default:
         return await null;
@@ -187,8 +199,8 @@ final class EcosedRuntime extends EcosedBase {
   Future<void> _initFramework() async {
     // 初始化平台插件
     try {
-      dynamic plugins = await _exec(pluginChannel, 'get_plugins', true);
-      List list = plugins as List? ?? [unknownPlugin];
+      dynamic plugins = await _exec(pluginChannel, 'get_engine_plugins', true);
+      List list = plugins as List? ?? [unknownPluginWithMap];
       // 判断列表是否为空
       if (list.isNotEmpty) {
         // 遍历原生插件
@@ -206,7 +218,35 @@ final class EcosedRuntime extends EcosedBase {
       // 平台错误添加未知插件占位
       _pluginDetailsList.add(
         PluginDetails.formMap(
-          map: unknownPlugin,
+          map: unknownPluginWithMap,
+          type: PluginType.unknown,
+        ),
+      );
+    }
+  }
+
+  /// 初始化平台层插件
+  Future<void> _initPlatform() async {
+    // 初始化平台插件
+    try {
+      // 遍历原生插件
+      for (var element
+          in (await _exec(pluginChannel, 'get_platform_plugins', true)
+                  as List? ??
+              [unknownPluginWithJSON])) {
+        // 添加到插件详细信息列表
+        _pluginDetailsList.add(
+          PluginDetails.formJSON(
+            json: jsonDecode(element),
+            type: PluginType.platform,
+          ),
+        );
+      }
+    } on PlatformException {
+      // 平台错误添加未知插件占位
+      _pluginDetailsList.add(
+        PluginDetails.formJSON(
+          json: jsonDecode(unknownPluginWithJSON),
           type: PluginType.unknown,
         ),
       );

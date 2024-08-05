@@ -11,9 +11,14 @@ abstract base class EcosedEnginePlugin extends ContextWrapper {
   late EngineWrapper _engine;
 
   /// 插件添加时执行
-  Future<void> onEcosedAdded(PluginBinding binding) async {
+  Future<void> onEcosedAdded(
+    PluginBinding binding,
+  ) async {
     // 初始化插件通道
-    _pluginChannel = PluginChannel(binding: binding, channel: channel);
+    _pluginChannel = PluginChannel(
+      binding: binding,
+      channel: channel,
+    );
     // 附加基础上下文
     attachBaseContext(_pluginChannel.getContext());
     // 获取引擎
@@ -38,11 +43,21 @@ abstract base class EcosedEnginePlugin extends ContextWrapper {
   String get description;
 
   /// 执行插件方法
-  Future<void> onEcosedMethodCall(EcosedMethodCall call, EcosedResult result);
+  Future<void> onEcosedMethodCall(
+    EcosedMethodCall call,
+    EcosedResult result,
+  );
 
   /// 执行插件方法
-  Future<dynamic> execPluginMethod(String channel, String method,
-      [dynamic arguments]) async {
-    return await _engine.execMethodCall(channel, method, arguments);
+  Future<dynamic> execPluginMethod(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]) async {
+    return await _engine.execMethodCall(
+      channel,
+      method,
+      arguments,
+    );
   }
 }

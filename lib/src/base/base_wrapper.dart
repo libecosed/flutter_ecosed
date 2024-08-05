@@ -13,30 +13,17 @@ abstract interface class BaseWrapper {
   /// 绑定层插件
   EcosedRuntimePlugin get base;
 
-  /// 执行引擎插件方法
-  Future<dynamic> execEngine(
-    String method, [
-    dynamic arguments,
-  ]);
-
-  /// 打开管理器
-  Future<dynamic> launchManager();
-
-  /// 执行插件方法
-  Future<dynamic> exec(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]);
+  /// 初始化
+  Future<void> init(List<EcosedRuntimePlugin> plugins);
 
   /// 获取管理器
   Widget buildManager(BuildContext context);
 
-  /// 初始化
-  Future<void> init(List<EcosedRuntimePlugin> plugins);
-
   /// 构建View Model
   ChangeNotifier buildViewModel(BuildContext context);
+
+  /// 管理器布局
+  Widget buildLayout(BuildContext context);
 
   /// 构建对话框
   Future<SimpleDialog?> buildDialog(
@@ -47,6 +34,19 @@ abstract interface class BaseWrapper {
   /// 打开对话框
   Future<SimpleDialog?> launchDialog();
 
-  /// 管理器布局
-  Widget build(BuildContext context);
+  /// 打开管理器
+  Future<dynamic> launchManager();
+
+  /// 执行引擎插件方法
+  Future<dynamic> execEngine(
+    String method, [
+    dynamic arguments,
+  ]);
+
+  /// 执行插件方法
+  Future<dynamic> exec(
+    String channel,
+    String method, [
+    dynamic arguments,
+  ]);
 }
