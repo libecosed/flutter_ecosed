@@ -84,30 +84,27 @@ base class EcosedBase extends ContextWrapper
     List<EcosedRuntimePlugin> plugins,
     Runner runner,
   ) async {
-    // 初始化Flutter相关
     // 打印横幅
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
-
-    // 初始化内核
-    // await RustLib.init();
-    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
     // 初始化内核桥接
     await initKernelBridge();
+    // await RustLib.init();
+    // Log.i(baseTag, greet(name: 'flutter_ecosed'));
+    // TODO: 内核相关操作
 
-    // 初始化服务
     // 初始化服务桥接
     await initServerBridge();
+    // TODO: 服务相关操作
 
-    // 初始化引擎
     // 初始化引擎桥接
     await initEngineBridge();
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
-
+    // 初始化应用
     await init(plugins);
-
+    // 启动应用
     return await runner(Builder(
       builder: (context) => Theme(
         data: ThemeData(

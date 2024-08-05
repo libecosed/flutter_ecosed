@@ -39,6 +39,25 @@ final class EcosedRuntime extends EcosedBase {
   @override
   String get pluginName => 'EcosedRuntime';
 
+  /// 方法调用
+  @override
+  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
+    switch (method) {
+      case 'get_engine_plugins':
+        return await super.execEngine(
+          'get_plugins',
+          {'channel': 'ecosed_engine'},
+        );
+      case 'get_platform_plugins':
+        return await super.execEngine(
+          'getPlugins',
+          {'channel': 'engine_embedded'},
+        );
+      default:
+        return await null;
+    }
+  }
+
   @override
   Future<void> init(List<EcosedRuntimePlugin> plugins) async {
     // 初始化包信息
@@ -146,25 +165,6 @@ final class EcosedRuntime extends EcosedBase {
       false,
       arguments,
     );
-  }
-
-  /// 方法调用
-  @override
-  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
-    switch (method) {
-      case 'get_engine_plugins':
-        return await super.execEngine(
-          'get_plugins',
-          {'channel': 'ecosed_engine'},
-        );
-      case 'get_platform_plugins':
-        return await super.execEngine(
-          'getPlugins',
-          {'channel': 'engine_embedded'},
-        );
-      default:
-        return await null;
-    }
   }
 
   /// 初始化包信息
