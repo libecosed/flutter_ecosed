@@ -104,16 +104,6 @@ final class EcosedRuntime extends EcosedBase {
       builder: (context) => SimpleDialog(
         title: const Text('调试菜单'),
         children: <SimpleDialogOption>[
-          SimpleDialogOption(
-            padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title: const Text('关闭'),
-              leading: const FlutterLogo(),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-              enabled: true,
-              onTap: () => Navigator.of(context).pop(),
-            ),
-          ),
           if (!isManager)
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
@@ -125,6 +115,16 @@ final class EcosedRuntime extends EcosedBase {
                 onTap: () async => await super.launchManager(),
               ),
             ),
+          SimpleDialogOption(
+            padding: const EdgeInsets.all(0),
+            child: ListTile(
+              title: const Text('关闭对话框'),
+              leading: const FlutterLogo(),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+              enabled: true,
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ),
         ],
       ),
     );
