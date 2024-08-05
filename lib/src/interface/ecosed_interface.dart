@@ -25,11 +25,11 @@ abstract class EcosedInterface extends PlatformInterface {
   }
 
   /// 运行应用
-  Future<void> runEcosedApp({
-    required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
-    required Runner runner,
-  }) async {
+  Future<void> runEcosedApp(
+    Widget app,
+    List<EcosedRuntimePlugin> plugins,
+    Runner runner,
+  ) async {
     throw UnimplementedError('未实现runEcosedApp()方法');
   }
 

@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../framework/service.dart';
 import '../framework/want.dart';
+import '../interface/ecosed_platform.dart';
 import '../utils/platform.dart';
 import 'binding.dart';
 import 'method_call.dart';
@@ -60,18 +59,17 @@ final class EngineEmbedded extends EcosedEnginePlugin {
   }
 }
 
-final class FlutterEcosedPlugin extends Service
-    implements FlutterEcosedPlatform {
+final class FlutterEcosedPlugin extends Service implements EcosedPlatform {
   FlutterEcosedPlugin();
 
   /// 平台实例
-  late FlutterEcosedPlatform _instance;
+  late EcosedPlatform _instance;
 
   @override
   void onCreate() {
     super.onCreate();
     if (kUseNative) {
-      _instance = FlutterEcosedPlatform.instance;
+      _instance = EcosedPlatform.instance;
     }
   }
 
@@ -113,7 +111,7 @@ final class FlutterEcosedPlugin extends Service
 
   Future<dynamic> _invoke({
     required Future<dynamic> Function() invoke,
-    required Future<dynamic> Function(FlutterEcosedPlatform instance) mobile,
+    required Future<dynamic> Function(EcosedPlatform instance) mobile,
     required Future<dynamic> Function(Exception exception) error,
   }) async {
     if (kIsWeb || kIsWasm) {
@@ -156,50 +154,4 @@ final class MyConnection implements ServiceConnection {
 
   @override
   void onServiceDisconnected(String name) {}
-}
-
-abstract class FlutterEcosedPlatform extends PlatformInterface {
-  FlutterEcosedPlatform() : super(token: _token);
-
-  static final Object _token = Object();
-  static FlutterEcosedPlatform get instance => MethodChannelFlutterEcosed();
-
-  Future<List?> getPlatformPluginList() async {
-    throw UnimplementedError('未实现getPlatformPluginList()接口.');
-  }
-
-  Future<bool?> openPlatformDialog() async {
-    throw UnimplementedError('未实现openPlatformDialog()接口.');
-  }
-
-  Future<bool?> closePlatformDialog() async {
-    throw UnimplementedError('未实现closePlatformDialog()接口.');
-  }
-}
-
-final class MethodChannelFlutterEcosed extends FlutterEcosedPlatform {
-  /// 方法通道
-  @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_ecosed');
-
-  /// 方法通道调用参数
-  final Map<String, String> _arguments = const {'channel': 'ecosed_engine'};
-
-  @override
-  Future<List?> getPlatformPluginList() async {
-    return await methodChannel.invokeListMethod<String?>(
-      'getPlugins',
-      _arguments,
-    );
-  }
-
-  @override
-  Future<bool?> openPlatformDialog() async {
-    return await methodChannel.invokeMethod<bool?>('openDialog', _arguments);
-  }
-
-  @override
-  Future<bool?> closePlatformDialog() async {
-    return await methodChannel.invokeMethod<bool?>('closeDialog', _arguments);
-  }
 }

@@ -91,13 +91,8 @@ Future<void> runEcosedApp({
   required Widget app,
   required List<EcosedPlugin> plugins,
   required Runner runner,
-}) async {
-  return await EcosedInterface.instance.runEcosedApp(
-    app: app,
-    plugins: plugins,
-    runner: runner,
-  );
-}
+}) async =>
+    await EcosedInterface.instance.runEcosedApp(app, plugins, runner);
 
 /// 调用插件方法
 ///
@@ -108,22 +103,15 @@ Future<dynamic> execPluginMethod(
   String channel,
   String method, [
   dynamic arguments,
-]) async {
-  return await EcosedInterface.instance.execPluginMethod(
-    channel,
-    method,
-    arguments,
-  );
-}
+]) async =>
+    await EcosedInterface.instance.execPluginMethod(channel, method, arguments);
 
 /// 打开调试菜单
 ///
 /// ```dart
 /// await openDebugMenu();
 /// ```
-Future<void> openDebugMenu() async {
-  return EcosedInterface.instance.openDebugMenu();
-}
+Future<void> openDebugMenu() async => EcosedInterface.instance.openDebugMenu();
 
 // /// 获取管理器控件
 // ///

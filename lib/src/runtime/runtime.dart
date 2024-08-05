@@ -7,7 +7,6 @@ import '../base/base.dart';
 import '../plugin/plugin_runtime.dart';
 import '../plugin/plugin_details.dart';
 import '../plugin/plugin_type.dart';
-import '../type/runner.dart';
 import '../values/placeholder.dart';
 import '../viewmodel/manager_view_model.dart';
 import '../widget/manager.dart';
@@ -26,35 +25,32 @@ final class EcosedRuntime extends EcosedBase {
   /// 插件详细信息列表
   final List<PluginDetails> _pluginDetailsList = [];
 
-  /// 启动应用
   @override
-  Future<void> runEcosedApp({
-    required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
-    required Runner runner,
-  }) async {
-    // 执行父类代码
-    await super.runEcosedApp(
-      app: app,
-      plugins: plugins,
-      runner: runner,
-    );
-    // 初始化
-    await _init(
-      plugins: plugins,
-    );
-    // 启动应用
-    return await super.runWithRunner(
-      app: app,
-      runner: runner,
+  Future<void> init(List<EcosedRuntimePlugin> plugins) async {
+    // 初始化包信息
+    await _initPackage();
+    // 初始化运行时
+    await _initRuntime();
+
+    await _initFramework();
+
+    // 初始化普通插件
+    await _initPlugins(plugins: plugins);
+
+    await super.execEngine(
+      'openDialog',
+      {'channel': 'engine_embedded'},
     );
   }
 
   /// 打开调试菜单
   @override
-  Future<void> openDebugMenu() async {
-    showDialog(
-      context: super.host,
+  Future<SimpleDialog?> buildDialog(
+    BuildContext context,
+    bool isManager,
+  ) async {
+    return await showDialog<SimpleDialog>(
+      context: context,
       useRootNavigator: false,
       builder: (context) => SimpleDialog(
         title: const Text('调试菜单'),
@@ -69,16 +65,17 @@ final class EcosedRuntime extends EcosedBase {
               onTap: () => Navigator.of(context).pop(),
             ),
           ),
-          SimpleDialogOption(
-            padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title: const Text('管理器'),
-              leading: const FlutterLogo(),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-              enabled: true,
-              onTap: () async => await super.launchManager(),
+          if (!isManager)
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text('管理器'),
+                leading: const FlutterLogo(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+                enabled: true,
+                onTap: () async => await super.launchManager(),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -106,7 +103,7 @@ final class EcosedRuntime extends EcosedBase {
       getPlugin: _getPlugin,
       getPluginWidget: _getPluginWidget,
       isRuntime: _isRuntime,
-      openDebugMenu: openDebugMenu,
+      openDebugMenu: () async => await launchDialog(),
     );
   }
 
@@ -153,26 +150,6 @@ final class EcosedRuntime extends EcosedBase {
       default:
         return await null;
     }
-  }
-
-  /// 初始化运行时
-  Future<void> _init({
-    required List<EcosedRuntimePlugin> plugins,
-  }) async {
-    // 初始化包信息
-    await _initPackage();
-    // 初始化运行时
-    await _initRuntime();
-
-    await _initFramework();
-
-    // 初始化普通插件
-    await _initPlugins(plugins: plugins);
-
-    await super.execEngine(
-      'openDialog',
-      {'channel': 'engine_embedded'},
-    );
   }
 
   /// 初始化包信息

@@ -11,22 +11,22 @@ base mixin BaseEntry on EcosedInterface {
 
   /// 运行应用
   @override
-  Future<void> runEcosedApp({
-    required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
-    required Runner runner,
-  }) async {
+  Future<void> runEcosedApp(
+    Widget app,
+    List<EcosedRuntimePlugin> plugins,
+    Runner runner,
+  ) async {
     try {
       return await _interface.runEcosedApp(
-        app: app,
-        plugins: plugins,
-        runner: runner,
+        app,
+        plugins,
+        runner,
       );
     } on Exception {
       return await super.runEcosedApp(
-        app: app,
-        plugins: plugins,
-        runner: runner,
+        app,
+        plugins,
+        runner,
       );
     }
   }

@@ -15,11 +15,11 @@ final class DefaultEntry extends EcosedInterface {
 
   /// 运行应用
   @override
-  Future<void> runEcosedApp({
-    required Widget app,
-    required List<EcosedRuntimePlugin> plugins,
-    required Runner runner,
-  }) async {
+  Future<void> runEcosedApp(
+    Widget app,
+    List<EcosedRuntimePlugin> plugins,
+    Runner runner,
+  ) async {
     return await runner(app).then(
       (_) => Log.w(
         entryTag,

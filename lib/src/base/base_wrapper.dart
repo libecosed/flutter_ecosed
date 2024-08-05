@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../interface/ecosed_interface.dart';
@@ -17,15 +19,6 @@ abstract interface class BaseWrapper {
     dynamic arguments,
   ]);
 
-  /// 使用运行器运行
-  Future<void> runWithRunner({
-    required Widget app,
-    required Future<void> Function(Widget app) runner,
-  });
-
-  /// 获取导航主机上下文
-  BuildContext get host;
-
   /// 打开管理器
   Future<dynamic> launchManager();
 
@@ -38,11 +31,21 @@ abstract interface class BaseWrapper {
 
   /// 获取管理器
   Widget buildManager(BuildContext context);
-  
 
+  /// 初始化
+  Future<void> init(List<EcosedRuntimePlugin> plugins);
+
+  /// 构建View Model
   ChangeNotifier buildViewModel(BuildContext context);
 
-  //TODO launchDialog
+  /// 构建对话框
+  Future<SimpleDialog?> buildDialog(
+    BuildContext context,
+    bool isManager,
+  );
+
+  /// 打开对话框
+  Future<SimpleDialog?> launchDialog();
 
   /// 管理器布局
   Widget build(BuildContext context);
