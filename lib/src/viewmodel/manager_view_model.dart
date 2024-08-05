@@ -22,10 +22,20 @@ final class ManagerViewModel with ChangeNotifier {
 
   /// 上下文
   final BuildContext context;
+
+  /// 插件列表
   final List<PluginDetails> pluginDetailsList;
+
+  /// 获取插件
   final PluginGetter getPlugin;
+
+  /// 获取插件界面
   final PluginWidgetGetter getPluginWidget;
+
+  /// 判断是否运行时
   final RuntimeChecker isRuntime;
+
+  /// 打开对话框
   final DialogLauncher launchDialog;
 
   /// 打开PubDev
@@ -224,5 +234,6 @@ final class ManagerViewModel with ChangeNotifier {
         : null;
   }
 
+  /// 打开对话框ß
   Future<void> openDebugMenu() async => await launchDialog();
 }
