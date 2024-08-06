@@ -224,8 +224,9 @@ class FloggerRecord {
     String? methodName = classAndMethodNames.value;
     // Get stacktrace from record stackTrace or record object
     StackTrace? stackTrace = record.stackTrace;
-    if (record.stackTrace == null && record.object is Error)
+    if (record.stackTrace == null && record.object is Error) {
       stackTrace = (record.object as Error).stackTrace;
+    }
     // Get message
     var message = record.message;
     // Maybe add object
@@ -252,7 +253,7 @@ class FloggerRecord {
       printedMessage += "[${time!.toIso8601String()}] ";
     }
     printedMessage += "${_levelShort(level)}/";
-    printedMessage += "$loggerName";
+    printedMessage += loggerName;
     if (className != null && config.printClassName) {
       if (methodName != null && config.printMethodName) {
         printedMessage += " $className#$methodName: ";
@@ -285,8 +286,8 @@ class FloggerRecord {
   static Frame? _getLogFrame() {
     try {
       // Capture the frame where the log originated from the current trace
-      final loggingLibrary = "package:logging/src/logger.dart";
-      final loggingFlutterLibrary = "package:logging_flutter/src/flogger.dart";
+      const loggingLibrary = "package:logging/src/logger.dart";
+      const loggingFlutterLibrary = "package:logging_flutter/src/flogger.dart";
       final currentFrames = Trace.current().frames.toList();
       // Remove all frames from the logging_flutter library
       currentFrames
@@ -327,7 +328,7 @@ class FloggerRecord {
 /// Logs can be configured with [FloggerConfig]
 /// Logs can be listened to with [FloggerListener]
 abstract class Flogger {
-  static FloggerConfig _config = FloggerConfig();
+  static FloggerConfig _config = const FloggerConfig();
   static Logger _logger = Logger(_config.loggerName);
 
   Flogger._();
@@ -380,7 +381,7 @@ abstract class Flogger {
       _logger.log(severity, message, null, stackTrace);
     } else {
       // Additional loggers
-      Logger(loggerName)..log(severity, message, null, stackTrace);
+      Logger(loggerName).log(severity, message, null, stackTrace);
     }
   }
 
@@ -412,10 +413,14 @@ class OutputEvent {
 }
 
 class LogConsole extends StatefulWidget {
+  const LogConsole({
+    super.key,
+    this.dark = false,
+    this.showCloseButton = false,
+  });
+
   final bool dark;
   final bool showCloseButton;
-
-  LogConsole({this.dark = false, this.showCloseButton = false});
 
   static Future<void> open(BuildContext context, {bool? dark}) async {
     var logConsole = LogConsole(
@@ -440,7 +445,7 @@ class LogConsole extends StatefulWidget {
   }
 
   @override
-  _LogConsoleState createState() => _LogConsoleState();
+  State<LogConsole> createState() => _LogConsoleState();
 }
 
 class RenderedEvent {
@@ -453,13 +458,13 @@ class RenderedEvent {
 }
 
 class _LogConsoleState extends State<LogConsole> {
-  ListQueue<RenderedEvent> _renderedBuffer = ListQueue();
+  final ListQueue<RenderedEvent> _renderedBuffer = ListQueue();
   List<RenderedEvent> _filteredBuffer = [];
 
   var logs = FullLogs().fullLogs;
 
-  var _scrollController = ScrollController();
-  var _filterController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _filterController = TextEditingController();
 
   Level? _filterLevel = Level.CONFIG;
   double _logFontSize = 14;
@@ -516,49 +521,33 @@ class _LogConsoleState extends State<LogConsole> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // theme: widget.dark
-      //     ? ThemeData(
-      //         brightness: Brightness.dark,
-      //         colorScheme: Theme.of(context).colorScheme.copyWith(
-      //               secondary: Colors.blueGrey,
-      //             ),
-      //       )
-      //     : ThemeData(
-      //         brightness: Brightness.light,
-      //         colorScheme: Theme.of(context).colorScheme.copyWith(
-      //               secondary: Colors.lightBlueAccent,
-      //             ),
-      //       ),
-      home: Scaffold(
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              _buildTopBar(context),
-              SizedBox(height: 8),
-              Expanded(
-                child: _buildLogContent(),
-              ),
-              SizedBox(height: 8),
-              _buildBottomBar(),
-            ],
-          ),
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            ///_buildTopBar(context),
+            const SizedBox(height: 8),
+            Expanded(
+              child: _buildLogContent(),
+            ),
+            const SizedBox(height: 8),
+            _buildBottomBar(),
+          ],
         ),
-        floatingActionButton: AnimatedOpacity(
-          opacity: _followBottom ? 0 : 1,
-          duration: Duration(milliseconds: 150),
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 60),
-            child: FloatingActionButton(
-              mini: true,
-              clipBehavior: Clip.antiAlias,
-              child: Icon(
-                Icons.arrow_downward,
-                color: widget.dark ? Colors.white : Colors.lightBlue[900],
-              ),
-              onPressed: _scrollToBottom,
+      ),
+      floatingActionButton: AnimatedOpacity(
+        opacity: _followBottom ? 0 : 1,
+        duration: const Duration(milliseconds: 150),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 60),
+          child: FloatingActionButton(
+            mini: true,
+            clipBehavior: Clip.antiAlias,
+            onPressed: _scrollToBottom,
+            child: Icon(
+              Icons.arrow_downward,
+              color: widget.dark ? Colors.white : Colors.lightBlue[900],
             ),
           ),
         ),
@@ -579,7 +568,7 @@ class _LogConsoleState extends State<LogConsole> {
             controller: _scrollController,
             itemBuilder: (context, index) {
               var logEntry = _filteredBuffer[index];
-              logs.write(logEntry.lowerCaseText + "\n");
+              logs.write("${logEntry.lowerCaseText}\n");
               return Text.rich(
                 logEntry.span,
                 key: Key(logEntry.id.toString()),
@@ -601,16 +590,16 @@ class _LogConsoleState extends State<LogConsole> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text(
+          const Text(
             "Log Console",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.content_copy_rounded,
               color: Colors.greenAccent,
             ),
@@ -623,7 +612,7 @@ class _LogConsoleState extends State<LogConsole> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               setState(() {
                 _logFontSize++;
@@ -631,7 +620,7 @@ class _LogConsoleState extends State<LogConsole> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.remove),
+            icon: const Icon(Icons.remove),
             onPressed: () {
               setState(() {
                 _logFontSize--;
@@ -663,34 +652,34 @@ class _LogConsoleState extends State<LogConsole> {
         children: <Widget>[
           Expanded(
             child: TextField(
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
               controller: _filterController,
               onChanged: (s) => _refreshFilter(),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Filter log output",
                 border: OutlineInputBorder(),
               ),
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           DropdownButton(
             value: _filterLevel,
-            items: [
+            items: const [
               DropdownMenuItem(
-                child: Text("DEBUG"),
                 value: Level.CONFIG,
+                child: Text("DEBUG"),
               ),
               DropdownMenuItem(
-                child: Text("INFO"),
                 value: Level.INFO,
+                child: Text("INFO"),
               ),
               DropdownMenuItem(
-                child: Text("WARNING"),
                 value: Level.WARNING,
+                child: Text("WARNING"),
               ),
               DropdownMenuItem(
-                child: Text("ERROR"),
                 value: Level.SEVERE,
+                child: Text("ERROR"),
               ),
             ],
             onChanged: (dynamic value) {
@@ -713,7 +702,7 @@ class _LogConsoleState extends State<LogConsole> {
     var scrollPosition = _scrollController.position;
     await _scrollController.animateTo(
       scrollPosition.maxScrollExtent,
-      duration: new Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
       curve: Curves.easeOut,
     );
 
@@ -737,7 +726,7 @@ class LogBar extends StatelessWidget {
   final bool? dark;
   final Widget? child;
 
-  LogBar({this.dark, this.child});
+  const LogBar({super.key, this.dark, this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -756,7 +745,7 @@ class LogBar extends StatelessWidget {
         child: Material(
           color: dark! ? Colors.blueGrey[900] : Colors.white,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
+            padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
             child: child,
           ),
         ),
