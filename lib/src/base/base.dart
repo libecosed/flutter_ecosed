@@ -90,22 +90,21 @@ base class EcosedBase extends ContextWrapper
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
     // 初始化日志
-    Flogger.init(
-      config: const FloggerConfig(
-        printClassName: true,
-        printMethodName: true,
-        showDateTime: true,
-        showDebugLogs: true,
-      ),
-    );
+    Flogger.init();
     if (kDebugMode) {
       Flogger.registerListener(
-        (record) => log(record.printable(), stackTrace: record.stackTrace),
+        (record) => log(
+          record.printable(),
+          stackTrace: record.stackTrace,
+        ),
       );
     }
     Flogger.registerListener(
       (record) => LogConsole.add(
-        OutputEvent(record.level, [record.printable()]),
+        OutputEvent(
+          record.level,
+          [record.printable()],
+        ),
         bufferSize: 1000,
       ),
     );

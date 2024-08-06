@@ -2,16 +2,12 @@ import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import '../type/logger_listener.dart';
-import '../type/logger_printer.dart';
 
 /// Contains all the information about the [LogRecord]
 /// and can be printed with [printable] based on [FloggerConfig]
 class FloggerRecord {
   /// Original [LogRecord] from [Logger]
   final LogRecord logRecord;
-
-  /// Print configuration
-  final FloggerConfig config;
 
   /// [Logger] name
   final String loggerName;
@@ -36,7 +32,6 @@ class FloggerRecord {
 
   FloggerRecord._(
     this.logRecord,
-    this.config,
     this.loggerName,
     this.message,
     this.level,
@@ -47,10 +42,7 @@ class FloggerRecord {
   );
 
   /// Create a [FloggerRecord] from a [LogRecord]
-  factory FloggerRecord.fromLogger(
-    LogRecord record,
-    FloggerConfig config,
-  ) {
+  factory FloggerRecord.fromLogger(LogRecord record) {
     // Get ClassName and MethodName
     final classAndMethodNames = _getClassAndMethodNames(_getLogFrame()!);
     String? className = classAndMethodNames.key;
@@ -67,7 +59,6 @@ class FloggerRecord {
     // Build Flogger record
     return FloggerRecord._(
       record,
-      config,
       record.loggerName,
       message,
       record.level,
@@ -80,20 +71,19 @@ class FloggerRecord {
 
   /// Convert the log to a printable [String]
   String printable() {
-    if (config.printer != null) return config.printer!(this);
     var printedMessage = "";
-    if (config.showDateTime && time != null) {
+    if (time != null) {
       printedMessage += "[${time!.toIso8601String()}] ";
     }
     printedMessage += "${_levelShort(level)}/";
     printedMessage += loggerName;
-    if (className != null && config.printClassName) {
-      if (methodName != null && config.printMethodName) {
+    if (className != null) {
+      if (methodName != null) {
         printedMessage += " $className#$methodName: ";
       } else {
         printedMessage += " $className: ";
       }
-    } else if (methodName != null && config.printMethodName) {
+    } else if (methodName != null) {
       printedMessage += " $methodName: ";
     } else {
       printedMessage += ": ";
@@ -120,7 +110,8 @@ class FloggerRecord {
     try {
       // Capture the frame where the log originated from the current trace
       const loggingLibrary = "package:logging/src/logger.dart";
-      const loggingFlutterLibrary = "package:logging_flutter/src/flogger.dart";
+      const loggingFlutterLibrary =
+          "package:flutter_ecosed/src/framework/log.dart";
       final currentFrames = Trace.current().frames.toList();
       // Remove all frames from the logging_flutter library
       currentFrames
@@ -156,43 +147,50 @@ class FloggerRecord {
   }
 }
 
-/// Convenience singleton with static methods to
-/// interact with [Logger]
-/// Logs can be configured with [FloggerConfig]
-/// Logs can be listened to with [FloggerListener]
 abstract class Flogger {
-  static FloggerConfig _config = const FloggerConfig();
-
-  /// Initialize the default [Logger] and set the [FloggerConfig]
-  static void init({FloggerConfig config = const FloggerConfig()}) {
-    _config = config;
-    Logger.root.level = _config.showDebugLogs ? Level.ALL : Level.INFO;
+  static void init() {
+    Logger.root.level = Level.ALL;
   }
 
   /// Log a DEBUG message with CONFIG [Level]
-  static d(String message, {required String loggerName}) => _log(
+  static d({
+    required String message,
+    required String loggerName,
+  }) =>
+      _log(
         message: message,
         loggerName: loggerName,
         severity: Level.CONFIG,
       );
 
   /// Log an INFO message with INFO [Level]
-  static i(String message, {required String loggerName}) => _log(
+  static i({
+    required String message,
+    required String loggerName,
+  }) =>
+      _log(
         message: message,
         loggerName: loggerName,
         severity: Level.INFO,
       );
 
   /// Log a WARNING message with WARNING [Level]
-  static w(String message, {required String loggerName}) => _log(
+  static w({
+    required String message,
+    required String loggerName,
+  }) =>
+      _log(
         message: message,
         loggerName: loggerName,
         severity: Level.WARNING,
       );
 
   /// Log an ERROR message with SEVERE [Level]
-  static e(String message,
-          {StackTrace? stackTrace, required String loggerName}) =>
+  static e({
+    required String message,
+    required String loggerName,
+    StackTrace? stackTrace,
+  }) =>
       _log(
         message: message,
         loggerName: loggerName,
@@ -207,14 +205,14 @@ abstract class Flogger {
     StackTrace? stackTrace,
   }) {
     // Additional loggers
-    Logger(loggerName).log(severity, message, null, stackTrace);
+    Logger(loggerName).log(severity, message, null, stackTrace, null);
   }
 
   /// Register a listener to listen to all logs
   /// Logs are emitted as [FloggerRecord]
   static registerListener(LoggerListener onRecord) {
     Logger.root.onRecord
-        .map((e) => FloggerRecord.fromLogger(e, _config))
+        .map((e) => FloggerRecord.fromLogger(e))
         .listen(onRecord);
   }
 
@@ -224,33 +222,6 @@ abstract class Flogger {
   }
 }
 
-/// Configuration options for [LogRecord]
-class FloggerConfig {
-  /// Print the class name where the log was triggered
-  final bool printClassName;
-
-  /// Print the method name where the log was triggered
-  final bool printMethodName;
-
-  /// Print the date and time when the log occurred
-  final bool showDateTime;
-
-  /// Print logs with Debug severity
-  final bool showDebugLogs;
-
-  /// Print logs with a custom format
-  /// If set, ignores all other print options
-  final LoggerPrinter? printer;
-
-  const FloggerConfig({
-    this.printClassName = true,
-    this.printMethodName = true,
-    this.showDateTime = true,
-    this.showDebugLogs = true,
-    this.printer,
-  });
-}
-
 class Log extends Flogger {
   /// Info级别
   static void i(
@@ -258,7 +229,7 @@ class Log extends Flogger {
     String message,
   ) {
     Flogger.i(
-      message,
+      message: message,
       loggerName: tag,
     );
   }
@@ -269,7 +240,7 @@ class Log extends Flogger {
     String message,
   ) {
     Flogger.d(
-      message,
+      message: message,
       loggerName: tag,
     );
   }
@@ -281,7 +252,7 @@ class Log extends Flogger {
     dynamic exceptino,
   ) {
     Flogger.e(
-      message,
+      message: message,
       stackTrace: exceptino,
       loggerName: tag,
     );
@@ -293,7 +264,7 @@ class Log extends Flogger {
     String message,
   ) {
     Flogger.w(
-      message,
+      message: message,
       loggerName: tag,
     );
   }
