@@ -157,7 +157,7 @@ abstract class Flogger {
     required String message,
     required String loggerName,
   }) =>
-      _log(
+      _printLog(
         message: message,
         loggerName: loggerName,
         severity: Level.CONFIG,
@@ -168,7 +168,7 @@ abstract class Flogger {
     required String message,
     required String loggerName,
   }) =>
-      _log(
+      _printLog(
         message: message,
         loggerName: loggerName,
         severity: Level.INFO,
@@ -179,7 +179,7 @@ abstract class Flogger {
     required String message,
     required String loggerName,
   }) =>
-      _log(
+      _printLog(
         message: message,
         loggerName: loggerName,
         severity: Level.WARNING,
@@ -191,14 +191,14 @@ abstract class Flogger {
     required String loggerName,
     StackTrace? stackTrace,
   }) =>
-      _log(
+      _printLog(
         message: message,
         loggerName: loggerName,
         severity: Level.SEVERE,
         stackTrace: stackTrace,
       );
 
-  static void _log({
+  static void _printLog({
     required String message,
     required String loggerName,
     required Level severity,

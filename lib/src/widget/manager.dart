@@ -86,7 +86,7 @@ class _EcosedManagerState extends State<EcosedManager> {
             appName: widget.appName,
             appVersion: widget.appVersion,
           ),
-          LogConsole(),
+          const LogConsole(),
           PluginPage(
             appName: widget.appName,
             appVersion: widget.appVersion,

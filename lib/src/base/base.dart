@@ -87,8 +87,6 @@ base class EcosedBase extends ContextWrapper
     List<EcosedRuntimePlugin> plugins,
     Runner runner,
   ) async {
-    // 初始化控件绑定
-    WidgetsFlutterBinding.ensureInitialized();
     // 初始化日志
     Flogger.init();
     if (kDebugMode) {
@@ -110,6 +108,8 @@ base class EcosedBase extends ContextWrapper
     );
     // 打印横幅
     Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
+    // 初始化控件绑定
+    WidgetsFlutterBinding.ensureInitialized();
     // 初始化内核桥接
     await initKernelBridge();
     // await RustLib.init();
