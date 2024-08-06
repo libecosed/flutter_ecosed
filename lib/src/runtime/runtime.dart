@@ -122,25 +122,31 @@ final class EcosedRuntime extends EcosedBase {
           if (!isManager)
             SimpleDialogOption(
               padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text('打开管理器'),
-                leading: const Icon(
-                  Icons.keyboard_command_key,
-                  color: Colors.pinkAccent,
+              child: Tooltip(
+                message: '打开管理器',
+                child: ListTile(
+                  title: const Text('打开管理器'),
+                  leading: const Icon(
+                    Icons.keyboard_command_key,
+                    color: Colors.pinkAccent,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  enabled: true,
+                  onTap: () async => await super.launchManager(),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-                enabled: true,
-                onTap: () async => await super.launchManager(),
               ),
             ),
           SimpleDialogOption(
             padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title: const Text('关闭对话框'),
-              leading: const Icon(Icons.close),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-              enabled: true,
-              onTap: () => Navigator.of(context).pop(),
+            child: Tooltip(
+              message: '关闭对话框',
+              child: ListTile(
+                title: const Text('关闭对话框'),
+                leading: const Icon(Icons.close),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+                enabled: true,
+                onTap: () => Navigator.of(context).pop(),
+              ),
             ),
           ),
         ],

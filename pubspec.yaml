@@ -26,6 +26,7 @@ dependencies:
   sensors_plus: ^6.0.0
   package_info_plus: ^8.0.1
   url_launcher: ^6.3.0
+  flutter_adaptive_scaffold: ^0.1.11+1
 
 dev_dependencies:
   ffi: ^2.1.0

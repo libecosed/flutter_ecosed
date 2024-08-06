@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 
 import '../plugin/plugin_details.dart';
 import 'info_card.dart';
@@ -22,6 +23,13 @@ class EcosedManager extends StatefulWidget {
   State<EcosedManager> createState() => _EcosedManagerState();
 }
 
+class A extends Breakpoint {
+  @override
+  bool isActive(BuildContext context) {
+    return true;
+  }
+}
+
 class _EcosedManagerState extends State<EcosedManager> {
   final ScrollController _scrollController = ScrollController();
 
@@ -33,11 +41,26 @@ class _EcosedManagerState extends State<EcosedManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AdaptiveScaffold(
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.abc),
+          label: 'home',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.abc),
+          label: 'home',
+        ),
+      ],
       appBar: AppBar(
         title: const Text('管理器'),
       ),
-      body: Scrollbar(
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
+      appBarBreakpoint: Breakpoints.standard,
+      useDrawer: false,
+      body: (context) => Scrollbar(
         controller: _scrollController,
         child: ListView(
           controller: _scrollController,

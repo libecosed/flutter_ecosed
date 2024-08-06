@@ -9,21 +9,21 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
-  // await runEcosedApp(
-  //   app: Center(
-  //     child: TextButton(
-  //       onPressed: () => openDebugMenu(),
-  //       child: const Text('debug'),
-  //     ),
-  //   ),
-  //   plugins: const <EcosedPlugin>[ExamplePlugin()],
-  //   runner: (app) async => runApp(app),
-  // );
   await runEcosedApp(
-    app: const MyApp(),
-    plugins: const [ExamplePlugin()],
+    app: Center(
+      child: TextButton(
+        onPressed: () => openDebugMenu(),
+        child: const Text('debug'),
+      ),
+    ),
+    plugins: const <EcosedPlugin>[ExamplePlugin()],
     runner: (app) async => runApp(app),
   );
+  // await runEcosedApp(
+  //   app: const MyApp(),
+  //   plugins: const [ExamplePlugin()],
+  //   runner: (app) async => runApp(app),
+  // );
 }
 
 class MyApp extends StatefulWidget {
