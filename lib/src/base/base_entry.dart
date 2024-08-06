@@ -22,8 +22,7 @@ base mixin BaseEntry on EcosedInterface {
         plugins,
         runner,
       );
-    } on Exception catch (e) {
-      debugPrint(e.toString());
+    } on Exception {
       return await super.runEcosedApp(
         app,
         plugins,
