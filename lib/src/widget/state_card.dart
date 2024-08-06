@@ -47,13 +47,16 @@ class StateCard extends StatelessWidget {
                 ),
               ),
             ),
-            Consumer<ManagerViewModel>(
-              builder: (context, viewModel, child) => IconButton(
-                onPressed: viewModel.openDebugMenu,
-                icon: Icon(
-                  Icons.developer_mode,
-                  size: Theme.of(context).iconTheme.size,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+            Tooltip(
+              message: '调试菜单',
+              child: Consumer<ManagerViewModel>(
+                builder: (context, viewModel, child) => IconButton(
+                  onPressed: viewModel.openDebugMenu,
+                  icon: Icon(
+                    Icons.developer_mode,
+                    size: Theme.of(context).iconTheme.size,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
               ),
             ),

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter_ecosed/src/values/strings.dart';
+
 import '../framework/context.dart';
 import '../framework/log.dart';
 import 'binding.dart';
@@ -33,7 +35,7 @@ final class EcosedEngine extends EcosedEnginePlugin
 
   /// 插件作者
   @override
-  String get author => 'wyq0918dev';
+  String get author => developerName;
 
   /// 插件通道
   @override
@@ -54,8 +56,16 @@ final class EcosedEngine extends EcosedEnginePlugin
     EcosedResult result,
   ) async {
     switch (call.method) {
-      case 'get_plugins':
+      case 'get_engine_plugins':
         result.success(_infoList);
+        break;
+      case 'get_platform_plugins':
+        result.success(
+          execPluginMethod(
+            'engine_embedded',
+            'getPlugins',
+          ),
+        );
         break;
       default:
         result.notImplemented();

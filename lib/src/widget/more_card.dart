@@ -31,13 +31,16 @@ class MoreCard extends StatelessWidget {
                 ],
               ),
             ),
-            Consumer<ManagerViewModel>(
-              builder: (context, viewModel, child) => IconButton(
-                onPressed: viewModel.launchPubDev,
-                icon: Icon(
-                  Icons.open_in_browser,
-                  size: Theme.of(context).iconTheme.size,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+            Tooltip(
+              message: '了解更多',
+              child: Consumer<ManagerViewModel>(
+                builder: (context, viewModel, child) => IconButton(
+                  onPressed: viewModel.launchPubDev,
+                  icon: Icon(
+                    Icons.open_in_browser,
+                    size: Theme.of(context).iconTheme.size,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
               ),
             ),

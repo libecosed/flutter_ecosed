@@ -240,7 +240,7 @@ base class EcosedBase extends ContextWrapper
   ]) async {
     return await engineBridgerScope.onMethodCall(
       method,
-      arguments,
+      {'channel': 'ecosed_engine', ...?arguments},
     );
   }
 

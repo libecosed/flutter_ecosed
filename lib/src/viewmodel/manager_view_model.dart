@@ -194,6 +194,16 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
         : '无界面';
   }
 
+  /// 获取插件的提示
+  @override
+  String getPluginTooltip(PluginDetails details) {
+    return _isAllowPush(details)
+        ? details.channel != 'ecosed_runtime'
+            ? '打开插件的界面'
+            : '关于本框架'
+        : '此插件没有界面';
+  }
+
   /// 打开卡片
   @override
   VoidCallback? openPlugin(

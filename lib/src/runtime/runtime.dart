@@ -41,18 +41,15 @@ final class EcosedRuntime extends EcosedBase {
 
   /// 方法调用
   @override
-  Future<dynamic> onMethodCall(String method, [dynamic arguments]) async {
+  Future<dynamic> onMethodCall(
+    String method, [
+    dynamic arguments,
+  ]) async {
     switch (method) {
       case 'get_engine_plugins':
-        return await super.execEngine(
-          'get_plugins',
-          {'channel': 'ecosed_engine'},
-        );
+        return await super.execEngine('get_engine_plugins');
       case 'get_platform_plugins':
-        return await super.execEngine(
-          'getPlugins',
-          {'channel': 'engine_embedded'},
-        );
+        return await super.execEngine('get_platform_plugins');
       default:
         return await null;
     }
@@ -64,18 +61,17 @@ final class EcosedRuntime extends EcosedBase {
     await _initPackage();
     // 初始化运行时
     await _initRuntime();
-
-    await _initFramework();
-
-    await _initPlatform();
-
+    // 初始化引擎插件
+    await _initEnginePlugin();
+    // 初始化平台插件
+    await _initPlatformPlugin();
     // 初始化普通插件
     await _initPlugins(plugins: plugins);
 
-    await super.execEngine(
-      'openDialog',
-      {'channel': 'engine_embedded'},
-    );
+    // await super.execEngine(
+    //   'openDialog',
+    //   {'channel': 'engine_embedded'},
+    // );
   }
 
   /// 获取管理器
@@ -199,7 +195,7 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化平台层插件
-  Future<void> _initFramework() async {
+  Future<void> _initEnginePlugin() async {
     // 初始化平台插件
     try {
       dynamic plugins = await _exec(pluginChannel, 'get_engine_plugins', true);
@@ -229,7 +225,7 @@ final class EcosedRuntime extends EcosedBase {
   }
 
   /// 初始化平台层插件
-  Future<void> _initPlatform() async {
+  Future<void> _initPlatformPlugin() async {
     // 初始化平台插件
     try {
       // 遍历原生插件
@@ -324,5 +320,3 @@ final class EcosedRuntime extends EcosedBase {
     return null;
   }
 }
-
-

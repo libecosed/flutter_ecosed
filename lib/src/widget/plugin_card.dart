@@ -99,14 +99,17 @@ class PluginCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
-                  TextButton(
-                    onPressed: viewModel.openPlugin(
-                      details,
-                      appName,
-                      appVersion,
-                    ),
-                    child: Text(
-                      viewModel.getPluginAction(details),
+                  Tooltip(
+                    message: viewModel.getPluginTooltip(details),
+                    child: TextButton(
+                      onPressed: viewModel.openPlugin(
+                        details,
+                        appName,
+                        appVersion,
+                      ),
+                      child: Text(
+                        viewModel.getPluginAction(details),
+                      ),
                     ),
                   ),
                 ],
