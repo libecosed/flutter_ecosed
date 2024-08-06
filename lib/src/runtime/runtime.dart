@@ -103,7 +103,6 @@ final class EcosedRuntime extends EcosedBase {
     return EcosedManager(
       appName: _appName,
       appVersion: _appVersion,
-      pluginDetailsList: _pluginDetailsList,
     );
   }
 

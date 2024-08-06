@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../plugin/plugin_details.dart';
 import '../viewmodel/manager_view_model.dart';
 import 'info_item.dart';
 
@@ -10,12 +9,10 @@ class InfoCard extends StatelessWidget {
     super.key,
     required this.appName,
     required this.appVersion,
-    required this.pluginDetailsList,
   });
 
   final String appName;
   final String appVersion;
-  final List<PluginDetails> pluginDetailsList;
 
   @override
   Widget build(BuildContext context) {

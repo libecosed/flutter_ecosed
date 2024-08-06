@@ -254,4 +254,6 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
       ),
     );
   }
+
+  List<PluginDetails> get getPluginDetailsList => pluginDetailsList;
 }
