@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../viewmodel/manager_view_model.dart';
 import 'home_page.dart';
+import 'log_page.dart';
 import 'plugin_page.dart';
 
 class EcosedManager extends StatefulWidget {
@@ -85,7 +86,7 @@ class _EcosedManagerState extends State<EcosedManager> {
             appName: widget.appName,
             appVersion: widget.appVersion,
           ),
-          const Placeholder(),
+          LogConsole(),
           PluginPage(
             appName: widget.appName,
             appVersion: widget.appVersion,
