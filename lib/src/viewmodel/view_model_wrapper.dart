@@ -12,6 +12,9 @@ abstract interface class ViewModelWrapper {
   /// 打开PubDev
   Future<bool> launchPubDev();
 
+  /// 获取插件列表
+  List<PluginDetails> get getPluginDetailsList;
+
   /// 获取插件图标
   Widget getPluginIcon(PluginDetails details);
 

@@ -63,6 +63,10 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
     );
   }
 
+  /// 获取插件列表
+  @override
+  List<PluginDetails> get getPluginDetailsList => pluginDetailsList;
+
   /// 获取插件图标
   @override
   Widget getPluginIcon(PluginDetails details) {
@@ -254,6 +258,4 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
       ),
     );
   }
-
-  List<PluginDetails> get getPluginDetailsList => pluginDetailsList;
 }
