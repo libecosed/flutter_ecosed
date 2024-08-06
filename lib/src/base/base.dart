@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
@@ -88,11 +87,30 @@ base class EcosedBase extends ContextWrapper
     List<EcosedRuntimePlugin> plugins,
     Runner runner,
   ) async {
-    init_aaa();
-    // 打印横幅
-    Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
+    // 初始化日志
+    Flogger.init(
+      config: const FloggerConfig(
+        printClassName: true,
+        printMethodName: true,
+        showDateTime: true,
+        showDebugLogs: true,
+      ),
+    );
+    if (kDebugMode) {
+      Flogger.registerListener(
+        (record) => log(record.printable(), stackTrace: record.stackTrace),
+      );
+    }
+    Flogger.registerListener(
+      (record) => LogConsole.add(
+        OutputEvent(record.level, [record.printable()]),
+        bufferSize: 1000,
+      ),
+    );
+    // 打印横幅
+    Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
     // 初始化内核桥接
     await initKernelBridge();
     // await RustLib.init();
@@ -110,55 +128,50 @@ base class EcosedBase extends ContextWrapper
     // 初始化应用
     await init(plugins);
     // 启动应用
-    return await runner(Builder(
-      builder: (context) => Theme(
-        data: ThemeData(
-          brightness: MediaQuery.platformBrightnessOf(context),
-        ),
-        child: Material(
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Localizations(
-              locale: const Locale('zh', 'CN'),
-              delegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              child: Navigator(
-                initialRoute: routeApp,
-                onGenerateRoute: (settings) {
-                  switch (settings.name) {
-                    case routeApp:
-                      return MaterialPageRoute(
-                        builder: (context) {
-                          attachBuildContext(context);
-                          return EcosedBanner(child: app);
-                        },
-                      );
-                    case routeManager:
-                      return MaterialPageRoute(
-                        builder: (context) => buildManager(context),
-                      );
-                    default:
-                      return MaterialPageRoute(
-                        builder: (context) => const Placeholder(),
-                      );
-                  }
-                },
-                observers: [
-                  RouteObserver(
-                    change: (name) {
-                      Log.d(baseTag, '当前页面$name');
-                    },
-                  ),
+    return await runner(
+      Builder(
+        builder: (context) => Theme(
+          data: ThemeData(
+            brightness: MediaQuery.platformBrightnessOf(context),
+          ),
+          child: Material(
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Localizations(
+                locale: const Locale('zh', 'CN'),
+                delegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
                 ],
+                child: Navigator(
+                  initialRoute: routeApp,
+                  onGenerateRoute: (settings) {
+                    switch (settings.name) {
+                      case routeApp:
+                        return MaterialPageRoute(
+                          builder: (context) {
+                            attachBuildContext(context);
+                            return EcosedBanner(child: app);
+                          },
+                        );
+                      case routeManager:
+                        return MaterialPageRoute(
+                          builder: (context) => buildManager(context),
+                        );
+                      default:
+                        return MaterialPageRoute(
+                          builder: (context) => const Placeholder(),
+                        );
+                    }
+                  },
+                ),
               ),
             ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   /// 执行插件方法
@@ -260,135 +273,37 @@ base class EcosedBase extends ContextWrapper
   }
 }
 
-class RouteObserver extends NavigatorObserver {
-  RouteObserver({required this.change});
-
-  final Function(String? route) change;
-
-  @override
-  void didPush(
-    Route<dynamic> route,
-    Route<dynamic>? previousRoute,
-  ) {
-    change(route.settings.name);
-  }
-
-  @override
-  void didPop(
-    Route<dynamic> route,
-    Route<dynamic>? previousRoute,
-  ) {
-    change(previousRoute?.settings.name);
-  }
-
-  @override
-  void didRemove(Route route, Route? previousRoute) {
-    change(previousRoute?.settings.name);
-  }
-
-  @override
-  void didReplace({Route? newRoute, Route? oldRoute}) {
-    change(newRoute?.settings.name);
-  }
-}
-
-class SampleClass {
-  final String name;
-  final int id;
-
-  SampleClass({
-    required this.name,
-    required this.id,
-  });
-
-  static void printSomeLogs() {
-    Flogger.d("Debug message");
-
-    Flogger.i("Info message");
-    Flogger.i("Info message with object - ${SampleClass(name: "John", id: 1)}");
-
-    Flogger.w("Warning message");
-    try {
-      throw Exception("Something bad happened");
-    } catch (e) {
-      Flogger.w("Warning message with exception $e");
-    }
-
-    Flogger.e("Error message with exception - ${Exception("Test Error")}");
-
-    Flogger.i("Info message with a different logger name", loggerName: "Dio");
-
-    // throw Exception("This has been thrown");
-  }
-}
-
-class ExternalPackage {
-  static void printSomeLogs() {
-    Logger.root.config("Debug message");
-
-    Logger.root.info("Info message");
-    Logger.root.info("Info message with object - ${ExternalPackage()}");
-
-    Logger.root.warning("Warning message");
-    try {
-      throw Exception("Something bad happened");
-    } catch (e) {
-      Logger.root.info("Warning message with exception $e");
-    }
-
-    Logger.root
-        .severe("Error message with exception - ${Exception("Test Error")}");
-
-    Logger("Isar").info("Info message with a different logger name");
-
-    // throw Exception("This has been thrown");
-  }
-}
-
-// void main() {
-//   runZonedGuarded(() {
-//     runApp(MyApp());
-//     init();
-//   }, (error, stack) {
-//     // Catch and log crashes
-//     Flogger.e('Unhandled error - $error', stackTrace: stack);
-//   });
+// void initAaa() {
+//   Flogger.init(
+//     config: const FloggerConfig(
+//       printClassName: true,
+//       printMethodName: true,
+//       showDateTime: true,
+//       showDebugLogs: true,
+//     ),
+//   );
+//   if (kDebugMode) {
+//     Flogger.registerListener(
+//       (record) => log(record.printable(), stackTrace: record.stackTrace),
+//     );
+//   }
+//   Flogger.registerListener(
+//     (record) => LogConsole.add(
+//       OutputEvent(record.level, [record.printable()]),
+//       bufferSize: 1000,
+//     ),
+//   );
+//   // // You can also use "registerListener" to log to Crashlytics or any other services
+//   // if (kReleaseMode) {
+//   //   Flogger.registerListener((record) {
+//   //     // Filter logs that may contain sensitive data
+//   //     if (record.loggerName != "App") return;
+//   //     if (record.message.contains("apiKey")) return;
+//   //     if (record.message.contains("password")) return;
+//   //     // Send logs to logging services
+//   //     // FirebaseCrashlytics.instance.log(record.message);
+//   //     // DatadogSdk.instance.logs?.info(record.message);
+//   //   });
+//   // }
+//   // //SampleClass.printSomeLogs();
 // }
-
-void init_aaa() {
-  // Init
-  Flogger.init(
-    config: FloggerConfig(
-      printClassName: true,
-      printMethodName: true,
-      showDateTime: true,
-      showDebugLogs: true,
-    ),
-  );
-  if (kDebugMode) {
-    // Send logs to debug console
-    Flogger.registerListener(
-      (record) => log(record.printable(), stackTrace: record.stackTrace),
-    );
-  }
-  // Send logs to App Console
-  Flogger.registerListener(
-    (record) => LogConsole.add(
-      OutputEvent(record.level, [record.printable()]),
-      bufferSize: 1000, // Remember the last X logs
-    ),
-  );
-  // You can also use "registerListener" to log to Crashlytics or any other services
-  if (kReleaseMode) {
-    Flogger.registerListener((record) {
-      // Filter logs that may contain sensitive data
-      if (record.loggerName != "App") return;
-      if (record.message.contains("apiKey")) return;
-      if (record.message.contains("password")) return;
-      // Send logs to logging services
-      // FirebaseCrashlytics.instance.log(record.message);
-      // DatadogSdk.instance.logs?.info(record.message);
-    });
-  }
-  SampleClass.printSomeLogs();
-}

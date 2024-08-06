@@ -1,14 +1,13 @@
+import 'dart:collection';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import "package:logging/logging.dart";
-import 'package:stack_trace/stack_trace.dart';
-import 'dart:collection';
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 
 class AnsiParser {
-  static const TEXT = 0, BRACKET = 1, CODE = 2;
+  static const TEXT = 0;
+  static const BRACKET = 1;
+  static const CODE = 2;
 
   final bool dark;
 
@@ -22,13 +21,12 @@ class AnsiParser {
     spans = [];
     var state = TEXT;
     StringBuffer? buffer;
-    var text = StringBuffer();
+    final text = StringBuffer();
     var code = 0;
     late List<int> codes;
 
     for (var i = 0, n = s.length; i < n; i++) {
       var c = s[i];
-
       switch (state) {
         case TEXT:
           if (c == '\u001b') {
@@ -40,7 +38,6 @@ class AnsiParser {
             text.write(c);
           }
           break;
-
         case BRACKET:
           buffer!.write(c);
           if (c == '[') {
@@ -50,7 +47,6 @@ class AnsiParser {
             text.write(buffer);
           }
           break;
-
         case CODE:
           buffer!.write(c);
           var codeUnit = c.codeUnitAt(0);
@@ -74,19 +70,14 @@ class AnsiParser {
               text.write(buffer);
             }
           }
-
           break;
       }
     }
-
     spans!.add(createSpan(text.toString()));
   }
 
   void handleCodes(List<int> codes) {
-    if (codes.isEmpty) {
-      codes.add(0);
-    }
-
+    if (codes.isEmpty) codes.add(0);
     switch (codes[0]) {
       case 0:
         foreground = getColor(0, true);
@@ -124,286 +115,22 @@ class AnsiParser {
 
   TextSpan createSpan(String text) {
     return TextSpan(
-        text: text,
-        style: TextStyle(
-          color: foreground,
-          backgroundColor: background,
-        ),
-        recognizer: LongPressGestureRecognizer()
-          ..onLongPress = () {
-            // Clipboard.setData(ClipboardData(text: text));
-            // Toast.toast("Copy to paste board");
-          });
-  }
-}
-
-typedef FloggerPrinter = String Function(FloggerRecord record);
-typedef FloggerListener = void Function(FloggerRecord record);
-
-/// Configuration options for [LogRecord]
-class FloggerConfig {
-  /// The name for the default Logger
-  final String loggerName;
-
-  /// Print the class name where the log was triggered
-  final bool printClassName;
-
-  /// Print the method name where the log was triggered
-  final bool printMethodName;
-
-  /// Print the date and time when the log occurred
-  final bool showDateTime;
-
-  /// Print logs with Debug severity
-  final bool showDebugLogs;
-
-  /// Print logs with a custom format
-  /// If set, ignores all other print options
-  final FloggerPrinter? printer;
-
-  const FloggerConfig({
-    this.loggerName = "App",
-    this.printClassName = true,
-    this.printMethodName = false,
-    this.showDateTime = false,
-    this.showDebugLogs = true,
-    this.printer,
-  });
-}
-
-/// Contains all the information about the [LogRecord]
-/// and can be printed with [printable] based on [FloggerConfig]
-class FloggerRecord {
-  /// Original [LogRecord] from [Logger]
-  final LogRecord logRecord;
-
-  /// Print configuration
-  final FloggerConfig config;
-
-  /// [Logger] name
-  final String loggerName;
-
-  /// Log severity
-  final Level level;
-
-  /// Log message
-  final String message;
-
-  /// Log time
-  final DateTime? time;
-
-  /// [Error] stacktrace
-  final StackTrace? stackTrace;
-
-  /// Class name where the log was triggered
-  final String? className;
-
-  /// Method name where the log was triggered
-  final String? methodName;
-
-  FloggerRecord._(
-    this.logRecord,
-    this.config,
-    this.loggerName,
-    this.message,
-    this.level,
-    this.time,
-    this.stackTrace,
-    this.className,
-    this.methodName,
-  );
-
-  /// Create a [FloggerRecord] from a [LogRecord]
-  factory FloggerRecord.fromLogger(
-    LogRecord record,
-    FloggerConfig config,
-  ) {
-    // Get ClassName and MethodName
-    final classAndMethodNames = _getClassAndMethodNames(_getLogFrame()!);
-    String? className = classAndMethodNames.key;
-    String? methodName = classAndMethodNames.value;
-    // Get stacktrace from record stackTrace or record object
-    StackTrace? stackTrace = record.stackTrace;
-    if (record.stackTrace == null && record.object is Error) {
-      stackTrace = (record.object as Error).stackTrace;
-    }
-    // Get message
-    var message = record.message;
-    // Maybe add object
-    if (record.object != null) message += " - ${record.object}";
-    // Build Flogger record
-    return FloggerRecord._(
-      record,
-      config,
-      record.loggerName,
-      message,
-      record.level,
-      record.time,
-      stackTrace,
-      className,
-      methodName,
+      text: text,
+      style: TextStyle(
+        color: foreground,
+        backgroundColor: background,
+      ),
+      recognizer: LongPressGestureRecognizer()
+        ..onLongPress = () {
+          // TODO: 复制剪贴板
+          // Clipboard.setData(ClipboardData(text: text));
+          // Toast.toast("Copy to paste board");
+        },
     );
-  }
-
-  /// Convert the log to a printable [String]
-  String printable() {
-    if (config.printer != null) return config.printer!(this);
-    var printedMessage = "";
-    if (config.showDateTime && time != null) {
-      printedMessage += "[${time!.toIso8601String()}] ";
-    }
-    printedMessage += "${_levelShort(level)}/";
-    printedMessage += loggerName;
-    if (className != null && config.printClassName) {
-      if (methodName != null && config.printMethodName) {
-        printedMessage += " $className#$methodName: ";
-      } else {
-        printedMessage += " $className: ";
-      }
-    } else if (methodName != null && config.printMethodName) {
-      printedMessage += " $methodName: ";
-    } else {
-      printedMessage += ": ";
-    }
-    printedMessage += message;
-    return printedMessage;
-  }
-
-  static String _levelShort(Level level) {
-    if (level == Level.CONFIG) {
-      return "D";
-    } else if (level == Level.INFO) {
-      return "I";
-    } else if (level == Level.WARNING) {
-      return "W";
-    } else if (level == Level.SEVERE) {
-      return "E";
-    } else {
-      return "?";
-    }
-  }
-
-  static Frame? _getLogFrame() {
-    try {
-      // Capture the frame where the log originated from the current trace
-      const loggingLibrary = "package:logging/src/logger.dart";
-      const loggingFlutterLibrary = "package:logging_flutter/src/flogger.dart";
-      final currentFrames = Trace.current().frames.toList();
-      // Remove all frames from the logging_flutter library
-      currentFrames
-          .removeWhere((element) => element.library == loggingFlutterLibrary);
-      // Capture the last frame from the logging library
-      final lastLoggerIndex = currentFrames
-          .lastIndexWhere((element) => element.library == loggingLibrary);
-      return currentFrames[lastLoggerIndex + 1];
-    } catch (e) {}
-    return null;
-  }
-
-  static MapEntry<String?, String?> _getClassAndMethodNames(Frame frame) {
-    String? className;
-    String? methodName;
-    try {
-      // This variable can be ClassName.MethodName or only a function name, when it doesn't belong to a class, e.g. main()
-      final member = frame.member!;
-      // If there is a . in the member name, it means the method belongs to a class. Thus we can split it.
-      if (member.contains(".")) {
-        className = member.split(".")[0];
-      } else {
-        className = "";
-      }
-      // If there is a . in the member name, it means the method belongs to a class. Thus we can split it.
-      if (member.contains(".")) {
-        methodName = member.split(".")[1];
-      } else {
-        methodName = member;
-      }
-    } catch (e) {}
-    return MapEntry(className, methodName);
-  }
-}
-
-/// Convenience singleton with static methods to
-/// interact with [Logger]
-/// Logs can be configured with [FloggerConfig]
-/// Logs can be listened to with [FloggerListener]
-abstract class Flogger {
-  static FloggerConfig _config = const FloggerConfig();
-  static Logger _logger = Logger(_config.loggerName);
-
-  Flogger._();
-
-  /// Initialize the default [Logger] and set the [FloggerConfig]
-  static void init({FloggerConfig config = const FloggerConfig()}) {
-    _config = config;
-    _logger = Logger(_config.loggerName);
-    Logger.root.level = _config.showDebugLogs ? Level.ALL : Level.INFO;
-  }
-
-  /// Log a DEBUG message with CONFIG [Level]
-  static d(String message, {String? loggerName}) => _log(
-        message,
-        loggerName: loggerName,
-        severity: Level.CONFIG,
-      );
-
-  /// Log an INFO message with INFO [Level]
-  static i(String message, {String? loggerName}) => _log(
-        message,
-        loggerName: loggerName,
-        severity: Level.INFO,
-      );
-
-  /// Log a WARNING message with WARNING [Level]
-  static w(String message, {String? loggerName}) => _log(
-        message,
-        loggerName: loggerName,
-        severity: Level.WARNING,
-      );
-
-  /// Log an ERROR message with SEVERE [Level]
-  static e(String message, {StackTrace? stackTrace, String? loggerName}) =>
-      _log(
-        message,
-        loggerName: loggerName,
-        severity: Level.SEVERE,
-        stackTrace: stackTrace,
-      );
-
-  static void _log(
-    String message, {
-    String? loggerName,
-    required Level severity,
-    StackTrace? stackTrace,
-  }) {
-    if (loggerName == null) {
-      // Main logger
-      _logger.log(severity, message, null, stackTrace);
-    } else {
-      // Additional loggers
-      Logger(loggerName).log(severity, message, null, stackTrace);
-    }
-  }
-
-  /// Register a listener to listen to all logs
-  /// Logs are emitted as [FloggerRecord]
-  static registerListener(FloggerListener onRecord) {
-    Logger.root.onRecord
-        .map((e) => FloggerRecord.fromLogger(e, _config))
-        .listen(onRecord);
-  }
-
-  /// Clear all log listeners
-  static clearListeners() {
-    Logger.root.clearListeners();
   }
 }
 
 ListQueue<OutputEvent> _outputEventBuffer = ListQueue();
-
-class FullLogs {
-  StringBuffer fullLogs = StringBuffer('Start: ');
-}
 
 class OutputEvent {
   final Level level;
@@ -415,27 +142,7 @@ class OutputEvent {
 class LogConsole extends StatefulWidget {
   const LogConsole({
     super.key,
-    this.dark = false,
-    this.showCloseButton = false,
   });
-
-  final bool dark;
-  final bool showCloseButton;
-
-  static Future<void> open(BuildContext context, {bool? dark}) async {
-    var logConsole = LogConsole(
-      showCloseButton: true,
-      dark: dark ?? Theme.of(context).brightness == Brightness.dark,
-    );
-    PageRoute route;
-    if (Platform.isIOS) {
-      route = CupertinoPageRoute(builder: (_) => logConsole);
-    } else {
-      route = MaterialPageRoute(builder: (_) => logConsole);
-    }
-
-    await Navigator.push(context, route);
-  }
 
   static void add(OutputEvent outputEvent, {int? bufferSize = 1000}) {
     while (_outputEventBuffer.length >= (bufferSize ?? 1)) {
@@ -454,7 +161,16 @@ class RenderedEvent {
   final TextSpan span;
   final String lowerCaseText;
 
-  RenderedEvent(this.id, this.level, this.span, this.lowerCaseText);
+  RenderedEvent(
+    this.id,
+    this.level,
+    this.span,
+    this.lowerCaseText,
+  );
+}
+
+class FullLogs {
+  StringBuffer fullLogs = StringBuffer('Start: ');
 }
 
 class _LogConsoleState extends State<LogConsole> {
@@ -466,17 +182,15 @@ class _LogConsoleState extends State<LogConsole> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _filterController = TextEditingController();
 
-  Level? _filterLevel = Level.CONFIG;
-  double _logFontSize = 14;
-
   var _currentId = 0;
   bool _scrollListenerEnabled = true;
   bool _followBottom = true;
 
+  bool get dark => Theme.of(context).brightness == Brightness.dark;
+
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(() {
       if (!_scrollListenerEnabled) return;
       var scrolledToBottom = _scrollController.offset >=
@@ -490,7 +204,6 @@ class _LogConsoleState extends State<LogConsole> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     _renderedBuffer.clear();
     for (var event in _outputEventBuffer) {
       _renderedBuffer.add(_renderEvent(event));
@@ -500,7 +213,7 @@ class _LogConsoleState extends State<LogConsole> {
 
   void _refreshFilter() {
     var newFilteredBuffer = _renderedBuffer.where((it) {
-      var logLevelMatches = it.level.value >= _filterLevel!.value;
+      var logLevelMatches = it.level.value >= Level.CONFIG.value;
       if (!logLevelMatches) {
         return false;
       } else if (_filterController.text.isNotEmpty) {
@@ -510,207 +223,52 @@ class _LogConsoleState extends State<LogConsole> {
         return true;
       }
     }).toList();
-    setState(() {
-      _filteredBuffer = newFilteredBuffer;
-    });
-
-    if (_followBottom) {
-      Future.delayed(Duration.zero, _scrollToBottom);
-    }
+    setState(() => _filteredBuffer = newFilteredBuffer);
+    if (_followBottom) Future.delayed(Duration.zero, _scrollToBottom);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            ///_buildTopBar(context),
-            const SizedBox(height: 8),
-            Expanded(
-              child: _buildLogContent(),
-            ),
-            const SizedBox(height: 8),
-            _buildBottomBar(),
-          ],
-        ),
-      ),
-      floatingActionButton: AnimatedOpacity(
-        opacity: _followBottom ? 0 : 1,
-        duration: const Duration(milliseconds: 150),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 60),
-          child: FloatingActionButton(
-            mini: true,
-            clipBehavior: Clip.antiAlias,
-            onPressed: _scrollToBottom,
-            child: Icon(
-              Icons.arrow_downward,
-              color: widget.dark ? Colors.white : Colors.lightBlue[900],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogContent() {
     logs.clear();
-    return Container(
-      color: widget.dark ? Colors.black : Colors.grey[150],
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: 1600,
-          child: ListView.builder(
-            shrinkWrap: true,
-            controller: _scrollController,
-            itemBuilder: (context, index) {
-              var logEntry = _filteredBuffer[index];
-              logs.write("${logEntry.lowerCaseText}\n");
-              return Text.rich(
-                logEntry.span,
-                key: Key(logEntry.id.toString()),
-                style: TextStyle(
-                    fontSize: _logFontSize,
-                    color: logEntry.level.toColor(widget.dark)),
-              );
-            },
-            itemCount: _filteredBuffer.length,
-          ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: 1600,
+        child: ListView.builder(
+          shrinkWrap: true,
+          controller: _scrollController,
+          itemCount: _filteredBuffer.length,
+          itemBuilder: (context, index) {
+            final logEntry = _filteredBuffer[index];
+            logs.write("${logEntry.lowerCaseText}\n");
+            return Text.rich(
+              logEntry.span,
+              key: Key(logEntry.id.toString()),
+              style: TextStyle(
+                fontSize: 14,
+                color: logEntry.level.toColor(dark),
+              ),
+            );
+          },
         ),
-      ),
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context) {
-    return LogBar(
-      dark: widget.dark,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          const Text(
-            "Log Console",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(
-              Icons.content_copy_rounded,
-              color: Colors.greenAccent,
-            ),
-            onPressed: () {
-              Clipboard.setData(
-                ClipboardData(
-                  text: logs.toString(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              setState(() {
-                _logFontSize++;
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.remove),
-            onPressed: () {
-              setState(() {
-                _logFontSize--;
-              });
-            },
-          ),
-          if (widget.showCloseButton)
-            IconButton(
-              icon: Icon(
-                Icons.cancel,
-                color: Colors.red[200],
-                size: 30,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                logs.clear();
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return LogBar(
-      dark: widget.dark,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Expanded(
-            child: TextField(
-              style: const TextStyle(fontSize: 20),
-              controller: _filterController,
-              onChanged: (s) => _refreshFilter(),
-              decoration: const InputDecoration(
-                labelText: "Filter log output",
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          DropdownButton(
-            value: _filterLevel,
-            items: const [
-              DropdownMenuItem(
-                value: Level.CONFIG,
-                child: Text("DEBUG"),
-              ),
-              DropdownMenuItem(
-                value: Level.INFO,
-                child: Text("INFO"),
-              ),
-              DropdownMenuItem(
-                value: Level.WARNING,
-                child: Text("WARNING"),
-              ),
-              DropdownMenuItem(
-                value: Level.SEVERE,
-                child: Text("ERROR"),
-              ),
-            ],
-            onChanged: (dynamic value) {
-              _filterLevel = value;
-              _refreshFilter();
-            },
-          )
-        ],
       ),
     );
   }
 
   void _scrollToBottom() async {
     _scrollListenerEnabled = false;
-
-    setState(() {
-      _followBottom = true;
-    });
-
-    var scrollPosition = _scrollController.position;
+    setState(() => _followBottom = true);
+    final scrollPosition = _scrollController.position;
     await _scrollController.animateTo(
       scrollPosition.maxScrollExtent,
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeOut,
     );
-
     _scrollListenerEnabled = true;
   }
 
   RenderedEvent _renderEvent(OutputEvent event) {
-    var parser = AnsiParser(widget.dark);
+    var parser = AnsiParser(dark);
     var text = event.lines.join('\n');
     parser.parse(text);
     return RenderedEvent(
@@ -718,38 +276,6 @@ class _LogConsoleState extends State<LogConsole> {
       event.level,
       TextSpan(children: parser.spans),
       text.toLowerCase(),
-    );
-  }
-}
-
-class LogBar extends StatelessWidget {
-  final bool? dark;
-  final Widget? child;
-
-  const LogBar({super.key, this.dark, this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60,
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            if (!dark!)
-              BoxShadow(
-                color: Colors.grey[400]!,
-                blurRadius: 3,
-              ),
-          ],
-        ),
-        child: Material(
-          color: dark! ? Colors.blueGrey[900] : Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
-            child: child,
-          ),
-        ),
-      ),
     );
   }
 }
