@@ -1,21 +1,33 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class AnsiParser {
-  static const _textCode = 0;
-  static const _bracketCode = 1;
-  static const _codeCode = 2;
+abstract interface class ParserWrapper {
+  List<TextSpan> get getSpans;
+  void parse(String s);
+}
 
+class AnsiParser implements ParserWrapper {
   AnsiParser({required this.context});
 
   final BuildContext context;
 
-  Color? foreground;
-  Color? background;
-  List<TextSpan>? spans;
+  static const _textCode = 0;
+  static const _bracketCode = 1;
+  static const _codeCode = 2;
 
+  late List<TextSpan> _spans;
+
+  Color? _foreground;
+  Color? _background;
+
+  @override
+  List<TextSpan> get getSpans {
+    return _spans;
+  }
+
+  @override
   void parse(String s) {
-    spans = [];
+    _spans = [];
     var state = _textCode;
     StringBuffer? buffer;
     final text = StringBuffer();
@@ -56,13 +68,13 @@ class AnsiParser {
             continue;
           } else {
             if (text.isNotEmpty) {
-              spans!.add(createSpan(text.toString()));
+              _spans.add(_createSpan(text.toString()));
               text.clear();
             }
             state = _textCode;
             if (c == 'm') {
               codes.add(code);
-              handleCodes(codes);
+              _handleCodes(codes);
             } else {
               text.write(buffer);
             }
@@ -70,31 +82,31 @@ class AnsiParser {
           break;
       }
     }
-    spans!.add(createSpan(text.toString()));
+    _spans.add(_createSpan(text.toString()));
   }
 
-  void handleCodes(List<int> codes) {
+  void _handleCodes(List<int> codes) {
     if (codes.isEmpty) codes.add(0);
     switch (codes[0]) {
       case 0:
-        foreground = getColor(0, true);
-        background = getColor(0, false);
+        _foreground = _getColor(0, true);
+        _background = _getColor(0, false);
         break;
       case 38:
-        foreground = getColor(codes[2], true);
+        _foreground = _getColor(codes[2], true);
         break;
       case 39:
-        foreground = getColor(0, true);
+        _foreground = _getColor(0, true);
         break;
       case 48:
-        background = getColor(codes[2], false);
+        _background = _getColor(codes[2], false);
         break;
       case 49:
-        background = getColor(0, false);
+        _background = _getColor(0, false);
     }
   }
 
-  Color? getColor(int colorCode, bool foreground) {
+  Color? _getColor(int colorCode, bool foreground) {
     switch (colorCode) {
       case 0:
         return foreground ? Colors.black : Colors.transparent;
@@ -114,12 +126,12 @@ class AnsiParser {
     return Theme.of(context).brightness == Brightness.dark;
   }
 
-  TextSpan createSpan(String text) {
+  TextSpan _createSpan(String text) {
     return TextSpan(
       text: text,
       style: TextStyle(
-        color: foreground,
-        backgroundColor: background,
+        color: _foreground,
+        backgroundColor: _background,
       ),
       recognizer: LongPressGestureRecognizer()
         ..onLongPress = () {

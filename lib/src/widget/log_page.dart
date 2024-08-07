@@ -44,7 +44,7 @@ class _LogPageState extends State<LogPage> {
     super.didChangeDependencies();
     _renderedBuffer.clear();
     for (var event in EventBuffer.outputEventBuffer) {
-      final AnsiParser parser = AnsiParser(context: context);
+      final ParserWrapper parser = AnsiParser(context: context);
       final String text = event.lines.join('\n');
       int currentId = 0;
       parser.parse(text);
@@ -52,7 +52,7 @@ class _LogPageState extends State<LogPage> {
         RenderedEvent(
           currentId++,
           event.level,
-          TextSpan(children: parser.spans),
+          TextSpan(children: parser.getSpans),
           text.toLowerCase(),
         ),
       );
