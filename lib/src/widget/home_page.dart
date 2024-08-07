@@ -31,31 +31,33 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scrollbar(
       controller: _scrollController,
-      child: ListView(
+      child: SingleChildScrollView(
         controller: _scrollController,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-            child: StateCard(
-              appName: widget.appName,
-              appVersion: widget.appVersion,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+              child: StateCard(
+                appName: widget.appName,
+                appVersion: widget.appVersion,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 6,
-              horizontal: 12,
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 6,
+                horizontal: 12,
+              ),
+              child: InfoCard(
+                appName: widget.appName,
+                appVersion: widget.appVersion,
+              ),
             ),
-            child: InfoCard(
-              appName: widget.appName,
-              appVersion: widget.appVersion,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(12, 6, 12, 12),
+              child: MoreCard(),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(12, 6, 12, 12),
-            child: MoreCard(),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

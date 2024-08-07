@@ -16,19 +16,19 @@ base mixin BaseEntry on EcosedInterface {
     List<EcosedRuntimePlugin> plugins,
     Runner runner,
   ) async {
-    try {
+    // try {
       return await _interface.runEcosedApp(
         app,
         plugins,
         runner,
       );
-    } on Exception {
-      return await super.runEcosedApp(
-        app,
-        plugins,
-        runner,
-      );
-    }
+    // } on Exception {
+    //   return await super.runEcosedApp(
+    //     app,
+    //     plugins,
+    //     runner,
+    //   );
+    // }
   }
 
   /// 执行插件方法

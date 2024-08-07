@@ -86,7 +86,10 @@ final class EcosedEngine extends EcosedEnginePlugin
       initialized = true;
     } else {
       // 打印提示
-      Log.d(engineTag, '请勿重复执行onCreateEngine!');
+      Log.d(
+        tag: engineTag,
+        message: '请勿重复执行onCreateEngine!',
+      );
     }
   }
 
@@ -94,9 +97,15 @@ final class EcosedEngine extends EcosedEnginePlugin
     // 加载插件
     try {
       await element.onEcosedAdded(_binding);
-      Log.d(engineTag, '插件${element.channel}已加载');
+      Log.d(
+        tag: engineTag,
+        message: '插件${element.channel}已加载',
+      );
     } catch (e) {
-      Log.d(engineTag, '插件${element.channel}添加失败!\n$e');
+      Log.e(
+        tag: engineTag,
+        message: '插件${element.channel}添加失败!\n$e',
+      );
     }
     // 将插件添加进列表
     _pluginList.add(element);
@@ -107,7 +116,10 @@ final class EcosedEngine extends EcosedEnginePlugin
       'author': element.author
     });
     // 打印提示
-    Log.d(engineTag, '插件${element.channel}已添加到插件列表');
+    Log.d(
+      tag: engineTag,
+      message: '插件${element.channel}已添加到插件列表',
+    );
   }
 
   @override
@@ -116,7 +128,10 @@ final class EcosedEngine extends EcosedEnginePlugin
       _pluginList.clear();
       _infoList.clear();
     } else {
-      Log.d(engineTag, '请勿重复执行onDestroyEngine!');
+      Log.d(
+        tag: engineTag,
+        message: '请勿重复执行onDestroyEngine!',
+      );
     }
   }
 
@@ -148,21 +163,21 @@ final class EcosedEngine extends EcosedEnginePlugin
             arguments,
           );
           Log.d(
-            engineTag,
-            '插件代码调用成功!\n'
-            '通道名称:$channel.\n'
-            '方法名称:$method.\n'
-            '返回结果:$result.',
+            tag: engineTag,
+            message: '插件代码调用成功!\n'
+                '通道名称:$channel.\n'
+                '方法名称:$method.\n'
+                '返回结果:$result.',
           );
         }
       }
     } catch (exception) {
       Log.d(
-        engineTag,
-        '插件代码调用失败!\n$exception'
-        '通道名称:$channel.\n'
-        '方法名称:$method.\n'
-        '返回结果:$result.',
+        tag: engineTag,
+        message: '插件代码调用失败!\n$exception'
+            '通道名称:$channel.\n'
+            '方法名称:$method.\n'
+            '返回结果:$result.',
       );
     }
     return await result;

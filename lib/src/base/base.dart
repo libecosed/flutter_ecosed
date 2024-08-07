@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +20,6 @@ import '../values/drawable.dart';
 import '../server/server.dart';
 import '../viewmodel/manager_view_model.dart';
 import '../widget/banner.dart';
-import '../widget/log_page.dart';
 import 'base_mixin.dart';
 import 'base_wrapper.dart';
 
@@ -88,26 +85,9 @@ base class EcosedBase extends ContextWrapper
     Runner runner,
   ) async {
     // 初始化日志
-    Flogger.init();
-    if (kDebugMode) {
-      Flogger.registerListener(
-        (record) => log(
-          record.printable(),
-          stackTrace: record.stackTrace,
-        ),
-      );
-    }
-    Flogger.registerListener(
-      (record) => LogConsole.add(
-        OutputEvent(
-          record.level,
-          [record.printable()],
-        ),
-        bufferSize: 1000,
-      ),
-    );
+    Log.init();
     // 打印横幅
-    Log.d(baseTag, '\n${utf8.decode(base64Decode(banner))}');
+    Log.d(tag: baseTag, message: '\n${utf8.decode(base64Decode(banner))}');
     // 初始化控件绑定
     WidgetsFlutterBinding.ensureInitialized();
     // 初始化内核桥接

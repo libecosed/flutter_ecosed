@@ -1,7 +1,13 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
+import '../event/output_event.dart';
 import '../type/logger_listener.dart';
+import '../widget/log_page.dart';
 
 /// Contains all the information about the [LogRecord]
 /// and can be printed with [printable] based on [FloggerConfig]
@@ -147,56 +153,99 @@ class FloggerRecord {
   }
 }
 
-abstract class Flogger {
+class FullLogs {
+  StringBuffer fullLogs = StringBuffer('Start: ');
+}
+
+extension LevelExtension on Level {
+  Color toColor(bool dark) {
+    if (this == Level.CONFIG) {
+      return dark ? Colors.white38 : Colors.black38;
+    } else if (this == Level.INFO) {
+      return dark ? Colors.white : Colors.black;
+    } else if (this == Level.WARNING) {
+      return Colors.orange;
+    } else if (this == Level.SEVERE) {
+      return Colors.red;
+    } else if (this == Level.SHOUT) {
+      return Colors.pinkAccent;
+    } else {
+      return dark ? Colors.white : Colors.black;
+    }
+  }
+}
+
+final class Log {
   static void init() {
     Logger.root.level = Level.ALL;
+    if (kDebugMode) {
+      Log.registerListener(
+        (record) => log(
+          record.printable(),
+          stackTrace: record.stackTrace,
+        ),
+      );
+    }
+    Log.registerListener(
+      (record) => LogPage.add(
+        outputEvent: OutputEvent(
+          record.level,
+          [record.printable()],
+        ),
+        bufferSize: 1000,
+      ),
+    );
   }
 
-  /// Log a DEBUG message with CONFIG [Level]
-  static d({
+  /// Debug级别
+  static void d({
+    required String tag,
     required String message,
-    required String loggerName,
-  }) =>
-      _printLog(
-        message: message,
-        loggerName: loggerName,
-        severity: Level.CONFIG,
-      );
+  }) {
+    _printLog(
+      message: message,
+      loggerName: tag,
+      severity: Level.CONFIG,
+    );
+  }
 
-  /// Log an INFO message with INFO [Level]
-  static i({
+  /// Info级别
+  static void i({
     required String message,
-    required String loggerName,
-  }) =>
-      _printLog(
-        message: message,
-        loggerName: loggerName,
-        severity: Level.INFO,
-      );
+    required String tag,
+  }) {
+    _printLog(
+      message: message,
+      loggerName: tag,
+      severity: Level.INFO,
+    );
+  }
 
-  /// Log a WARNING message with WARNING [Level]
-  static w({
+  /// Warning级别
+  static void w({
     required String message,
-    required String loggerName,
-  }) =>
-      _printLog(
-        message: message,
-        loggerName: loggerName,
-        severity: Level.WARNING,
-      );
+    required String tag,
+  }) {
+    _printLog(
+      message: message,
+      loggerName: tag,
+      severity: Level.WARNING,
+    );
+  }
 
-  /// Log an ERROR message with SEVERE [Level]
-  static e({
+  /// Error级别
+  static void e({
     required String message,
-    required String loggerName,
+    required String tag,
     StackTrace? stackTrace,
-  }) =>
-      _printLog(
-        message: message,
-        loggerName: loggerName,
-        severity: Level.SEVERE,
-        stackTrace: stackTrace,
-      );
+  }) {
+    _printLog(
+      message: message,
+      loggerName: tag,
+      severity: Level.SEVERE,
+      stackTrace: stackTrace,
+    );
+  }
 
   static void _printLog({
     required String message,
@@ -204,68 +253,25 @@ abstract class Flogger {
     required Level severity,
     StackTrace? stackTrace,
   }) {
-    // Additional loggers
-    Logger(loggerName).log(severity, message, null, stackTrace, null);
+    Logger(loggerName).log(
+      severity,
+      message,
+      null,
+      stackTrace,
+      null,
+    );
   }
 
   /// Register a listener to listen to all logs
   /// Logs are emitted as [FloggerRecord]
-  static registerListener(LoggerListener onRecord) {
+  static void registerListener(LoggerListener onRecord) {
     Logger.root.onRecord
         .map((e) => FloggerRecord.fromLogger(e))
         .listen(onRecord);
   }
 
   /// Clear all log listeners
-  static clearListeners() {
+  static void clearListeners() {
     Logger.root.clearListeners();
-  }
-}
-
-class Log extends Flogger {
-  /// Info级别
-  static void i(
-    String tag,
-    String message,
-  ) {
-    Flogger.i(
-      message: message,
-      loggerName: tag,
-    );
-  }
-
-  /// Debug级别
-  static void d(
-    String tag,
-    String message,
-  ) {
-    Flogger.d(
-      message: message,
-      loggerName: tag,
-    );
-  }
-
-  /// Error级别
-  static void e(
-    String tag,
-    String message,
-    dynamic exceptino,
-  ) {
-    Flogger.e(
-      message: message,
-      stackTrace: exceptino,
-      loggerName: tag,
-    );
-  }
-
-  /// Warring级别
-  static void w(
-    String tag,
-    String message,
-  ) {
-    Flogger.w(
-      message: message,
-      loggerName: tag,
-    );
   }
 }

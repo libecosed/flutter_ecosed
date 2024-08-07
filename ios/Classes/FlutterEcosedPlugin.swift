@@ -10,7 +10,7 @@ public class FlutterEcosedPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "getPlugins":
-            result([""])
+            result(nil)
         case "openDialog":
             result(true)
         case "closeDialog":

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../viewmodel/manager_view_model.dart';
 
 class StateCard extends StatelessWidget {
   const StateCard({
@@ -44,19 +41,6 @@ class StateCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
-                ),
-              ),
-            ),
-            Tooltip(
-              message: '调试菜单',
-              child: Consumer<ManagerViewModel>(
-                builder: (context, viewModel, child) => IconButton(
-                  onPressed: viewModel.openDebugMenu,
-                  icon: Icon(
-                    Icons.developer_mode,
-                    size: Theme.of(context).iconTheme.size,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
                 ),
               ),
             ),

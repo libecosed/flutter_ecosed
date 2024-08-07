@@ -68,6 +68,9 @@ class _EcosedManagerState extends State<EcosedManager> {
           enabled: true,
         ),
       ],
+      smallBreakpoint: const WidthPlatformBreakpoint(end: 600),
+      mediumBreakpoint: const WidthPlatformBreakpoint(begin: 600, end: 840),
+      largeBreakpoint: const WidthPlatformBreakpoint(begin: 840),
       selectedIndex: _currentIndex,
       body: (context) => PageTransitionSwitcher(
         duration: const Duration(
@@ -86,7 +89,7 @@ class _EcosedManagerState extends State<EcosedManager> {
             appName: widget.appName,
             appVersion: widget.appVersion,
           ),
-          const LogConsole(),
+          const LogPage(),
           PluginPage(
             appName: widget.appName,
             appVersion: widget.appVersion,
