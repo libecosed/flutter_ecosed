@@ -1,13 +1,13 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_ecosed/src/widget/settings_page.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodel/manager_view_model.dart';
 import 'home_page.dart';
 import 'log_page.dart';
 import 'plugin_page.dart';
+import 'settings_page.dart';
 
 class EcosedManager extends StatefulWidget {
   const EcosedManager({super.key});
