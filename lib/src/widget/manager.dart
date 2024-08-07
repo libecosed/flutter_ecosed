@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_ecosed/src/widget/settings_page.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodel/manager_view_model.dart';
@@ -81,7 +82,7 @@ class _EcosedManagerState extends State<EcosedManager> {
           const HomePage(),
           const LogPage(),
           const PluginPage(),
-          const Placeholder(),
+          const SettingsPage(),
         ][_currentIndex],
       ),
       transitionDuration: const Duration(
