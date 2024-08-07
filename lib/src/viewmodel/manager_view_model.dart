@@ -65,7 +65,9 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
 
   /// 获取插件列表
   @override
-  List<PluginDetails> get getPluginDetailsList => pluginDetailsList;
+  List<PluginDetails> get getPluginDetailsList {
+    return pluginDetailsList;
+  }
 
   /// 获取插件图标
   @override

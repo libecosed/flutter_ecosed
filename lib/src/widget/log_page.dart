@@ -7,7 +7,8 @@ import '../event/event_buffer.dart';
 import '../event/output_event.dart';
 import '../event/rendered_event.dart';
 import '../framework/ansi_parser.dart';
-import '../framework/log.dart';
+import '../framework/log_full.dart';
+import '../framework/log_level.dart';
 
 class LogPage extends StatefulWidget {
   const LogPage({
@@ -25,10 +26,10 @@ class LogPage extends StatefulWidget {
   }
 
   @override
-  State<LogPage> createState() => _LogConsoleState();
+  State<LogPage> createState() => _LogPageState();
 }
 
-class _LogConsoleState extends State<LogPage> {
+class _LogPageState extends State<LogPage> {
   final ListQueue<RenderedEvent> _renderedBuffer = ListQueue();
   final StringBuffer _logs = FullLogs().fullLogs;
   final ScrollController _scrollController = ScrollController();
@@ -123,8 +124,8 @@ class _LogConsoleState extends State<LogPage> {
   }
 
   RenderedEvent _renderEvent(OutputEvent event) {
-    var parser = AnsiParser(_dark(context));
-    var text = event.lines.join('\n');
+    final AnsiParser parser = AnsiParser(_dark(context));
+    final String text = event.lines.join('\n');
     parser.parse(text);
     return RenderedEvent(
       _currentId++,
