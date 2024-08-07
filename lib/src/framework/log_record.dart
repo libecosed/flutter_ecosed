@@ -115,8 +115,9 @@ class LoggerRecord {
         (element) => element.library == loggingLibrary,
       );
       return currentFrames[lastLoggerIndex + 1];
-    } catch (e) {}
-    return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   static MapEntry<String?, String?> _getClassAndMethodNames(Frame frame) {
@@ -134,7 +135,9 @@ class LoggerRecord {
       } else {
         methodName = member;
       }
-    } catch (e) {}
+    } catch (e) {
+      return MapEntry(className, methodName);
+    }
     return MapEntry(className, methodName);
   }
 }
