@@ -15,16 +15,6 @@ class LogPage extends StatefulWidget {
     super.key,
   });
 
-  static void add({
-    required OutputEvent outputEvent,
-    required int bufferSize,
-  }) {
-    while (EventBuffer.outputEventBuffer.length >= bufferSize) {
-      EventBuffer.outputEventBuffer.removeFirst();
-    }
-    EventBuffer.outputEventBuffer.add(outputEvent);
-  }
-
   @override
   State<LogPage> createState() => _LogPageState();
 }

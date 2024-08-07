@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
+import '../event/event_buffer.dart';
 import '../event/output_event.dart';
 import '../type/logger_listener.dart';
-import '../widget/log_page.dart';
 import 'log_record.dart';
 
 final class Log {
@@ -21,13 +21,17 @@ final class Log {
       );
     }
     Log.registerListener(
-      (record) => LogPage.add(
-        outputEvent: OutputEvent(
-          record.level,
-          [record.printable()],
-        ),
-        bufferSize: 1000,
-      ),
+      (record) {
+        while (EventBuffer.outputEventBuffer.length >= 1000) {
+          EventBuffer.outputEventBuffer.removeFirst();
+        }
+        EventBuffer.outputEventBuffer.add(
+          OutputEvent(
+            record.level,
+            [record.printable()],
+          ),
+        );
+      },
     );
   }
 
