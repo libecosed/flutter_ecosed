@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
 extension LevelExtension on Level {
-  Color toColor(bool dark) {
+  Color toColor(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     if (this == Level.CONFIG) {
       return dark ? Colors.white38 : Colors.black38;
     } else if (this == Level.INFO) {

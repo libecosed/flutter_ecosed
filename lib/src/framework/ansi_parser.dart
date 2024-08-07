@@ -2,13 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class AnsiParser {
-  static const TEXT = 0;
-  static const BRACKET = 1;
-  static const CODE = 2;
+  static const _textCode = 0;
+  static const _bracketCode = 1;
+  static const _codeCode = 2;
 
-  final bool dark;
+  AnsiParser({required this.context});
 
-  AnsiParser(this.dark);
+  final BuildContext context;
 
   Color? foreground;
   Color? background;
@@ -16,7 +16,7 @@ class AnsiParser {
 
   void parse(String s) {
     spans = [];
-    var state = TEXT;
+    var state = _textCode;
     StringBuffer? buffer;
     final text = StringBuffer();
     var code = 0;
@@ -25,9 +25,9 @@ class AnsiParser {
     for (var i = 0, n = s.length; i < n; i++) {
       var c = s[i];
       switch (state) {
-        case TEXT:
+        case _textCode:
           if (c == '\u001b') {
-            state = BRACKET;
+            state = _bracketCode;
             buffer = StringBuffer(c);
             code = 0;
             codes = [];
@@ -35,16 +35,16 @@ class AnsiParser {
             text.write(c);
           }
           break;
-        case BRACKET:
+        case _bracketCode:
           buffer!.write(c);
           if (c == '[') {
-            state = CODE;
+            state = _codeCode;
           } else {
-            state = TEXT;
+            state = _textCode;
             text.write(buffer);
           }
           break;
-        case CODE:
+        case _codeCode:
           buffer!.write(c);
           var codeUnit = c.codeUnitAt(0);
           if (codeUnit >= 48 && codeUnit <= 57) {
@@ -59,7 +59,7 @@ class AnsiParser {
               spans!.add(createSpan(text.toString()));
               text.clear();
             }
-            state = TEXT;
+            state = _textCode;
             if (c == 'm') {
               codes.add(code);
               handleCodes(codes);
@@ -99,15 +99,19 @@ class AnsiParser {
       case 0:
         return foreground ? Colors.black : Colors.transparent;
       case 12:
-        return dark ? Colors.lightBlue[300] : Colors.indigo[700];
+        return _dark ? Colors.lightBlue[300] : Colors.indigo[700];
       case 208:
-        return dark ? Colors.orange[300] : Colors.orange[700];
+        return _dark ? Colors.orange[300] : Colors.orange[700];
       case 196:
-        return dark ? Colors.red[300] : Colors.red[700];
+        return _dark ? Colors.red[300] : Colors.red[700];
       case 199:
-        return dark ? Colors.pink[300] : Colors.pink[700];
+        return _dark ? Colors.pink[300] : Colors.pink[700];
     }
     return foreground ? Colors.black : Colors.transparent;
+  }
+
+  bool get _dark {
+    return Theme.of(context).brightness == Brightness.dark;
   }
 
   TextSpan createSpan(String text) {

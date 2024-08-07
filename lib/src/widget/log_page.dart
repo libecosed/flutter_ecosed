@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
 import '../event/event_buffer.dart';
-import '../event/output_event.dart';
 import '../event/rendered_event.dart';
 import '../framework/ansi_parser.dart';
-import '../framework/log_full.dart';
 import '../framework/log_level.dart';
 
 class LogPage extends StatefulWidget {
@@ -21,11 +19,10 @@ class LogPage extends StatefulWidget {
 
 class _LogPageState extends State<LogPage> {
   final ListQueue<RenderedEvent> _renderedBuffer = ListQueue();
-  final StringBuffer _logs = FullLogs().fullLogs;
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _filterController = TextEditingController();
+  final StringBuffer _logs = StringBuffer('Start: ');
+
   List<RenderedEvent> _filteredBuffer = [];
-  int _currentId = 0;
   bool _scrollListenerEnabled = true;
   bool _followBottom = true;
 
@@ -43,89 +40,79 @@ class _LogPageState extends State<LogPage> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     _renderedBuffer.clear();
     for (var event in EventBuffer.outputEventBuffer) {
+      final AnsiParser parser = AnsiParser(context: context);
+      final String text = event.lines.join('\n');
+      int currentId = 0;
+      parser.parse(text);
       _renderedBuffer.add(
-        _renderEvent(event),
+        RenderedEvent(
+          currentId++,
+          event.level,
+          TextSpan(children: parser.spans),
+          text.toLowerCase(),
+        ),
       );
     }
-    var newFilteredBuffer = _renderedBuffer.where(
-      (it) {
-        if (!(it.level.value >= Level.CONFIG.value)) {
-          return false;
-        } else if (_filterController.text.isNotEmpty) {
-          return it.lowerCaseText.contains(
-            _filterController.text.toLowerCase(),
-          );
-        } else {
-          return true;
-        }
-      },
-    ).toList();
-    setState(() => _filteredBuffer = newFilteredBuffer);
+    setState(
+      () => _filteredBuffer = _renderedBuffer.where(
+        (it) {
+          if (it.level.value < Level.CONFIG.value) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+      ).toList(),
+    );
     if (_followBottom) {
       Future.delayed(
         Duration.zero,
-        _scrollToBottom,
+        () async {
+          _scrollListenerEnabled = false;
+          setState(() => _followBottom = true);
+          await _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOut,
+          );
+          _scrollListenerEnabled = true;
+        },
       );
     }
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _logs.clear();
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SizedBox(
-        width: 1600,
-        child: ListView.builder(
-          shrinkWrap: true,
-          controller: _scrollController,
-          itemCount: _filteredBuffer.length,
-          itemBuilder: (context, index) {
-            final logEntry = _filteredBuffer[index];
-            _logs.write("${logEntry.lowerCaseText}\n");
-            return Text.rich(
-              logEntry.span,
-              key: Key(logEntry.id.toString()),
-              style: TextStyle(
-                fontSize: 14,
-                color: logEntry.level.toColor(_dark(context)),
-              ),
-            );
-          },
-        ),
+    return Scrollbar(
+      controller: _scrollController,
+      child: ListView.builder(
+        shrinkWrap: true,
+        controller: _scrollController,
+        itemCount: _filteredBuffer.length,
+        itemBuilder: (context, index) {
+          final logEntry = _filteredBuffer[index];
+          _logs.write("${logEntry.lowerCaseText}\n");
+          return Text.rich(
+            logEntry.span,
+            key: Key(logEntry.id.toString()),
+            style: TextStyle(
+              fontSize: 14,
+              color: logEntry.level.toColor(context),
+            ),
+          );
+        },
       ),
     );
-  }
-
-  void _scrollToBottom() async {
-    _scrollListenerEnabled = false;
-    setState(() => _followBottom = true);
-    final scrollPosition = _scrollController.position;
-    await _scrollController.animateTo(
-      scrollPosition.maxScrollExtent,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOut,
-    );
-    _scrollListenerEnabled = true;
-  }
-
-  RenderedEvent _renderEvent(OutputEvent event) {
-    final AnsiParser parser = AnsiParser(_dark(context));
-    final String text = event.lines.join('\n');
-    parser.parse(text);
-    return RenderedEvent(
-      _currentId++,
-      event.level,
-      TextSpan(children: parser.spans),
-      text.toLowerCase(),
-    );
-  }
-
-  bool _dark(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark;
   }
 }
