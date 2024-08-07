@@ -28,9 +28,8 @@ abstract interface class ViewModelWrapper {
   String getPluginTooltip(PluginDetails details);
 
   /// 打开卡片
-  VoidCallback? openPlugin(
-    PluginDetails details,
-    String appName,
-    String appVersion,
-  );
+  VoidCallback? openPlugin(PluginDetails details);
+
+  String get getAppName;
+  String get getAppVersion;
 }

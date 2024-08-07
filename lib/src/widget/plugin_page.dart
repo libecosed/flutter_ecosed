@@ -5,14 +5,7 @@ import '../viewmodel/manager_view_model.dart';
 import 'plugin_card.dart';
 
 class PluginPage extends StatefulWidget {
-  const PluginPage({
-    super.key,
-    required this.appName,
-    required this.appVersion,
-  });
-
-  final String appName;
-  final String appVersion;
+  const PluginPage({super.key});
 
   @override
   State<PluginPage> createState() => _PluginPageState();
@@ -45,8 +38,6 @@ class _PluginPageState extends State<PluginPage> {
                         child: Builder(
                           builder: (context) => PluginCard(
                             details: element,
-                            appName: widget.appName,
-                            appVersion: widget.appVersion,
                           ),
                         ),
                       ),

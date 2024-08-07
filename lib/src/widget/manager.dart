@@ -9,14 +9,7 @@ import 'log_page.dart';
 import 'plugin_page.dart';
 
 class EcosedManager extends StatefulWidget {
-  const EcosedManager({
-    super.key,
-    required this.appName,
-    required this.appVersion,
-  });
-
-  final String appName;
-  final String appVersion;
+  const EcosedManager({super.key});
 
   @override
   State<EcosedManager> createState() => _EcosedManagerState();
@@ -85,15 +78,9 @@ class _EcosedManagerState extends State<EcosedManager> {
           );
         },
         child: [
-          HomePage(
-            appName: widget.appName,
-            appVersion: widget.appVersion,
-          ),
+          const HomePage(),
           const LogPage(),
-          PluginPage(
-            appName: widget.appName,
-            appVersion: widget.appVersion,
-          ),
+          const PluginPage(),
           const Placeholder(),
         ][_currentIndex],
       ),

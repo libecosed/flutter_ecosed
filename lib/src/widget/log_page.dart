@@ -9,9 +9,7 @@ import '../framework/ansi_parser.dart';
 import '../framework/log_level.dart';
 
 class LogPage extends StatefulWidget {
-  const LogPage({
-    super.key,
-  });
+  const LogPage({super.key});
 
   @override
   State<LogPage> createState() => _LogPageState();
@@ -97,7 +95,6 @@ class _LogPageState extends State<LogPage> {
     return Scrollbar(
       controller: _scrollController,
       child: ListView.builder(
-        shrinkWrap: true,
         controller: _scrollController,
         itemCount: _filteredBuffer.length,
         itemBuilder: (context, index) {

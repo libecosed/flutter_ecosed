@@ -19,6 +19,8 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
     required this.getPluginWidget,
     required this.isRuntime,
     required this.launchDialog,
+    required this.appName,
+    required this.appVersion,
   });
 
   /// 上下文
@@ -38,6 +40,9 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
 
   /// 打开对话框
   final DialogLauncher launchDialog;
+
+  final String appName;
+  final String appVersion;
 
   /// 打开对话框
   @override
@@ -212,11 +217,7 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
 
   /// 打开卡片
   @override
-  VoidCallback? openPlugin(
-    PluginDetails details,
-    String appName,
-    String appVersion,
-  ) {
+  VoidCallback? openPlugin(PluginDetails details) {
     // 无法打开的返回空
     return _isAllowPush(details)
         ? () {
@@ -235,6 +236,16 @@ final class ManagerViewModel with ChangeNotifier implements ViewModelWrapper {
             }
           }
         : null;
+  }
+
+  @override
+  String get getAppName {
+    return appName;
+  }
+
+  @override
+  String get getAppVersion {
+    return appVersion;
   }
 
   /// 插件是否可以打开

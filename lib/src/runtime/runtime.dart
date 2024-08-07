@@ -79,7 +79,10 @@ final class EcosedRuntime extends EcosedBase {
   Widget buildManager(BuildContext context) {
     for (var element in _pluginDetailsList) {
       if (_isRuntime(element)) {
-        return _getPluginWidget(context, element);
+        return _getPluginWidget(
+          context,
+          element,
+        );
       }
     }
     return super.buildManager(context);
@@ -94,16 +97,15 @@ final class EcosedRuntime extends EcosedBase {
       getPluginWidget: _getPluginWidget,
       isRuntime: _isRuntime,
       launchDialog: super.launchDialog,
+      appName: _appName,
+      appVersion: _appVersion,
     );
   }
 
   /// 管理器布局
   @override
   Widget buildLayout(BuildContext context) {
-    return EcosedManager(
-      appName: _appName,
-      appVersion: _appVersion,
-    );
+    return const EcosedManager();
   }
 
   /// 构建调试菜单

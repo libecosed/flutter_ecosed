@@ -8,13 +8,9 @@ class PluginCard extends StatelessWidget {
   const PluginCard({
     super.key,
     required this.details,
-    required this.appName,
-    required this.appVersion,
   });
 
   final PluginDetails details;
-  final String appName;
-  final String appVersion;
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +98,7 @@ class PluginCard extends StatelessWidget {
                   Tooltip(
                     message: viewModel.getPluginTooltip(details),
                     child: TextButton(
-                      onPressed: viewModel.openPlugin(
-                        details,
-                        appName,
-                        appVersion,
-                      ),
+                      onPressed: viewModel.openPlugin(details),
                       child: Text(
                         viewModel.getPluginAction(details),
                       ),

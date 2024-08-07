@@ -7,12 +7,7 @@ import 'info_item.dart';
 class InfoCard extends StatelessWidget {
   const InfoCard({
     super.key,
-    required this.appName,
-    required this.appVersion,
   });
-
-  final String appName;
-  final String appVersion;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +24,12 @@ class InfoCard extends StatelessWidget {
                   children: [
                     InfoItem(
                       title: '应用名称',
-                      subtitle: appName,
+                      subtitle: viewModel.getAppName,
                     ),
                     const SizedBox(height: 16),
                     InfoItem(
                       title: '应用版本',
-                      subtitle: appVersion,
+                      subtitle: viewModel.getAppVersion,
                     ),
                     const SizedBox(height: 16),
                     InfoItem(

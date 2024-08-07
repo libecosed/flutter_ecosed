@@ -5,14 +5,7 @@ import 'more_card.dart';
 import 'state_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    super.key,
-    required this.appName,
-    required this.appVersion,
-  });
-
-  final String appName;
-  final String appVersion;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -33,26 +26,20 @@ class _HomePageState extends State<HomePage> {
       controller: _scrollController,
       child: SingleChildScrollView(
         controller: _scrollController,
-        child: Column(
+        child: const Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-              child: StateCard(
-                appName: widget.appName,
-                appVersion: widget.appVersion,
-              ),
+              padding: EdgeInsets.fromLTRB(12, 12, 12, 6),
+              child: StateCard(),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 vertical: 6,
                 horizontal: 12,
               ),
-              child: InfoCard(
-                appName: widget.appName,
-                appVersion: widget.appVersion,
-              ),
+              child: InfoCard(),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(12, 6, 12, 12),
               child: MoreCard(),
             ),
