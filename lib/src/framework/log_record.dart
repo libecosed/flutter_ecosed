@@ -106,17 +106,14 @@ class LoggerRecord {
 
   static Frame? _getLogFrame() {
     try {
-      // Capture the frame where the log originated from the current trace
       const loggingLibrary = "package:logging/src/logger.dart";
-      const loggingFlutterLibrary =
-          "package:flutter_ecosed/src/framework/log.dart";
+      const ecosedLibrary = "package:flutter_ecosed/flutter_ecosed.dart";
       final currentFrames = Trace.current().frames.toList();
-      // Remove all frames from the logging_flutter library
-      currentFrames
-          .removeWhere((element) => element.library == loggingFlutterLibrary);
+      currentFrames.removeWhere((element) => element.library == ecosedLibrary);
       // Capture the last frame from the logging library
-      final lastLoggerIndex = currentFrames
-          .lastIndexWhere((element) => element.library == loggingLibrary);
+      final lastLoggerIndex = currentFrames.lastIndexWhere(
+        (element) => element.library == loggingLibrary,
+      );
       return currentFrames[lastLoggerIndex + 1];
     } catch (e) {}
     return null;
@@ -126,15 +123,12 @@ class LoggerRecord {
     String? className;
     String? methodName;
     try {
-      // This variable can be ClassName.MethodName or only a function name, when it doesn't belong to a class, e.g. main()
       final member = frame.member!;
-      // If there is a . in the member name, it means the method belongs to a class. Thus we can split it.
       if (member.contains(".")) {
         className = member.split(".")[0];
       } else {
         className = "";
       }
-      // If there is a . in the member name, it means the method belongs to a class. Thus we can split it.
       if (member.contains(".")) {
         methodName = member.split(".")[1];
       } else {
