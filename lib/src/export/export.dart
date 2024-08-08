@@ -115,17 +115,8 @@ Future<dynamic> execPluginMethod(
     );
 
 /// 打开调试菜单
-///˝
+///
 /// ```dart
 /// await openDebugMenu();
 /// ```
 Future<void> openDebugMenu() async => EcosedInterface.instance.openDebugMenu();
-
-// /// 获取管理器控件
-// ///
-// /// ```dart
-// /// getManagerWidget();
-// /// ```
-// Widget getManagerWidget() {
-//   return EcosedInterface.instance.getManagerWidget();
-// }
