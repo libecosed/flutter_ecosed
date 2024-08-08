@@ -7,7 +7,7 @@ issue_tracker: https://github.com/libecosed/flutter_ecosed/issues
 documentation: https://github.com/libecosed/flutter_ecosed/blob/master/README.md
 
 environment:
-  sdk: ">=3.4.4 <4.0.0"
+  sdk: ^3.5.0
   flutter: ">=3.3.0"
 
 dependencies:
