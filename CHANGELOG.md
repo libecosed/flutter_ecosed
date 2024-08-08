@@ -1,3 +1,5 @@
+## 0.2.0-dev.6
+* Downgrade Dart version
 ## 0.2.0-dev.5
 * Fix some bugs.
 ## 0.2.0-dev.4
