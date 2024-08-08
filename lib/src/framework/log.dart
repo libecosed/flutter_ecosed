@@ -41,61 +41,64 @@ final class Log {
     required String message,
   }) {
     _printLog(
+      tag: tag,
+      level: Level.CONFIG,
       message: message,
-      loggerName: tag,
-      severity: Level.CONFIG,
     );
   }
 
   /// Info级别
   static void i({
-    required String message,
     required String tag,
+    required String message,
   }) {
     _printLog(
+      tag: tag,
+      level: Level.INFO,
       message: message,
-      loggerName: tag,
-      severity: Level.INFO,
     );
   }
 
   /// Warning级别
   static void w({
-    required String message,
     required String tag,
+    required String message,
   }) {
     _printLog(
+      tag: tag,
+      level: Level.WARNING,
       message: message,
-      loggerName: tag,
-      severity: Level.WARNING,
     );
   }
 
   /// Error级别
   static void e({
-    required String message,
     required String tag,
+    required String message,
+    dynamic error,
     StackTrace? stackTrace,
   }) {
     _printLog(
+      tag: tag,
+      level: Level.SEVERE,
       message: message,
-      loggerName: tag,
-      severity: Level.SEVERE,
+      error: error,
       stackTrace: stackTrace,
     );
   }
 
   /// 打印日志
   static void _printLog({
+    required String tag,
+    required Level level,
     required String message,
-    required String loggerName,
-    required Level severity,
+    dynamic error,
     StackTrace? stackTrace,
   }) {
-    Logger(loggerName).log(
-      severity,
+    return Logger(tag).log(
+      level,
       message,
-      null,
+      error,
       stackTrace,
       null,
     );

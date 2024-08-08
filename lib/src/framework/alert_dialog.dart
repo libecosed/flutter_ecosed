@@ -12,7 +12,7 @@ final class EAlertDialogBuilder {
   void setTitle(String title) {
     _title = title;
   }
-  
+
   void setItem(Widget item) {}
 
   EAlertDialog create() {
