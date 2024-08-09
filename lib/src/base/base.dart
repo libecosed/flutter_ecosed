@@ -112,6 +112,7 @@ base class EcosedBase extends ContextWrapper
         builder: (context) => Theme(
           data: ThemeData(
             brightness: MediaQuery.platformBrightnessOf(context),
+            useMaterial3: true,
           ),
           child: Material(
             child: Directionality(
@@ -251,38 +252,3 @@ base class EcosedBase extends ContextWrapper
     return await null;
   }
 }
-
-// void initAaa() {
-//   Flogger.init(
-//     config: const FloggerConfig(
-//       printClassName: true,
-//       printMethodName: true,
-//       showDateTime: true,
-//       showDebugLogs: true,
-//     ),
-//   );
-//   if (kDebugMode) {
-//     Flogger.registerListener(
-//       (record) => log(record.printable(), stackTrace: record.stackTrace),
-//     );
-//   }
-//   Flogger.registerListener(
-//     (record) => LogConsole.add(
-//       OutputEvent(record.level, [record.printable()]),
-//       bufferSize: 1000,
-//     ),
-//   );
-//   // // You can also use "registerListener" to log to Crashlytics or any other services
-//   // if (kReleaseMode) {
-//   //   Flogger.registerListener((record) {
-//   //     // Filter logs that may contain sensitive data
-//   //     if (record.loggerName != "App") return;
-//   //     if (record.message.contains("apiKey")) return;
-//   //     if (record.message.contains("password")) return;
-//   //     // Send logs to logging services
-//   //     // FirebaseCrashlytics.instance.log(record.message);
-//   //     // DatadogSdk.instance.logs?.info(record.message);
-//   //   });
-//   // }
-//   // //SampleClass.printSomeLogs();
-// }
