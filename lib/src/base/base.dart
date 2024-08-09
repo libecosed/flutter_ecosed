@@ -188,7 +188,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   @override
-  Future<void> init(List<EcosedRuntimePlugin> plugins) {
+  Future<void> init(List<EcosedRuntimePlugin> plugins) async {
     throw UnimplementedError('');
   }
 
