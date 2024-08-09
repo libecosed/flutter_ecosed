@@ -25,7 +25,6 @@ if (flutterVersionName == null) {
 android {
     namespace = "io.libecosed.flutter_ecosed_example"
     compileSdk = 34
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
