@@ -175,7 +175,7 @@ base class EcosedBase extends ContextWrapper
   /// 打开调试菜单
   @override
   Future<void> openDebugMenu() async {
-    await buildDialog(getBuildContext(), false);
+    await buildDialog(super.getBuildContext(), false);
   }
 
   /// 方法调用
@@ -220,7 +220,7 @@ base class EcosedBase extends ContextWrapper
 
   @override
   Future<SimpleDialog?> launchDialog() async {
-    return await buildDialog(getBuildContext(), true);
+    return await buildDialog(super.getBuildContext(), true);
   }
 
   /// 打开管理器
@@ -228,7 +228,7 @@ base class EcosedBase extends ContextWrapper
   @override
   Future<dynamic> launchManager() async {
     return await Navigator.of(
-      getBuildContext(),
+      super.getBuildContext(),
       rootNavigator: true,
     ).pushNamed(routeManager);
   }
