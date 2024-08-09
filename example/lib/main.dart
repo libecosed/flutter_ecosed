@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
+            FilledButton(
               onPressed: () => openDebugMenu(),
               child: const Text('调试菜单'),
             ),
