@@ -17,20 +17,17 @@ package io.libecosed.flutter_ecosed
 
 import android.app.Activity
 import android.app.Service
-import android.app.UiModeManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.content.res.TypedArray
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Base64
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -67,7 +64,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
-import java.nio.charset.StandardCharsets
 
 /**
  * 作者: wyq0918dev
@@ -117,8 +113,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     /** 服务绑定状态 */
     private var mIsBind: Boolean = false
 
-
-    private lateinit var poem: ArrayList<String>
 
     /** AppCompatDelegate */
     private lateinit var mAppCompatDelegate: AppCompatDelegate
@@ -213,18 +207,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
 
         // 绑定Shizuku服务
         //Shizuku.bindUserService(mUserServiceArgs, this@EcosedKitPlugin)
-
-        poem = arrayListOf()
-        poem.add("不向焦虑与抑郁投降，这个世界终会有我们存在的地方。")
-        poem.add("把喜欢的一切留在身边，这便是努力的意义。")
-        poem.add("治愈、温暖，这就是我们最终幸福的结局。")
-        poem.add("我有一个梦，也许有一天，灿烂的阳光能照进黑暗森林。")
-        poem.add("如果必须要失去，那么不如一开始就不曾拥有。")
-        poem.add("我们的终点就是与幸福同在。")
-        poem.add("孤独的人不会伤害别人，只会不断地伤害自己罢了。")
-        poem.add("如果你能记住我的名字，如果你们都能记住我的名字，也许我或者我们，终有一天能自由地生存着。")
-        poem.add("对于所有生命来说，不会死亡的绝望，是最可怕的审判。")
-        poem.add("我不曾活着，又何必害怕死亡。")
 
 
     }
@@ -1067,17 +1049,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                     debug = this@FlutterEcosedPlugin.mBaseDebug,
                     context = context,
                 ) { plugins, binding ->
-                    // 打印横幅
-                    if (this@FlutterEcosedPlugin.mBaseDebug) Log.i(
-                        PLUGIN_TAG,
-                        String(
-                            bytes = Base64.decode(
-                                EcosedResources.BANNER,
-                                Base64.DEFAULT,
-                            ),
-                            charset = StandardCharsets.UTF_8,
-                        ),
-                    )
                     // 初始化插件列表.
                     this@FlutterEcosedPlugin.mPluginList = arrayListOf()
                     this@FlutterEcosedPlugin.mJSONList = arrayListOf()
@@ -2206,13 +2177,11 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private fun onePoem(): String {
-        return poem[poem.indices.random()]
+        return ""
     }
 
     private fun watch(): Boolean {
-        return getSystemService(
-            UiModeManager::class.java
-        ).currentModeType == Configuration.UI_MODE_TYPE_WATCH
+        return false;
     }
 
     private fun dynamicColors(): Boolean {
@@ -2271,14 +2240,6 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         /** 确定按钮文本 */
         const val POSITIVE_BUTTON_STRING: String = "确定"
 
-        /** 项目ASCII艺术字Base64编码 */
-        const val BANNER: String = "ICBfX19fXyBfICAgICAgIF8gICBfICAgICAgICAgICAgICBfX19fXyAgICAgI" +
-                "CAgICAgICAgICAgICAgICAgXyAKIHwgIF9fX3wgfF8gICBffCB8X3wgfF8gX19fIF8gX18gIHwgX19fX" +
-                "3xfX18gX19fICBfX18gIF9fXyAgX198IHwKIHwgfF8gIHwgfCB8IHwgfCBfX3wgX18vIF8gXCAnX198I" +
-                "HwgIF98IC8gX18vIF8gXC8gX198LyBfIFwvIF9gIHwKIHwgIF98IHwgfCB8X3wgfCB8X3wgfHwgIF9fL" +
-                "yB8ICAgIHwgfF9ffCAoX3wgKF8pIFxfXyBcICBfXy8gKF98IHwKIHxffCAgIHxffFxfXyxffFxfX3xcX" +
-                "19cX19ffF98ICAgIHxfX19fX1xfX19cX19fL3xfX18vXF9fX3xcX18sX3wKICAgICAgICAgICAgICAgI" +
-                "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA="
     }
 
     /**
