@@ -127,10 +127,7 @@ final class EcosedRuntime extends EcosedBase {
                 message: '打开管理器',
                 child: ListTile(
                   title: const Text('打开管理器'),
-                  leading: const Icon(
-                    Icons.keyboard_command_key,
-                    color: Colors.pinkAccent,
-                  ),
+                  leading: const Icon(Icons.open_in_new),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
                   enabled: true,
                   onTap: () async => await super.launchManager(),

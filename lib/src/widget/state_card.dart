@@ -35,7 +35,7 @@ class StateCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        viewModel.getAppName,
+                        viewModel.getAppVersion,
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),

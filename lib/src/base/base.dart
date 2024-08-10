@@ -112,10 +112,10 @@ base class EcosedBase extends ContextWrapper
         builder: (context) => Theme(
           data: ThemeData(
             useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: MediaQuery.platformBrightnessOf(context),
-            ),
+            // colorScheme: ColorScheme.fromSeed(
+            //   seedColor: Colors.blue,
+            //   brightness: MediaQuery.platformBrightnessOf(context),
+            // ),
             brightness: MediaQuery.platformBrightnessOf(context),
           ),
           child: Material(

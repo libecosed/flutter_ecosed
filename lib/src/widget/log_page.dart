@@ -21,21 +21,21 @@ class _LogPageState extends State<LogPage> {
   final StringBuffer _logs = StringBuffer('Start: ');
 
   List<RenderedEvent> _filteredBuffer = [];
-  bool _scrollListenerEnabled = true;
-  bool _followBottom = true;
+  // bool _scrollListenerEnabled = true;
+  // bool _followBottom = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(
-      () {
-        if (!_scrollListenerEnabled) return;
-        final scrolledToBottom = _scrollController.offset >=
-            _scrollController.position.maxScrollExtent;
-        setState(() => _followBottom = scrolledToBottom);
-      },
-    );
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _scrollController.addListener(
+  //     () {
+  //       if (!_scrollListenerEnabled) return;
+  //       final scrolledToBottom = _scrollController.offset >=
+  //           _scrollController.position.maxScrollExtent;
+  //       setState(() => _followBottom = scrolledToBottom);
+  //     },
+  //   );
+  // }
 
   @override
   void didChangeDependencies() async {
@@ -66,21 +66,21 @@ class _LogPageState extends State<LogPage> {
         },
       ).toList(),
     );
-    if (_followBottom) {
-      Future.delayed(
-        Duration.zero,
-        () async {
-          _scrollListenerEnabled = false;
-          setState(() => _followBottom = true);
-          await _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOut,
-          );
-          _scrollListenerEnabled = true;
-        },
-      );
-    }
+    // if (_followBottom) {
+    //   Future.delayed(
+    //     Duration.zero,
+    //     () async {
+    //       _scrollListenerEnabled = false;
+    //       setState(() => _followBottom = true);
+    //       await _scrollController.animateTo(
+    //         _scrollController.position.maxScrollExtent,
+    //         duration: const Duration(milliseconds: 400),
+    //         curve: Curves.easeOut,
+    //       );
+    //       _scrollListenerEnabled = true;
+    //     },
+    //   );
+    // }
   }
 
   @override
