@@ -33,7 +33,6 @@ class AnsiParser implements ParserWrapper {
     final text = StringBuffer();
     var code = 0;
     late List<int> codes;
-
     for (var i = 0, n = s.length; i < n; i++) {
       var c = s[i];
       switch (state) {
