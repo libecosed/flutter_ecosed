@@ -3,16 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecosed/flutter_ecosed.dart';
 
+typedef Open = Future<void> Function();
+typedef Exec = Future<dynamic> Function(String channel, String method,
+    [dynamic arguments]);
+
 Future<void> main() async {
   await runEcosedApp(
-    app: const MyApp(),
-    plugins: const [ExamplePlugin()],
     runner: (app) async => runApp(app),
+    plugins: () => const [ExamplePlugin()],
+    app: (context, open, exec) {
+      return MyApp(open, exec);
+    },
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp(this.open, this.exec, {super.key});
+
+  final Open? open;
+  final Exec? exec;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +38,23 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(
+        open: open!,
+        exec: exec!,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({
+    super.key,
+    required this.open,
+    required this.exec,
+  });
+
+  final Open open;
+  final Exec exec;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -54,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FilledButton(
-              onPressed: () => openDebugMenu(),
+              onPressed: () => widget.open(),
               child: const Text('调试菜单'),
             ),
             const Text(
@@ -74,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await execPluginMethod(
+          await widget.exec(
             'example_channel',
             Global.add,
           );

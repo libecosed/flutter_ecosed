@@ -11,24 +11,10 @@ final class MockFlutterEcosedPlatform
     implements EcosedInterface {
   @override
   Future<void> runEcosedApp(
-    Widget app,
-    List<EcosedRuntimePlugin> plugins,
-    Runner runner,
+    AppRunner runner,
+    PluginList plugins,
+    AppBuilder app,
   ) async {}
-
-  @override
-  Future<void> execPluginMethod(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> openDebugMenu() {
-    throw UnimplementedError();
-  }
 }
 
 void main() {
@@ -43,9 +29,9 @@ void main() {
     EcosedInterface.instance = fakePlatform;
     expect(
       EcosedInterface.instance.runEcosedApp(
-        Container(),
-        const <EcosedRuntimePlugin>[],
         (app) async => runApp(app),
+        () => const <EcosedRuntimePlugin>[],
+        (context, open, exec) => const Placeholder(),
       ),
       Future.value(),
     );

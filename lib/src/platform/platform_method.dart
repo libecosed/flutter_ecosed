@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../interface/ecosed_platform.dart';
+import '../utils/platform.dart';
 
 final class PlatformMethod extends EcosedPlatform {
   /// 方法通道
@@ -13,19 +14,31 @@ final class PlatformMethod extends EcosedPlatform {
 
   @override
   Future<List?> getPlatformPluginList() async {
-    return await methodChannel.invokeListMethod<String?>(
-      'getPlugins',
-      _arguments,
-    );
+    return kUseNative
+        ? await methodChannel.invokeListMethod<String?>(
+            'getPlugins',
+            _arguments,
+          )
+        : await null;
   }
 
   @override
   Future<bool?> openPlatformDialog() async {
-    return await methodChannel.invokeMethod<bool?>('openDialog', _arguments);
+    return kUseNative
+        ? await methodChannel.invokeMethod<bool?>(
+            'openDialog',
+            _arguments,
+          )
+        : await null;
   }
 
   @override
   Future<bool?> closePlatformDialog() async {
-    return await methodChannel.invokeMethod<bool?>('closeDialog', _arguments);
+    return kUseNative
+        ? await methodChannel.invokeMethod<bool?>(
+            'closeDialog',
+            _arguments,
+          )
+        : await null;
   }
 }

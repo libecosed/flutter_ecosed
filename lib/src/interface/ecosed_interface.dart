@@ -1,7 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../plugin/plugin_runtime.dart';
 import '../entry/default_entry.dart';
 import '../type/runner.dart';
 
@@ -26,24 +24,10 @@ abstract class EcosedInterface extends PlatformInterface {
 
   /// 运行应用
   Future<void> runEcosedApp(
-    Widget app,
-    List<EcosedRuntimePlugin> plugins,
-    Runner runner,
+    AppRunner runner,
+    PluginList plugins,
+    AppBuilder app,
   ) async {
     throw UnimplementedError('未实现runEcosedApp()方法');
-  }
-
-  /// 执行方法
-  Future<dynamic> execPluginMethod(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]) async {
-    throw UnimplementedError('未实现execPluginMethod()方法');
-  }
-
-  /// 打开调试菜单
-  Future<void> openDebugMenu() async {
-    throw UnimplementedError('未实现openDebugMenu()方法');
   }
 }

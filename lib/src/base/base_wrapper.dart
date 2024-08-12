@@ -13,6 +13,8 @@ abstract interface class BaseWrapper {
   /// 绑定层插件
   EcosedRuntimePlugin get base;
 
+  EcosedRuntimePlugin get embedder;
+
   /// 初始化
   Future<void> init(List<EcosedRuntimePlugin> plugins);
 

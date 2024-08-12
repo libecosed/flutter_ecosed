@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ecosed/src/engine/engine_embedder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,7 @@ base class EcosedBase extends ContextWrapper
     with
         RuntimeMixin,
         BaseMixin,
+        EmbedderMixin,
         KernelBridgeMixin,
         ServerBridgeMixin,
         EngineBridgeMixin,
@@ -80,9 +82,9 @@ base class EcosedBase extends ContextWrapper
   /// 运行应用
   @override
   Future<void> runEcosedApp(
-    Widget app,
-    List<EcosedRuntimePlugin> plugins,
-    Runner runner,
+    AppRunner runner,
+    PluginList plugins,
+    AppBuilder app,
   ) async {
     // 初始化日志
     Log.init();
@@ -105,7 +107,7 @@ base class EcosedBase extends ContextWrapper
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
     // 初始化应用
-    await init(plugins);
+    await init(plugins());
     // 启动应用
     return await runner(
       Builder(
@@ -136,7 +138,28 @@ base class EcosedBase extends ContextWrapper
                         return MaterialPageRoute(
                           builder: (context) {
                             super.attachBuildContext(context);
-                            return EcosedBanner(child: app);
+                            return EcosedBanner(
+                              child: app(
+                                context,
+                                () async {
+                                  await buildDialog(
+                                    getBuildContext(),
+                                    false,
+                                  );
+                                },
+                                (
+                                  String channel,
+                                  String method, [
+                                  dynamic arguments,
+                                ]) async {
+                                  return await exec(
+                                    channel,
+                                    method,
+                                    arguments,
+                                  );
+                                },
+                              ),
+                            );
                           },
                         );
                       case routeManager:
@@ -156,26 +179,6 @@ base class EcosedBase extends ContextWrapper
         ),
       ),
     );
-  }
-
-  /// 执行插件方法
-  @override
-  Future<dynamic> execPluginMethod(
-    String channel,
-    String method, [
-    dynamic arguments,
-  ]) async {
-    return await exec(
-      channel,
-      method,
-      arguments,
-    );
-  }
-
-  /// 打开调试菜单
-  @override
-  Future<void> openDebugMenu() async {
-    await buildDialog(getBuildContext(), false);
   }
 
   /// 方法调用

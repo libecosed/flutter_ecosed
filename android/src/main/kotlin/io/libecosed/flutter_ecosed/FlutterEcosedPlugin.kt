@@ -309,7 +309,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
             args: Any?,
         ): PlatformView = object : PlatformView {
             override fun getView(): View = mToolbar
-            override fun dispose() {}
+            override fun dispose() = Unit
         }
     }
 
@@ -1064,9 +1064,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onCreateEngine(context: Context) {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNull or
-                        this@FlutterEcosedPlugin.mJSONList.isNull or
-                        this@FlutterEcosedPlugin.mBinding.isNull -> pluginScope(
+                this@FlutterEcosedPlugin.mPluginList.isNull or this@FlutterEcosedPlugin.mJSONList.isNull or this@FlutterEcosedPlugin.mBinding.isNull -> pluginScope(
                     debug = this@FlutterEcosedPlugin.mBaseDebug,
                     context = context,
                 ) { plugins, binding ->
@@ -1121,9 +1119,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
          */
         override fun onDestroyEngine() {
             when {
-                this@FlutterEcosedPlugin.mPluginList.isNotNull or
-                        this@FlutterEcosedPlugin.mJSONList.isNotNull or
-                        this@FlutterEcosedPlugin.mBinding.isNotNull -> {
+                this@FlutterEcosedPlugin.mPluginList.isNotNull or this@FlutterEcosedPlugin.mJSONList.isNotNull or this@FlutterEcosedPlugin.mBinding.isNotNull -> {
                     // 清空插件列表
                     this@FlutterEcosedPlugin.mPluginList = null
                     this@FlutterEcosedPlugin.mJSONList = null
@@ -1195,10 +1191,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
                             )
                             if (this@FlutterEcosedPlugin.mBaseDebug) Log.d(
                                 PLUGIN_TAG,
-                                "插件代码调用成功!\n" +
-                                        "通道名称:${channel}.\n" +
-                                        "方法名称:${method}.\n" +
-                                        "返回结果:${result}.",
+                                "插件代码调用成功!\n" + "通道名称:${channel}.\n" + "方法名称:${method}.\n" + "返回结果:${result}.",
                             )
                         }
                     }
@@ -1258,17 +1251,13 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         override fun onEcosedMethodCall(call: EcosedMethodCall, result: EcosedResult) {
             super.onEcosedMethodCall(call, result)
             when (call.method) {
-                EcosedMethod.OPEN_DIALOG_METHOD -> result.success(
-                    result = invokeMethod {
-                        openDialog()
-                    }
-                )
+                EcosedMethod.OPEN_DIALOG_METHOD -> result.success(result = invokeMethod {
+                    openDialog()
+                })
 
-                EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(
-                    result = invokeMethod {
-                        closeDialog()
-                    }
-                )
+                EcosedMethod.CLOSE_DIALOG_METHOD -> result.success(result = invokeMethod {
+                    closeDialog()
+                })
 
                 else -> result.notImplemented()
             }
@@ -1808,8 +1797,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断Activity是否为FlutterActivity或FlutterFragmentActivity
      */
     private inline val Activity.isFlutter: Boolean
-        get() = (this@isFlutter is FlutterActivity) or
-                (this@isFlutter is FlutterFragmentActivity)
+        get() = (this@isFlutter is FlutterActivity) or (this@isFlutter is FlutterFragmentActivity)
 
     /**
      * 调用方法
@@ -2025,8 +2013,7 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
      * 判断是否支持谷歌基础服务
      */
     private fun isSupportGMS(): Boolean = activityScope {
-        return@activityScope if (
-            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+        return@activityScope if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 this@activityScope
             ) == ConnectionResult.SUCCESS
         ) true else AppUtils.isAppInstalled(

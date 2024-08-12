@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import '../entry/ecosed_entry.dart';
 import '../interface/ecosed_interface.dart';
 import '../plugin/plugin_runtime.dart';
-import '../type/runner.dart';
 
 /// 注册 flutter_ecosed 插件
 ///
@@ -88,35 +87,21 @@ abstract interface class EcosedPlugin extends EcosedRuntimePlugin {}
 /// }
 /// ```
 Future<void> runEcosedApp({
-  required Widget app,
-  required List<EcosedPlugin> plugins,
-  required Runner runner,
-}) async =>
-    await EcosedInterface.instance.runEcosedApp(
-      app,
-      plugins,
-      runner,
-    );
-
-/// 调用插件方法
-///
-/// ```dart
-/// execPluginMethod('example_plugin', 'hello', {'name': 'value'});
-/// ```
-Future<dynamic> execPluginMethod(
-  String channel,
-  String method, [
-  dynamic arguments,
-]) async =>
-    await EcosedInterface.instance.execPluginMethod(
-      channel,
-      method,
-      arguments,
-    );
-
-/// 打开调试菜单
-///
-/// ```dart
-/// await openDebugMenu();
-/// ```
-Future<void> openDebugMenu() async => EcosedInterface.instance.openDebugMenu();
+  required Future<void> Function(Widget app) runner,
+  required List<EcosedPlugin> Function() plugins,
+  required Widget Function(
+    BuildContext context,
+    Future<void> Function() openDebugMenu,
+    Future<dynamic> Function(
+      String channel,
+      String method, [
+      dynamic arguments,
+    ]) execPluginMethod,
+  ) app,
+}) async {
+  return await EcosedInterface.instance.runEcosedApp(
+    runner,
+    plugins,
+    app,
+  );
+}
