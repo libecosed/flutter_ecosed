@@ -135,7 +135,7 @@ base class EcosedBase extends ContextWrapper
                       case routeApp:
                         return MaterialPageRoute(
                           builder: (context) {
-                            attachBuildContext(context);
+                            super.attachBuildContext(context);
                             return EcosedBanner(child: app);
                           },
                         );

@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -32,6 +33,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -59,6 +61,9 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.StandardMessageCodec
+import io.flutter.plugin.platform.PlatformView
+import io.flutter.plugin.platform.PlatformViewFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -286,10 +291,26 @@ class FlutterEcosedPlugin : Service(), FlutterPlugin, MethodChannel.MethodCallHa
         this@FlutterEcosedPlugin.mMethodChannel.setMethodCallHandler(
             this@FlutterEcosedPlugin,
         )
+        binding.platformViewRegistry.registerViewFactory("ecosed_toolbar", nativeViewFactory);
         // 初始化引擎
         return@bridgeScope this@bridgeScope.onCreateEngine(
             context = binding.applicationContext,
         )
+
+
+    }
+
+    private val nativeViewFactory = object : PlatformViewFactory(
+        StandardMessageCodec.INSTANCE
+    ) {
+        override fun create(
+            context: Context,
+            viewId: Int,
+            args: Any?,
+        ): PlatformView = object : PlatformView {
+            override fun getView(): View = mToolbar
+            override fun dispose() {}
+        }
     }
 
     /**

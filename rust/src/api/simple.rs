@@ -1,4 +1,7 @@
-use flutter_rust_bridge::{frb, setup_default_user_utils};
+use flutter_rust_bridge::{
+    frb,
+    setup_default_user_utils,
+};
 
 #[frb(sync)]
 pub fn greet(name: String) -> String {
