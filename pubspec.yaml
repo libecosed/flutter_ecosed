@@ -40,10 +40,6 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
-executables:
-  create: create
-  main: main
-
 flutter:
   uses-material-design: true
   plugin:
