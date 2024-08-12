@@ -12,18 +12,18 @@ import 'method_call.dart';
 import 'plugin_engine.dart';
 import 'result.dart';
 
-final class EngineEmbedded extends EcosedEnginePlugin {
+final class EngineEmbedder extends EcosedEnginePlugin {
   @override
   String get author => 'wyq0918dev';
 
   @override
-  String get channel => 'engine_embedded';
+  String get channel => 'engine_embedder';
 
   @override
   String get description => '服务嵌入';
 
   @override
-  String get title => 'EngineEmbedded';
+  String get title => 'EngineEmbedder';
 
   /// 服务实例
   late FlutterEcosedPlugin _service;

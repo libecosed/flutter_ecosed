@@ -70,7 +70,7 @@ final class EcosedRuntime extends EcosedBase {
 
     // await super.execEngine(
     //   'openDialog',
-    //   {'channel': 'engine_embedded'},
+    //   {'channel': 'engine_embedder'},
     // );
   }
 

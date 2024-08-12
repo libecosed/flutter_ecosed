@@ -1,7 +1,7 @@
 import 'plugin_engine.dart';
-import 'engine_embedded.dart';
+import 'engine_embedder.dart';
 
 base mixin PluginMixin {
   /// 插件列表
-  List<EcosedEnginePlugin> get plugins => [EngineEmbedded()];
+  List<EcosedEnginePlugin> get plugins => [EngineEmbedder()];
 }

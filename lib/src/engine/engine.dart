@@ -62,7 +62,7 @@ final class EcosedEngine extends EcosedEnginePlugin
       case 'get_platform_plugins':
         result.success(
           execPluginMethod(
-            'engine_embedded',
+            'engine_embedder',
             'getPlugins',
           ),
         );

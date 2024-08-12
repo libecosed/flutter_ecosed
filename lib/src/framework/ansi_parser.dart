@@ -79,6 +79,8 @@ class AnsiParser implements ParserWrapper {
             }
           }
           break;
+        default:
+          break;
       }
     }
     _spans.add(_createSpan(text.toString()));
