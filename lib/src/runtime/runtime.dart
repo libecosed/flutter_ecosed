@@ -47,9 +47,13 @@ final class EcosedRuntime extends EcosedBase {
   ]) async {
     switch (method) {
       case 'get_engine_plugins':
-        return await super.execEngine('get_engine_plugins');
+        return await super.execEngine(
+          'get_engine_plugins',
+        );
       case 'get_platform_plugins':
-        return await super.execEngine('get_platform_plugins');
+        return await super.execEngine(
+          'get_platform_plugins',
+        );
       default:
         return await null;
     }

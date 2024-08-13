@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/engine/engine_embedder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/bridge_mixin.dart';
+import '../engine/engine_embedder.dart';
 import '../plugin/plugin_runtime.dart';
 import '../type/runner.dart';
 import '../values/route.dart';
@@ -107,17 +107,13 @@ base class EcosedBase extends ContextWrapper
     // 初始化引擎
     await engineBridgerScope.onCreateEngine(this);
     // 初始化应用
-    await init(plugins());
+    await init(plugins.call());
     // 启动应用
     return await runner(
       Builder(
         builder: (context) => Theme(
           data: ThemeData(
             useMaterial3: true,
-            // colorScheme: ColorScheme.fromSeed(
-            //   seedColor: Colors.blue,
-            //   brightness: MediaQuery.platformBrightnessOf(context),
-            // ),
             brightness: MediaQuery.platformBrightnessOf(context),
           ),
           child: Material(
@@ -141,23 +137,20 @@ base class EcosedBase extends ContextWrapper
                             return EcosedBanner(
                               child: app(
                                 context,
-                                () async {
-                                  await buildDialog(
-                                    getBuildContext(),
-                                    false,
-                                  );
-                                },
+                                () async => await buildDialog(
+                                  super.getBuildContext(),
+                                  false,
+                                ),
                                 (
                                   String channel,
                                   String method, [
                                   dynamic arguments,
-                                ]) async {
-                                  return await exec(
-                                    channel,
-                                    method,
-                                    arguments,
-                                  );
-                                },
+                                ]) async =>
+                                    await exec(
+                                  channel,
+                                  method,
+                                  arguments,
+                                ),
                               ),
                             );
                           },
@@ -191,9 +184,7 @@ base class EcosedBase extends ContextWrapper
   }
 
   @override
-  Future<void> init(List<EcosedRuntimePlugin> plugins) async {
-    throw UnimplementedError('');
-  }
+  Future<void> init(List<EcosedRuntimePlugin> plugins) async {}
 
   /// 获取管理器
   @override

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecosed/src/widget/toolbar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -23,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
       controller: _scrollController,
       child: ListView(
         controller: _scrollController,
-        children: [EcosedToolbar()],
+        children: const [],
       ),
     );
   }
