@@ -1,12 +1,17 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../platform/platform_method.dart';
+import '../platform/ecosed_method_channel.dart';
 
 abstract class EcosedPlatform extends PlatformInterface {
   EcosedPlatform() : super(token: _token);
 
   static final Object _token = Object();
-  static EcosedPlatform get instance => PlatformMethod();
+  static EcosedPlatform _instance = MethodChannelEcosed();
+  static EcosedPlatform get instance => _instance;
+  static set instance(EcosedPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    _instance = instance;
+  }
 
   Future<List?> getPlatformPluginList() async {
     throw UnimplementedError('未实现getPlatformPluginList()接口.');

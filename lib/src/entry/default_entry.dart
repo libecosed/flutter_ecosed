@@ -15,6 +15,7 @@ final class DefaultEntry extends EcosedInterface {
     AppRunner runner,
     PluginList plugins,
     AppBuilder app,
+    Object? error,
   ) async {
     // 获取当前操作系统名称
     final String platform = Platform.operatingSystem;

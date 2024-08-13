@@ -1,5 +1,8 @@
+import 'dart:math';
+
+/// 心灵毒鸡汤
 class Poem {
-  static const list = [
+  static const _list = [
     '不向焦虑与抑郁投降，这个世界终会有我们存在的地方。',
     '把喜欢的一切留在身边，这便是努力的意义。',
     '治愈、温暖，这就是我们最终幸福的结局。',
@@ -11,4 +14,7 @@ class Poem {
     '对于所有生命来说，不会死亡的绝望，是最可怕的审判。',
     '我不曾活着，又何必害怕死亡。',
   ];
+
+  /// 随机抽取一句
+  String get getPoem => _list[Random().nextInt(_list.length)];
 }

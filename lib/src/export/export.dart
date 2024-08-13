@@ -103,5 +103,6 @@ Future<void> runEcosedApp({
     runner,
     plugins,
     app,
+    null,
   );
 }

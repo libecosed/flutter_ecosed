@@ -10,9 +10,10 @@ abstract interface class BaseWrapper {
   /// 运行时入口
   EcosedInterface call();
 
-  /// 绑定层插件
+  /// 绑定通信层插件
   EcosedRuntimePlugin get base;
 
+  /// 平台嵌入层插件
   EcosedRuntimePlugin get embedder;
 
   /// 初始化

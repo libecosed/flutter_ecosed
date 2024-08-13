@@ -287,11 +287,16 @@ final class EcosedRuntime extends EcosedBase {
     bool internal, [
     dynamic arguments,
   ]) async {
+    // 判断插件列表是否非空
     if (_pluginList.isNotEmpty) {
+      // 遍历插件列表
       for (var element in _pluginList) {
-        for (var internalPlugin in [this, super.base]) {
+        // 遍历内部插件列表
+        for (var internalPlugin in [super.base, this, super.embedder]) {
+          // 判断是否为内部插件, 且是否不允许访问内部插件
           if (internalPlugin.pluginChannel == channel && !internal) {
-            return await null;
+            // 返回空结束函数
+            return await Future.value(null);
           }
         }
         if (element.pluginChannel == channel) {
@@ -299,7 +304,7 @@ final class EcosedRuntime extends EcosedBase {
         }
       }
     } else {
-      return await null;
+      return await Future.value(null);
     }
   }
 

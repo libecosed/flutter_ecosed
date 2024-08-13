@@ -27,7 +27,10 @@ abstract class EcosedInterface extends PlatformInterface {
     AppRunner runner,
     PluginList plugins,
     AppBuilder app,
+    Object? error,
   ) async {
-    throw UnimplementedError('未实现runEcosedApp()方法');
+    throw UnimplementedError(
+      '未实现runEcosedApp()方法, $error',
+    );
   }
 }

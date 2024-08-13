@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../embedder/embedder_mixin.dart';
 import '../engine/bridge_mixin.dart';
-import '../engine/engine_embedder.dart';
 import '../plugin/plugin_runtime.dart';
 import '../type/runner.dart';
 import '../values/route.dart';
@@ -85,6 +85,7 @@ base class EcosedBase extends ContextWrapper
     AppRunner runner,
     PluginList plugins,
     AppBuilder app,
+    Object? error,
   ) async {
     // 初始化日志
     Log.init();
