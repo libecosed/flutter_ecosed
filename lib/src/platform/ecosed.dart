@@ -1,21 +1,21 @@
 import '../interface/ecosed_platform.dart';
 
-base mixin class FlutterEcosed implements EcosedPlatform {
+final class FlutterEcosed implements EcosedPlatform {
   /// 平台实例
-  final EcosedPlatform _instance = EcosedPlatform.instance;
+  final EcosedPlatform _platform = EcosedPlatform.instance;
 
   @override
   Future<bool?> closePlatformDialog() async {
-    return await _instance.closePlatformDialog();
+    return await _platform.closePlatformDialog();
   }
 
   @override
   Future<List?> getPlatformPluginList() async {
-    return await _instance.getPlatformPluginList();
+    return await _platform.getPlatformPluginList();
   }
 
   @override
   Future<bool?> openPlatformDialog() async {
-    return await _instance.openPlatformDialog();
+    return await _platform.openPlatformDialog();
   }
 }

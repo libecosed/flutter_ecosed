@@ -296,7 +296,7 @@ final class EcosedRuntime extends EcosedBase {
           // 判断是否为内部插件, 且是否不允许访问内部插件
           if (internalPlugin.pluginChannel == channel && !internal) {
             // 返回空结束函数
-            return await Future.value(null);
+            return await null;
           }
         }
         if (element.pluginChannel == channel) {
@@ -304,7 +304,7 @@ final class EcosedRuntime extends EcosedBase {
         }
       }
     } else {
-      return await Future.value(null);
+      return await null;
     }
   }
 

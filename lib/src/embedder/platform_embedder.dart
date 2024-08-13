@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_ecosed/src/engine/method_call.dart';
+import 'package:flutter_ecosed/src/engine/plugin_engine.dart';
+import 'package:flutter_ecosed/src/engine/result.dart';
 
 import '../framework/service.dart';
 import '../framework/want.dart';
@@ -10,8 +13,8 @@ import '../utils/platform.dart';
 import '../values/strings.dart';
 
 final class PlatformEmbedder extends Service
-    with FlutterEcosed
     implements EcosedRuntimePlugin, EcosedPlatform {
+  late FlutterEcosed _instance;
   @override
   String get pluginAuthor => developerName;
 
@@ -23,6 +26,12 @@ final class PlatformEmbedder extends Service
 
   @override
   String get pluginName => 'PlatformEmbedder';
+
+  @override
+  void onCreate() {
+    super.onCreate();
+    if (kUseNative) _instance = FlutterEcosed();
+  }
 
   @override
   IBinder onBind(Want want) => EmbedderBinder(embedder: this);
@@ -44,8 +53,9 @@ final class PlatformEmbedder extends Service
       invoke: () async {
         return List.empty();
       },
-      mobile: () async {
-        return await getPlatformPluginList();
+      mobile: (instance) async {
+        //return List.empty();
+        return await instance.getPlatformPluginList();
       },
       error: (exception) async {
         return List.empty();
@@ -59,8 +69,9 @@ final class PlatformEmbedder extends Service
       invoke: () async {
         return true;
       },
-      mobile: () async {
-        return await openPlatformDialog();
+      mobile: (instance) async {
+        //return true;
+        return await instance.openPlatformDialog();
       },
       error: (exception) async {
         return false;
@@ -74,8 +85,9 @@ final class PlatformEmbedder extends Service
       invoke: () async {
         return true;
       },
-      mobile: () async {
-        return await closePlatformDialog();
+      mobile: (instance) async {
+        //return true;
+        return await instance.closePlatformDialog();
       },
       error: (exception) async {
         return false;
@@ -85,14 +97,14 @@ final class PlatformEmbedder extends Service
 
   Future<dynamic> _invoke({
     required Future<dynamic> Function() invoke,
-    required Future<dynamic> Function() mobile,
+    required Future<dynamic> Function(FlutterEcosed instance) mobile,
     required Future<dynamic> Function(Exception exception) error,
   }) async {
     if (kIsWeb || kIsWasm) {
       return await invoke.call();
     } else if (kUseNative) {
       try {
-        return await mobile.call();
+        return await mobile.call(_instance);
       } on Exception catch (exception) {
         return await error.call(exception);
       }
@@ -128,4 +140,63 @@ final class EmbedderConnection implements ServiceConnection {
 
   @override
   void onServiceDisconnected(String name) {}
+}
+
+final class FEPlugin extends Service {
+  @override
+  void onCreate() {
+    super.onCreate();
+  }
+
+  @override
+  IBinder onBind(Want want) => ServiceBinder(service: this);
+}
+
+final class ServiceBinder extends Binder {
+  ServiceBinder({required this.service});
+
+  final FEPlugin service;
+
+  @override
+  Service get getService => service;
+}
+
+final class ServiceInvoke extends EcosedEnginePlugin {
+  @override
+  String get author => developerName;
+
+  @override
+  String get channel => 'service_invoke';
+
+  @override
+  String get description => 'ServiceInvoke';
+
+  @override
+  Future<void> onEcosedMethodCall(
+    EcosedMethodCall call,
+    EcosedResult result,
+  ) async {}
+
+  @override
+  String get title => 'ServiceInvoke';
+}
+
+final class ServiceDelegate extends EcosedEnginePlugin {
+  @override
+  String get author => developerName;
+
+  @override
+  String get channel => 'service_delegate';
+
+  @override
+  String get description => 'ServiceDelegate';
+
+  @override
+  Future<void> onEcosedMethodCall(
+    EcosedMethodCall call,
+    EcosedResult result,
+  ) async {}
+
+  @override
+  String get title => 'ServiceDelegate';
 }
