@@ -3,8 +3,8 @@
 [![Pub Version](https://img.shields.io/pub/v/flutter_ecosed?include_prereleases&style=flat-square&logo=dart&logoColor=white&label=Pub&color=blue)](https://pub.dev/packages/flutter_ecosed)
 [![GitHub Repo stars](https://img.shields.io/github/stars/libecosed/flutter_ecosed?style=flat-square&logo=github&logoColor=white&label=Stars&color=blue)](https://github.com/libecosed/flutter_ecosed)
 [![GitHub forks](https://img.shields.io/github/forks/libecosed/flutter_ecosed?style=flat-square&logo=github&logoColor=white&label=Forks&color=blue)](https://github.com/libecosed/flutter_ecosed/fork)
-[![GitHub License](https://img.shields.io/github/license/libecosed/flutter_ecosed?style=flat-square&label=License)](https://github.com/libecosed/flutter_ecosed/blob/master/LICENSE)
-[![Powered by flutter_ecosed](https://img.shields.io/badge/Powered_by-flutter__ecosed-deeppink?style=flat-square&logo=flutter)](https://pub.dev/packages/flutter_ecosed)
+[![GitHub License](https://img.shields.io/github/license/libecosed/flutter_ecosed?style=flat-square&logo=github&logoColor=white&label=License)](https://github.com/libecosed/flutter_ecosed/blob/master/LICENSE)
+[![Powered by flutter_ecosed](https://img.shields.io/badge/Powered_by-flutter__ecosed-deeppink?style=flat-square&logo=flutter&logoColor=white)](https://pub.dev/packages/flutter_ecosed)
 
 Logo先欠着
 
