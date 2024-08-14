@@ -54,7 +54,6 @@ final class PlatformEmbedder extends Service
         return List.empty();
       },
       mobile: (instance) async {
-        //return List.empty();
         return await instance.getPlatformPluginList();
       },
       error: (exception) async {
@@ -70,7 +69,6 @@ final class PlatformEmbedder extends Service
         return true;
       },
       mobile: (instance) async {
-        //return true;
         return await instance.openPlatformDialog();
       },
       error: (exception) async {
@@ -86,7 +84,6 @@ final class PlatformEmbedder extends Service
         return true;
       },
       mobile: (instance) async {
-        //return true;
         return await instance.closePlatformDialog();
       },
       error: (exception) async {

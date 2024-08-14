@@ -1,3 +1,5 @@
+## 0.2.0-migrate.0
+* This project has stopped maintenance, please migrate to FreeFEOS!
 ## 0.2.0-dev.6
 * Improve project architecture.
 * Improve the function.
