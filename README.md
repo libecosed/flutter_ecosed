@@ -1,5 +1,7 @@
 # [flutter_ecosed](https://pub.dev/packages/flutter_ecosed): FlutterEcosed is a Flutter plugin and a simple Flutter library OS and advanced Flutter development framework that providing plugin development and dashboard functions.
 
+# 该项目已停止维护，请迁移至 [FreeFEOS](https://pub.dev/packages/freefeos/example) ！
+
 [![Pub Version](https://img.shields.io/pub/v/flutter_ecosed?include_prereleases&style=flat-square&logo=dart&logoColor=white&label=Pub&color=blue)](https://pub.dev/packages/flutter_ecosed)
 [![GitHub Repo stars](https://img.shields.io/github/stars/libecosed/flutter_ecosed?style=flat-square&logo=github&logoColor=white&label=Stars&color=blue)](https://github.com/libecosed/flutter_ecosed)
 [![GitHub forks](https://img.shields.io/github/forks/libecosed/flutter_ecosed?style=flat-square&logo=github&logoColor=white&label=Forks&color=blue)](https://github.com/libecosed/flutter_ecosed/fork)
